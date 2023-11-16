@@ -1,4 +1,4 @@
-![Uploading 다운로드 파일_20231116_064416.gif…]()
+![다운로드 파일_20231116_064416](https://github.com/njy622/Onnanana_second-Projct/assets/139431528/19a428d8-7d5c-4539-b364-ca600f1a3b42)
 
 ## 기  간 : 2023년 10월 18일(수) ~ 2023년 11월 01일(수) (2주간)
 ## 팀  명 : Hip Data
