@@ -1,7 +1,4 @@
-
-
-![image](https://github.com/njy622/HipData/assets/139431528/f93cb33c-d0ee-44f2-83e6-c91c406f16a3)
-![Onnanana-unscreen](https://github.com/njy622/-Onnanana/assets/139431528/dcd5c821-26b7-46e6-b8e0-5b1fd068c53b)
+![Uploading 다운로드 파일_20231116_064416.gif…]()
 
 ## 기  간 : 2023년 10월 18일(수) ~ 2023년 11월 01일(수) (2주간)
 ## 팀  명 : Hip Data
