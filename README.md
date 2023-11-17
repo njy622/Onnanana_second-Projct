@@ -2,19 +2,27 @@
 
 # 미세 먼지 증감에 따른 미래 예측과 솔루션 제시 README
 
-- 배포 URL : 
+- 배포 URL :
+
 <br>
+
 ## 프로젝트 소개
+
 - 미세먼지에 대한 경각심 부여
 - 미세먼지 감소 가이드 라인 제공함으로써 참여 활성화 기대
 - 관련 질병 및 환경오염 감소 기대
+
 <br>
+
 ## 기  간 : 2023년 11월 15일(수) ~ 2023년 12월 27일(수) (6주간)
 <br>
+
 ## 팀  명 : 지구온나나나
 <br>
+
 ## 팀원 구성
 <div align="center">
+  
 | **Leader 심민준** | **남지영** | **신영화** | **탁광호** |
 | :------: |  :------: | :------: | :------: |
 | [<img src="https://avatars.githubusercontent.com/u/136799084?s=40&v=4" height=150 width=150> <br/> @MinJun1998](https://github.com/MinJun1998) | [<img src="https://avatars.githubusercontent.com/u/139431528?s=48&v=4" height=150 width=150> <br/> @njy622](https://github.com/njy622) | [<img src="https://avatars.githubusercontent.com/u/125530988?s=96&v=4" height=150 width=150> <br/> @forever-young86](https://github.com/forever-young86) | [<img src="https://avatars.githubusercontent.com/u/78691176?s=40&v=4" height=150 width=150> <br/> @siant88](https://github.com/siant88) |
