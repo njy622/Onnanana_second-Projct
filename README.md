@@ -15,7 +15,7 @@
 <div align="center">
 | **Leader 심민주** | **남지영** | **신영화** | **탁광호** |
 | :------: |  :------: | :------: | :------: |
-| [<img src="https://github.com/njy622/HipData/assets/139431528/6fd0ef7d-2932-4c43-a963-5d0de1c1c93f" height=150 width=150> <br/> @MinJun1998](https://github.com/MinJun1998)| [<img src="https://github.com/njy622/HipData/assets/139431528/17fd72d5-11f1-45cb-9f58-f6b27477590f" height=150 width=150> <br/> @njy622](https://github.com/njy622) | [<img src="https://github.com/njy622/HipData/assets/139431528/944fffa1-37e3-4aef-bd1a-8275becbd563" height=150 width=150> <br/> @forever-young86](https://github.com/forever-young86) | [<img src= "https://github.com/njy622/HipData/assets/139431528/e3af687e-68d3-4266-8c80-cf33854fc906" height=150 width=150> <br/> @siant88](https://github.com/siant88) |
+| [<img src="https://github.com/njy622/HipData/assets/139431528/6fd0ef7d-2932-4c43-a963-5d0de1c1c93f" height=150 width=150> <br/> @MinJun1998](https://github.com/MinJun1998) | [<img src="https://avatars.githubusercontent.com/u/112460466?v=4" height=150 width=150> <br/> @njy622](https://github.com/njy622) | [<img src="https://avatars.githubusercontent.com/u/112460506?v=4" height=150 width=150> <br/> @forever-young86](https://github.com/forever-young86) | [<img src="https://avatars.githubusercontent.com/u/76766459?v=4" height=150 width=150> <br/> @siant88](https://github.com/siant88) |
 
 </div>
 
