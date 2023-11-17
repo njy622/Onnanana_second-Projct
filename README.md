@@ -12,10 +12,9 @@
 ## 기  간 : 2023년 11월 15일(수) ~ 2023년 12월 27일(수) (6주간)
 ## 팀  명 : 지구온나나나
 ## 팀원 구성 :
-<div align="center">
-| **Leader 심민주** | **남지영** | **신영화** | **탁광호** |
+| **Leader 심민준** | **남지영** | **신영화** | **탁광호** |
 | :------: |  :------: | :------: | :------: |
-| [<img src="https://github.com/njy622/HipData/assets/139431528/6fd0ef7d-2932-4c43-a963-5d0de1c1c93f" height=150 width=150> <br/> @MinJun1998](https://github.com/MinJun1998) | [<img src="https://avatars.githubusercontent.com/u/112460466?v=4" height=150 width=150> <br/> @njy622](https://github.com/njy622) | [<img src="https://avatars.githubusercontent.com/u/112460506?v=4" height=150 width=150> <br/> @forever-young86](https://github.com/forever-young86) | [<img src="https://avatars.githubusercontent.com/u/76766459?v=4" height=150 width=150> <br/> @siant88](https://github.com/siant88) |
+| [<img src="https://avatars.githubusercontent.com/u/136799084?s=40&v=4" height=150 width=150> <br/> @MinJun1998](https://github.com/MinJun1998) | [<img src="https://avatars.githubusercontent.com/u/139431528?s=48&v=4" height=150 width=150> <br/> @njy622](https://github.com/njy622) | [<img src="https://avatars.githubusercontent.com/u/125530988?s=96&v=4" height=150 width=150> <br/> @forever-young86](https://github.com/forever-young86) | [<img src="https://avatars.githubusercontent.com/u/78691176?s=40&v=4" height=150 width=150> <br/> @siant88](https://github.com/siant88) |
 
 </div>
 
