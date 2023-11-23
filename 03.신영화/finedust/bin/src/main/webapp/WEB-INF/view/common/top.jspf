@@ -1,0 +1,46 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%-- <body> 상단에 있는 navigation bar --%>
+
+   <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+        <div class="container-fluid">
+            <ul class="navbar-nav">
+                <a class="navbar-brand mx-5" href="#"><img src="/finedust/img/ck-logo.png" height="36"></a>
+                <li class="nav-item ms-3">
+                    <a class="nav-link ${menu eq 'home' ? 'active' : ''}" href="/finedust/home"><i class="fas fa-home"></i> 홈</a>
+                </li>
+                <li class="nav-item ms-3">
+                    <a class="nav-link ${menu eq 'board' ? 'active' : ''}" href="#"><i class="far fa-list-alt"></i> 게시판</a>
+                </li>
+                <li class="nav-item ms-3">
+                    <a class="nav-link ${menu eq 'user' ? 'active' : ''}" href="/finedust/user/list/1"><i class="fas fa-user-friends"></i> 사용자</a>
+                </li>
+                <li class="nav-item dropdown ms-3">
+                    <a class="nav-link dropdown-toggle ${menu eq 'ai' ? 'active' : ''}" href="#" data-bs-toggle="dropdown">
+                        <i class="fa-solid fa-brain"></i> 인공지능
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Link 1</a></li>
+                        <li><a class="dropdown-item" href="#">Link 2</a></li>
+                        <li><a class="dropdown-item" href="#">Link 3</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">Another link</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item ms-3">
+                    <a class="nav-link ${menu eq 'schedule' ? 'active' : ''}" href="#"><i class="fa-solid fa-calendar-days"></i> 스케쥴</a>
+                </li>
+                <li class="nav-item ms-3">
+                <c:if test="${not empty sessUid}"> <%--아이디가 있으면 로그아웃 버튼이 보인다 --%>
+                    <a class="nav-link" href="/finedust/user/logout"><i class="fas fa-sign-out-alt"></i> 로그아웃</a>
+                </c:if>
+                <c:if test="${empty sessUid}"> <%--아이디가 없으면 로그인 버튼이 보인다 (c:if는 else가 없어서 두번 반복 써야함)--%>
+                    <a class="nav-link" href="/finedust/user/login"><i class="fas fa-sign-in-alt"></i> 로그인</a>
+                </c:if>
+                </li>
+            </ul>
+            <c:if test="${not empty sessUname}"> <%--로그인 한 상태에서만 아래 멘트 보임 --%>
+            <span class="navbar-text me-3">${sessUname}님 환영합니다.</span>
+            </c:if>
+        </div>
+    </nav>

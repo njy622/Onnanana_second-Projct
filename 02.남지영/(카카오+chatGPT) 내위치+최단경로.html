@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>현재 위치 가져오기</title>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    // 현재 위치 가져오기
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+      } else {
+        document.getElementById("demo").innerHTML = "Geolocation is not supported by this browser.";
+      }
+    }
+
+    function showPosition(position) {
+      var lat = position.coords.latitude;
+      var lon = position.coords.longitude;
+      document.getElementById("demo").innerHTML = "현재 위치: " + lat + ", " + lon;
+    }
+
+    getLocation();
+
+    // 검색한 위치 좌표 가져오기
+    function searchAddress() {
+      var address = document.getElementById('address').value;
+      var base_url = 'https://dapi.kakao.com/v2/local/search/address.json';
+      var query = encodeURIComponent(address);
+      var url = `${base_url}?query=${query}`;
+
+      var headers = {
+        'Authorization': 'KakaoAK db8c17d6893ffe5d073cd03b8bfe32b5'
+      };
+
+      $.ajax({
+        url: url,
+        headers: headers,
+        success: function (result) {
+          var latitude = result.documents[0].y;
+          var longitude = result.documents[0].x;
+          var resultDiv = document.getElementById("result");
+          resultDiv.innerHTML = `검색된 위치의 좌표: ${latitude}, ${longitude}`;
+          // 이후 추가 작업을 원하는 대로 처리할 수 있습니다
+        },
+        error: function (error) {
+          console.log('에러 발생:', error);
+        }
+      });
+    }
+        // 검색한 위치 좌표 가져오기
+        function searchAddress2() {
+      var address2 = document.getElementById('address2').value;
+      var base_url = 'https://dapi.kakao.com/v2/local/search/address.json';
+      var query = encodeURIComponent(address2);
+      var url = `${base_url}?query=${query}`;
+
+      var headers = {
+        'Authorization': 'KakaoAK db8c17d6893ffe5d073cd03b8bfe32b5'
+      };
+
+      $.ajax({
+        url: url,
+        headers: headers,
+        success: function (result2) {
+          if (result2.documents.length > 0) {
+            var latitude = result2.documents[0].y;
+            var longitude = result2.documents[0].x;
+            var resultDiv = document.getElementById("result2");
+            resultDiv.innerHTML = `검색된 위치의 좌표: ${latitude}, ${longitude}`;
+          } else {
+            var resultDiv = document.getElementById("result2");
+            resultDiv.innerHTML = `검색된 결과가 없습니다.`;
+          }
+          // 이후 추가 작업을 원하는 대로 처리할 수 있습니다
+        },
+        error: function (error) {
+          console.log('에러 발생:', error);
+        }
+      });
+    }
+
+    var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+    mapOption = {
+        center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+        level: 3 // 지도의 확대 레벨
+    };  
+
+
+
+//장소명으로 좌표 얻기
+
+
+
+
+
+  </script>
+</head>
+<body>
+  <p id="demo"></p>
+  <div>
+    <label for="destination">주소 검색시  좌표 리턴</label>
+    <input type="text" id="address" placeholder="주소를 입력하세요">
+    <button onclick="searchAddress()">검색</button>
+  </div>
+  <div id="result"></div>
+  <div>
+    <label for="destination">장소명 검색시  좌표 리턴</label>
+    <input type="text" id="address2" placeholder="주소를 입력하세요">
+    <button onclick="searchAddress2()">검색</button>
+    <div id="result2"></div>
+  </div>
+ 
+
+  
+</body>
+</html>
