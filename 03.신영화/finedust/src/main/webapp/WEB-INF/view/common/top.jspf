@@ -10,7 +10,7 @@
                     <a class="nav-link ${menu eq 'home' ? 'active' : ''}" href="/finedust/home"><i class="fas fa-home"></i> 홈</a>
                 </li>
                 <li class="nav-item ms-3">
-                    <a class="nav-link ${menu eq 'board' ? 'active' : ''}" href="#"><i class="far fa-list-alt"></i> 게시판</a>
+                    <a class="nav-link ${menu eq 'board' ? 'active' : ''}" href="/finedust/board"><i class="far fa-list-alt"></i> 게시판</a>
                 </li>
                 <li class="nav-item ms-3">
                     <a class="nav-link ${menu eq 'user' ? 'active' : ''}" href="/finedust/user/list/1"><i class="fas fa-user-friends"></i> 사용자</a>

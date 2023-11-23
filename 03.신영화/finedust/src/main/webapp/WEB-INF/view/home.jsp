@@ -15,7 +15,7 @@
 			<div class="col-9">
 				<h3><strong>Home</strong></h3>
 				<hr>
-				<img src="/finedust/img/home.jpg" width="80%">
+				<img src="img/home.jpg" width="80%">
 			</div>
 			<!-- ===============내가 작성할 부분 ================ -->
 		</div>

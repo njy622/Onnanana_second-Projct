@@ -10,7 +10,7 @@
 <body>
 	<nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
 		<div class="container-fluid">
-        	<img src="/finedust/img/ck-logo.png" height="60" class="rounded-3 mx-2">
+        	<img src="img/ck-logo.png" height="60" class="rounded-3 mx-2">
         	<div class="p-2 bg-dark justify-content-center rounded">
         		<img src="https://picsum.photos/1500/200" width="100%">
         	</div>
