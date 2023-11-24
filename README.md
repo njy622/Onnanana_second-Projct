@@ -1,6 +1,6 @@
 ![다운로드 파일_20231116_064416](https://github.com/njy622/Onnanana_second-Projct/assets/139431528/e7b30e1d-5234-45c3-9629-bfa1f02d06b7)
 
-# 미세 먼지 증감에 따른 미래 예측과 솔루션 제시 README
+# 대기 오염 증감에 따른 미래 예측과 솔루션 제시 README
 
 ![image](https://github.com/njy622/Onnanana_second-Projct/assets/125530988/be786db3-311a-4282-a9e0-c8112188de39)
 
