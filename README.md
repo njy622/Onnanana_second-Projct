@@ -35,12 +35,12 @@
 <br>
 
 ## 1. 개발 환경
-- 사용언어 : Python
+- 사용언어 : Python, Java
 - Front : HTML, CSS, JS를 활용한 UI 생성
-- Back-end : CSV로 dataset 생성 및 OCR 활용
+- Back-end : Oracle, Spring boot
 - 버전 및 이슈관리 : Github, Github Issues, Github Project
-- 협업 툴 : Discord
-- 서비스 배포 환경 : Flask
+- 협업 툴 : Github, Kakao
+- 서비스 배포 환경 : Flask, Spring boot
 <br>
 
 
@@ -53,14 +53,25 @@
 ## 3. 역할 분담
 <br>
 
-### 심민준 
+### 심민준 <팀장>
+- 기획안 발표 
+- OPEN API 시각화 (카토그램)
 <br>
 
 ### 남지영
+- 기록관리 및 깃허브 관리
+- 탄소 배출량 계산기 구현
+- 메인 디자인
+- 최종 발표
 <br>
 
 ### 신영화
+- 보고서 작성
+- 중간보고 발표
+- 생활지수 및 관련 질병 시각화
 <br>
 
 ### 탁광호
+- 데이터 분석
+- 기능 구현 및 적용
 <br>
