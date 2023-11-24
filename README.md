@@ -2,6 +2,9 @@
 
 # 미세 먼지 증감에 따른 미래 예측과 솔루션 제시 README
 
+![image](https://github.com/njy622/Onnanana_second-Projct/assets/125530988/be786db3-311a-4282-a9e0-c8112188de39)
+
+
 - 배포 URL :
 
 <br>
@@ -42,6 +45,9 @@
 
 
 ## 2. 프로젝트 구조
+
+![image](https://github.com/njy622/Onnanana_second-Projct/assets/125530988/2ae15468-d8c4-4ed4-8403-501db3e228b9)
+
 <br>
 
 ## 3. 역할 분담
