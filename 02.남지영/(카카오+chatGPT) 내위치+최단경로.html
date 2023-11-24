@@ -49,52 +49,24 @@
         }
       });
     }
-        // 검색한 위치 좌표 가져오기
-        function searchAddress2() {
-      var address2 = document.getElementById('address2').value;
-      var base_url = 'https://dapi.kakao.com/v2/local/search/address.json';
-      var query = encodeURIComponent(address2);
-      var url = `${base_url}?query=${query}`;
+     
+// 장소 검색 함수
+function searchPlace() {
+            var place = document.getElementById('placeInput').value;
 
-      var headers = {
-        'Authorization': 'KakaoAK db8c17d6893ffe5d073cd03b8bfe32b5'
-      };
+            var geocoder = new kakao.maps.services.Geocoder();
 
-      $.ajax({
-        url: url,
-        headers: headers,
-        success: function (result2) {
-          if (result2.documents.length > 0) {
-            var latitude = result2.documents[0].y;
-            var longitude = result2.documents[0].x;
-            var resultDiv = document.getElementById("result2");
-            resultDiv.innerHTML = `검색된 위치의 좌표: ${latitude}, ${longitude}`;
-          } else {
-            var resultDiv = document.getElementById("result2");
-            resultDiv.innerHTML = `검색된 결과가 없습니다.`;
-          }
-          // 이후 추가 작업을 원하는 대로 처리할 수 있습니다
-        },
-        error: function (error) {
-          console.log('에러 발생:', error);
+            geocoder.addressSearch(place, function(result, status) {
+                if (status === kakao.maps.services.Status.OK) {
+                    var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+                    // 검색된 결과를 결과창에 출력
+                    document.getElementById('result').innerHTML = '장소명: ' + place + '<br>위도: ' + coords.getLat() + '<br>경도: ' + coords.getLng();
+                } else {
+                    document.getElementById('result').innerHTML = '장소를 찾을 수 없습니다.';
+                }
+            });
         }
-      });
-    }
-
-    var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
-    mapOption = {
-        center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-        level: 3 // 지도의 확대 레벨
-    };  
-
-
-
-//장소명으로 좌표 얻기
-
-
-
-
-
   </script>
 </head>
 <body>
@@ -107,11 +79,11 @@
   <div id="result"></div>
   <div>
     <label for="destination">장소명 검색시  좌표 리턴</label>
-    <input type="text" id="address2" placeholder="주소를 입력하세요">
-    <button onclick="searchAddress2()">검색</button>
-    <div id="result2"></div>
+    <input type="text" id="placeInput" placeholder="장소명을 입력하세요">
+      <button onclick="searchPlace()">검색</button>
+      <div id="map" style="width: 500px; height: 400px;"></div>
+      <div id="result2"></div>
   </div>
- 
 
   
 </body>
