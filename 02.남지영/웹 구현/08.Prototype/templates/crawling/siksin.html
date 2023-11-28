@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Crawling{% endblock %}
+{% block weather %}{{ weather | safe() }}{% endblock %}
+{% block additional_head %} 
+    <style>
+        th  {text-align: center;}
+    </style>
+{% endblock %}
+{% block subtitle %}식신 맛집{% endblock %}
+{% block content %}
+    <table class="table" style="margin-bottom: 100px;">
+        <tr>
+            <th>No.</th>
+            <th>이미지</th>
+            <th>업소명</th>
+            <th>평점</th>
+            <th>메뉴</th>
+            <th>주소</th>
+            <th>전화번호</th>
+        </tr>
+        <!--{'업소명':name, '평점':score, '메뉴':menu, '주소':addr, '전화번호':tel, 'href':href, 'src': base_url+src})
+        -->
+        {% for rest in rest_list %}
+            <tr>
+                <td>{{loop.index}}</td>
+                <td><img src="{{rest.src}}" height="40"></td>
+                <td><a href="{{rest.href}}" target="_blank">{{rest.업소명}}</a></td>
+                <td>{{rest.평점}}</td>
+                <td>{{rest.메뉴}}</td>
+                <td>{{rest.주소}}</td>
+                <td>{{rest.전화번호}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
+
