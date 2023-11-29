@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>현재 위치 가져오기</title>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="./js/calcu.js"></script> 
+  </script>
+</head>
+<body>
+  <p id="demo"></p>
+  <div>
+    <label for="destination">주소 검색시  좌표 리턴</label>
+    <input type="text" id="address" placeholder="주소를 입력하세요">
+    <button onclick="searchAddress()">검색</button>
+  </div>
+  <div id="result"></div>
+  <div>
+    <label for="destination">장소명 검색시  좌표 리턴</label>
+    <input type="text" id="placeInput" placeholder="장소명을 입력하세요">
+      <button onclick="searchPlace()">검색</button>
+      <div id="map" style="width: 500px; height: 400px;"></div>
+      <div id="result2"></div>
+  </div>
+
+ 
+  <script>
+    // 페이지가 로드될 때 Kakao API 함수 호출
+    $(document).ready(function() {
+      getKakaoDirections(function(distance) {
+        var resultDiv = document.getElementById("result3");
+        resultDiv.innerHTML = `검색된 위치의 좌표: ${distance}m`;
+        // 거리 정보를 가져와서 result3 요소에 표시
+      });
+    });
+  </script>
+  <div>
+    <label for="destination">거리 결과 리턴</label>
+      <div id="result3"></div>
+  </div>
+
+  
+</body>
+</html>
