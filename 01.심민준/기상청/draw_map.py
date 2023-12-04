@@ -30,7 +30,7 @@ BORDER_LINES = [
     [(27,5), (27,6), (25,6)],
 ]
 
-def drawKorea(targetData, blockedMap, cmapname, border_lines=BORDER_LINES):
+def drawKorea(targetData, blockedMap, cmapname, save_filename=None ,border_lines=BORDER_LINES):
     whitelabelmin = (max(blockedMap[targetData]) - 
                      min(blockedMap[targetData]))*0.25 + \
                      min(blockedMap[targetData])
@@ -59,11 +59,19 @@ def drawKorea(targetData, blockedMap, cmapname, border_lines=BORDER_LINES):
 
         # 서대문구, 서귀포시 같이 이름이 3자 이상인 경우에 작은 글자로 표시
         if len(dispname.splitlines()[-1]) >= 3:
-            fontsize, linespacing = 10.0, 1.1
+            fontsize, linespacing = 8, 1.2
         else:
-            fontsize, linespacing = 11, 1.
+            fontsize, linespacing = 8, 1.2
 
-        annocolor = 'white' if row[targetData] > whitelabelmin else 'black'
+        if 0 <= row[targetData] <= 30:
+            annocolor = 'black'
+        elif 30 < row[targetData] <= 80:
+            annocolor = 'green'
+        elif 80 < row[targetData] <= 150:
+            annocolor = 'yellow'
+        else:
+            annocolor = 'red'
+        
         plt.annotate(dispname, (row['x']+0.5, row['y']+0.5), weight='bold',
                      fontsize=fontsize, ha='center', va='center', color=annocolor,
                      linespacing=linespacing)
@@ -79,6 +87,9 @@ def drawKorea(targetData, blockedMap, cmapname, border_lines=BORDER_LINES):
 
     cb = plt.colorbar(shrink=.1, aspect=10)
     cb.set_label(datalabel)
+    
+    if save_filename:
+        plt.savefig(save_filename, dpi=300)
 
     plt.tight_layout()
     plt.show()
