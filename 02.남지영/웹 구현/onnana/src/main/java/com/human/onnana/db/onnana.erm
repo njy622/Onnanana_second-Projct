@@ -135,7 +135,7 @@
 			</connections>
 			<display>false</display>
 			<creation_date>2023-11-29 10:00:05</creation_date>
-			<updated_date>2023-12-04 21:32:19</updated_date>
+			<updated_date>2023-12-05 09:36:32</updated_date>
 			<model_property>
 				<name>프로젝트명</name>
 				<value></value>
@@ -266,7 +266,7 @@
 		</word>
 		<word>
 			<id>6</id>
-			<length>40</length>
+			<length>1000</length>
 			<decimal>null</decimal>
 			<array>false</array>
 			<array_dimension>null</array_dimension>
@@ -346,7 +346,7 @@
 		</word>
 		<word>
 			<id>11</id>
-			<length>80</length>
+			<length>1000</length>
 			<decimal>null</decimal>
 			<array>false</array>
 			<array_dimension>null</array_dimension>
@@ -378,7 +378,7 @@
 		</word>
 		<word>
 			<id>13</id>
-			<length>40</length>
+			<length>1000</length>
 			<decimal>null</decimal>
 			<array>false</array>
 			<array_dimension>null</array_dimension>

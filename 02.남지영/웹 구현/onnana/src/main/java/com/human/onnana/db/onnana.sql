@@ -48,9 +48,9 @@ CREATE TABLE schedule
 	"uid" varchar2(12),
 	sdate char(8) NOT NULL,
 	startTime timestamp NOT NULL,
-	title varchar2(40) NOT NULL,
-	place varchar2(40),
-	smoke varchar2(80),
+	title varchar2(1000) NOT NULL,
+	place varchar2(1000),
+	smoke varchar2(1000),
 	PRIMARY KEY (sid)
 );
 

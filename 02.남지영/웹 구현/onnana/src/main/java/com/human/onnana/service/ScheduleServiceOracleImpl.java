@@ -86,5 +86,19 @@ public class ScheduleServiceOracleImpl implements ScheduleService {
 		int userCount = schedDao.userCount(uid);
 		return userCount;
 	}
+	
+	
+	
+	@Override
+	public double getCarbonCount() {
+		double allCarbon = schedDao.carbonCount();
+		return allCarbon;
+	}
+	
+	@Override
+	public double getCarbonUserCount(String uid) {
+		double userCarbon = schedDao.carbonUserCount(uid);
+		return userCarbon;
+	}
 
 }

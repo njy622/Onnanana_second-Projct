@@ -5,20 +5,22 @@
 <html>
 <head>
     <%@ include file="../common/head.jspf" %>
-    <style>
+     <style>
         #cartogram {
             width: 100%;
             cursor: pointer;
+            position: relative; /* 이미지 위치 기준으로 버튼을 배치하기 위해 상대 위치 설정 */
         }
 
         .transparent-button {
             background-color: transparent;
-            position: sticky;
+            position: absolute;
             cursor: pointer;
-            width: 36px; /* 버튼의 너비 설정 */
-            height: 29px; /* 버튼의 높이 설정 */
+            border: none;
+            padding: 0;
         }
     </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 <%@ include file="../common/top.jspf" %>
@@ -26,106 +28,76 @@
     <div class="row">
         <%@ include file="../common/aside.jspf" %>
         <!-- ================ 내가 작성할 부분 =================== -->
-        <div class="col-9">
-            <h3 class="mt-3"><strong>기상 예보 띄우는창</strong></h3>
-            <hr>
-            <div class="container" id="map" style="height: 500px;">
-                <!-- 이미지 표시 -->
-                <img id="cartogram" src="/onnana/img/카토그램.png" alt="Example Image">
-                <!-- 여러 개의 버튼 -->
-                <c:forEach var="index" begin="1" end="2">
-                    <form action="${pageContext.request.contextPath}/buttonAction" method="post"
-                          style="position: absolute; top: ${437 + (29 * (index - 1))}px; left: 478px;">
-                        <input type="hidden" name="buttonIndex" value="${index}" />
-                        <button type="submit" class="transparent-button"> </button>
-                    </form>
-                </c:forEach>
-                <c:forEach var="index" begin="1" end="22">
-                    <form action="${pageContext.request.contextPath}/buttonAction" method="post"
-                          style="position: absolute; top: ${401 + (29 * (index - 1))}px; left: 507px;">
-                        <input type="hidden" name="buttonIndex" value="${index}" />
-                        <button type="submit" class="transparent-button"> </button>
-                    </form>
-                </c:forEach>
-                <c:forEach var="index" begin="1" end="24">
-                    <form action="${pageContext.request.contextPath}/buttonAction" method="post"
-                          style="position: absolute; top: ${313 + (29 * (index - 1))}px; left: 544px;">
-                        <input type="hidden" name="buttonIndex" value="${index}" />
-                        <button type="submit" class="transparent-button"> </button>
-                    </form>
-                </c:forEach>
-                <c:forEach var="index" begin="1" end="23">
-                    <form action="${pageContext.request.contextPath}/buttonAction" method="post"
-                          style="position: absolute; top: ${313 + (29 * (index - 1))}px; left: 581px;">
-                        <input type="hidden" name="buttonIndex" value="${index}" />
-                        <button type="submit" class="transparent-button"> </button>
-                    </form>
-                </c:forEach>
-                <c:forEach var="index" begin="1" end="22">
-                    <form action="${pageContext.request.contextPath}/buttonAction" method="post"
-                          style="position: absolute; top: ${313 + (29 * (index - 1))}px; left: 618px;">
-                        <input type="hidden" name="buttonIndex" value="${index}" />
-                        <button type="submit" class="transparent-button"> </button>
-                    </form>
-                </c:forEach>
-                <c:forEach var="index" begin="1" end="22">
-                    <form action="${pageContext.request.contextPath}/buttonAction" method="post"
-                          style="position: absolute; top: ${313 + (29 * (index - 1))}px; left: 654px;">
-                        <input type="hidden" name="buttonIndex" value="${index}" />
-                        <button type="submit" class="transparent-button"> </button>
-                    </form>
-                </c:forEach>
-                <c:forEach var="index" begin="1" end="23">
-                    <form action="${pageContext.request.contextPath}/buttonAction" method="post"
-                          style="position: absolute; top: ${284 + (29 * (index - 1))}px; left: 692px;">
-                        <input type="hidden" name="buttonIndex" value="${index}" />
-                        <button type="submit" class="transparent-button"> </button>
-                    </form>
-                </c:forEach>
-                <c:forEach var="index" begin="1" end="23">
-                    <form action="${pageContext.request.contextPath}/buttonAction" method="post"
-                          style="position: absolute; top: ${284 + (29 * (index - 1))}px; left: 729px;">
-                        <input type="hidden" name="buttonIndex" value="${index}" />
-                        <button type="submit" class="transparent-button"> </button>
-                    </form>
-                </c:forEach>
-                <c:forEach var="index" begin="1" end="21">
-                    <form action="${pageContext.request.contextPath}/buttonAction" method="post"
-                          style="position: absolute; top: ${284 + (29 * (index - 1))}px; left: 765px;">
-                        <input type="hidden" name="buttonIndex" value="${index}" />
-                        <button type="submit" class="transparent-button"> </button>
-                    </form>
-                </c:forEach>
-                <c:forEach var="index" begin="1" end="21">
-                    <form action="${pageContext.request.contextPath}/buttonAction" method="post"
-                          style="position: absolute; top: ${284 + (29 * (index - 1))}px; left: 801px;">
-                        <input type="hidden" name="buttonIndex" value="${index}" />
-                        <button type="submit" class="transparent-button"> </button>
-                    </form>
-                </c:forEach>
-                <c:forEach var="index" begin="1" end="18">
-                    <form action="${pageContext.request.contextPath}/buttonAction" method="post"
-                          style="position: absolute; top: ${372 + (29 * (index - 1))}px; left: 837px;">
-                        <input type="hidden" name="buttonIndex" value="${index}" />
-                        <button type="submit" class="transparent-button"> </button>
-                    </form>
-                </c:forEach>
-                <c:forEach var="index" begin="1" end="8">
-                    <form action="${pageContext.request.contextPath}/buttonAction" method="post"
-                          style="position: absolute; top: ${575 + (29 * (index - 1))}px; left: 874px;">
-                        <input type="hidden" name="buttonIndex" value="${index}" />
-                        <button type="submit" class="transparent-button"> </button>
-                    </form>
-                </c:forEach>
-                <form action="${pageContext.request.contextPath}/buttonAction" method="post" style="position: absolute; top: 516px; left: 911px;">
-                   <input type="hidden" name="buttonIndex" value="1" />
-                   <button type="submit" class="transparent-button"> </button>
-               </form>
-            </div>
-
-        </div>
-
-    </div>
+        <div class="col-sm-9 mt-3 ms-1">
+       		<title>대기 품질 정보 조회</title>
+    		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		
+		    <input type="text" id="stationName" placeholder="측정소명 입력">
+		    <button onclick="getAirQuality()">데이터 가져오기</button>
+		    
+		        <p>날짜: <span id='dataTime'></span></p>
+                <p>측정소 이름: <span id='stationName'></span></p>
+                <p>측정망 정보: <span id='mangName'></span></p>
+                <p>아황산가스 농도: <span id='so2Value'></span>ppm</p>
+                <p>일산화탄소 농도: <span id='coValue'></span>ppm</p>
+                <p>오존 농도: <span id='o3Value'></span>ppm</p>
+                <p>이산화질소 농도: <span id='no2Value'></span>ppm</p>
+                <p>미세먼지(PM10) 농도: <span id='pm10Value'></span> ug/m³</p>
+                <p>초미세먼지(PM2.5) 농도: <span id='pm25Value'></span> ug/m³</p>
+		    </div>
+		
+		    <script>
+		        function getAirQuality() {
+		            var stationName = document.getElementById("stationName").value;
+		            var base_url = "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty";
+		            var service_key = "nBg+Hwr/AcIl8mQ6pviMUSuy9Te5CDEJKfw5CIJn6tTDevZ5u3SL7vCng8+lzQcmLlJ7o6Eqy91xpF+4UMQzGA==";
+		
+		            var params = {
+		                'serviceKey': service_key,
+		                'returnType': 'JSON',
+		                'numOfRows': 1,
+		                'pageNo': 1,
+		                'stationName': stationName,
+		                'dataTerm': 'DAILY',
+		                'ver': "1.4"
+		            };
+		
+		            $.ajax({
+		                type: "GET",
+		                url: base_url,
+		                data: params,
+		                success: function(response) {
+		                    displayAirQuality(response);
+		                    console.log(response);
+		                },
+		                error: function(xhr, status, error) {
+		                    console.error('데이터를 가져오는 중 문제가 발생했습니다:', error);
+		                }
+		            });
+		        }
+		
+		        function displayAirQuality(data) {
+		            var airQualityInfo = document.getElementById("airQualityInfo");
+		            var items = data.response.body.items[0];
+		            console.log(items);
+		
+		            
+		            $('#dataTime').html(items.dataTime);
+		            $('#stationName').html(items.stationName);
+		            $('#mangName').html(items.mangName);
+		            $('#so2Value').html(items.so2Value);
+		            $('#coValue').html(items.coValue);
+		            $('#o3Value').html(items.o3Value);
+		            $('#no2Value').html(items.no2Value);
+		            $('#pm10Value').html(items.pm10Value);
+		            $('#pm25Value').html(items.pm25Value);
+		            $('#date').html(items.dataTime);
+		            
+		        }
+		    </script>
+        
+		</div>
+    </div> 
 </div>
 <%@ include file="../common/bottom.jspf" %>
 </body>

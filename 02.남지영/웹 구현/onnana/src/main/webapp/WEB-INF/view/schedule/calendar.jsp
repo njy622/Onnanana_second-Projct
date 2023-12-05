@@ -14,6 +14,7 @@
     </style>
     <script src="/onnana/js/calendar.js?v=2"></script>
     <script src="/onnana/js/calcu.js"></script>
+    
     <!-- =================== 탄소계산기 스크립트 start =================== -->
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery 라이브러리 -->    
 	<script>
@@ -35,10 +36,26 @@
 	        data: {startDate, startTime, title, place, smoke},
 	        success: function(){
 	            $('#addModal').modal('hide');  // 모달창 숨기고
-	            location.href = '/onnana/schedule/calendar';   // 제출버튼 이후 calendar 창으로 감     
+	            location.href = '/onnana/schedule/calendar';   // 제출버튼 이후 calendar 창으로 감  
+	         // 세션값 불러와서 카운트 글작성이후 바로 리로딩되게 하는 함수
+	            
+	         	$(document).ready(function() {
+	                $.ajax({
+	                    type: "POST",
+	                    url: "/onnana/schedule/count", // 세션 값을 가져오는 컨트롤러 URL로 변경해야 합니다.
+	                    success: function(data) {
+	                        // 가져온 세션 값들을 화면에 표시합니다.
+	                        $("#sessAllId").text(data.sessAllId);
+	                        $("#sessId").text(data.sessId);
+	                        $("#sessAllCarbonId").text(data.sessAllCarbonId);
+	                        $("#sessCarbonId").text(data.sessCarbonId);
+	                    }
+	                });
+	            });
 	        }
 	    });
 	}
+	
 
 //거리환산 값을 제목에 넣는 함수
 function readJs() {
@@ -68,6 +85,9 @@ function calculateAndShow() {
 //페이지 로딩 시 바로 함수 호출
 calculateAndShow();
   
+  
+  
+
 	</script>                       
 	                        
     

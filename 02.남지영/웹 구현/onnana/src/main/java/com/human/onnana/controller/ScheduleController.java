@@ -132,6 +132,7 @@ public class ScheduleController {
 		return "schedule/calendar";
 	}
 	
+	
 	@ResponseBody
 	@PostMapping("/insert")
 	public String insert(HttpServletRequest req, HttpSession session, String uid) {
@@ -145,18 +146,28 @@ public class ScheduleController {
 		String sdate = startDate.replace("-", "");
 		
 		String sessUid = (String) session.getAttribute("sessUid");
-		System.out.println(title);
-		System.out.println(place);
-		System.out.println(smoke);
 		Schedule schedule = new Schedule(sessUid, sdate, startDateTime, title, place, smoke);
 		schedService.insert(schedule);
-		System.out.println(schedule);
-		// 게시판 글 전체 카운트
-		//session.setAttribute("sessAllId", schedService.getCount());
-		// 게시판 글 유저 카운트
-		//session.setAttribute("sessId", schedService.getUserCount(uid));
 		return "redirect:/schedule/calendar";
 	}
+	
+	@ResponseBody
+	@PostMapping("/count")
+	public String count(HttpSession session, String uid) {
+		
+		// 게시판 글 전체 카운트
+		session.setAttribute("sessAllId", schedService.getCount());
+		// 게시판 글 유저 카운트
+		session.setAttribute("sessId", schedService.getUserCount(uid));
+					
+		// 탄소배출감소량 전체 유저 카운트
+		session.setAttribute("sessAllCarbonId", schedService.getCarbonCount());
+		// 탄소배출감소량 한 유저 카운트
+		session.setAttribute("sessCarbonId", schedService.getCarbonUserCount(uid));
+		
+		return "";
+	}
+
 
 
 	// Ajax로 detail data를 전달함
