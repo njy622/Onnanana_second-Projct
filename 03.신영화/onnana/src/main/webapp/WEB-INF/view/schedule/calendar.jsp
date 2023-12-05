@@ -13,35 +13,81 @@
         .disabled-link	{ pointer-events: none; }
     </style>
     <script src="/onnana/js/calendar.js?v=2"></script>
+    <script src="/onnana/js/calcu.js"></script>
+    
     <!-- =================== 탄소계산기 스크립트 start =================== -->
- 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery 라이브러리 -->
- 	<script src="../js/calcu.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery 라이브러리 -->    
 	<script>
 
    <!-- =================== 탄소계산기 end =================== -->
    
-   <!-- =================== insert 함수 form태그없이 함수로 제출버튼 구현 =================== -->
+// <!-- =================== insert 함수 form태그없이 함수로 제출버튼 구현 =================== -->
 	function insert(){
-		var title = $('#title').val();				// insert에 들어가는 데이터 id로 불러와서 변수에 넣음
+		
 		var startDate = $('#startDate').val();
 		var startTime = $('#startTime').val();
-		var endDate = $('#endDate').val();
-		var endTime = $('#endTime').val();
+		var title = $('#title').val();				// insert에 들어가는 데이터 id로 불러와서 변수에 넣음
 		var place = $('#place').val();
-		var memo = $('#memo').val();
+		var smoke = $('#smoke').val();
+		
 	    $.ajax({
 	        type: "POST",
 	        url: "/onnana/schedule/insert", // 스케줄 컨트롤러안의 함수 불러오는 경로
-	        data: {title, startDate, startTime, endDate, endTime, place, memo},
+	        data: {startDate, startTime, title, place, smoke},
 	        success: function(){
 	            $('#addModal').modal('hide');  // 모달창 숨기고
-	            location.href = '/onnana/schedule/calendar';   // 제출버튼 이후 calendar 창으로 감     
+	            location.href = '/onnana/schedule/calendar';   // 제출버튼 이후 calendar 창으로 감  
+	         // 세션값 불러와서 카운트 글작성이후 바로 리로딩되게 하는 함수
+	            
+	         	$(document).ready(function() {
+	                $.ajax({
+	                    type: "POST",
+	                    url: "/onnana/schedule/count", // 세션 값을 가져오는 컨트롤러 URL로 변경해야 합니다.
+	                    success: function(data) {
+	                        // 가져온 세션 값들을 화면에 표시합니다.
+	                        $("#sessAllId").text(data.sessAllId);
+	                        $("#sessId").text(data.sessId);
+	                        $("#sessAllCarbonId").text(data.sessAllCarbonId);
+	                        $("#sessCarbonId").text(data.sessCarbonId);
+	                    }
+	                });
+	            });
 	        }
 	    });
 	}
-<!-- ============================================ end ==================================== --> 
-   
-   
+	
+
+//거리환산 값을 제목에 넣는 함수
+function readJs() {
+   let val = document.getElementById('result').innerText;
+   let carbonEmission = parseFloat(val.match(/\d+/)[0]);
+
+   let smokeVal = parseInt(document.getElementById('smoke').value);
+   let smokeCarbon = smokeVal * 14 / 1000;
+
+   let totalCarbon = carbonEmission + smokeCarbon;
+   document.getElementById('showResult').innerText = totalCarbon.toFixed(2);
+
+   // 제목에 결과값 추가
+   let titleElement = document.getElementById('title');
+   let currentTitle = titleElement.value;
+   titleElement.value = currentTitle + ' - 오늘의 감소량: ' + totalCarbon.toFixed(2) + 'kg';
+}
+
+
+//담배 갯수 선택한 값에 * 14g 연산 후  kg으로 출력하는 함수
+function calculateAndShow() {
+   let selectedValue = document.getElementById('smoke').value;
+   let result = selectedValue * 14 / 1000;
+   document.getElementById('showResult').innerText = result;
+}
+
+//페이지 로딩 시 바로 함수 호출
+calculateAndShow();
+  
+  
+  
+
 	</script>                       
 	                        
     
@@ -112,13 +158,7 @@
 	                        	<!-- 글작성 시, 스탬프 찍기 -->
 								<img height="60px" src="/onnana/img/stamp.png">
 	                        	<br>
-	                        	${fn:substring(sched.startTime, 11, 16)}
-	                        <c:if test="${sched.isImportant eq 1}">
-	                        	<strong>${sched.title}</strong>
-	                        </c:if>
-	                        <c:if test="${sched.isImportant ne 1}">
 	                        	${sched.title}
-	                        </c:if>
                         	</div>
                         </c:forEach>
                         </td>
@@ -150,8 +190,8 @@
 	                        <tr>
 	                            <td colspan="2">
 	                                <label for="title">제목</label>
-	                                <input class="ms-5 me-2" type="checkbox" name="importance">중요
 	                                <input class="form-control" type="text" id="title" name="title">
+	                                <button onclick="readJs()">Move Content</button>
 	                            </td>
 	                        </tr>
 	                        <tr>
@@ -168,44 +208,30 @@
 	                                </select>
 	                            </td>
 	                        </tr>
-	                        <tr>
-	                            <td>
-	                                <label for="endDate">종료일</label>
-	                                <input class="form-control" type="date" id="endDate" name="endDate">
-	                            </td>
-	                            <td>
-	                                <label for="endTime">종료시간</label>
-	                                <select class="form-control" name="endTime" id="endTime">
-	                                <c:forEach var="tl" items="${timeList}">
-	                                    <option value="${tl}">${tl}</option>
-	                                </c:forEach>
-	                                </select>
-	                            </td>
-	                        </tr>
 <!-- ========================================================= 탄소계산기 start ========================================================= -->
 	                         <tr>
 	                            <td colspan="2">
 	                            	<p id="demo"></p> <!-- 현재 위치를 표시할 요소 -->
 	                                <label for="place">대중교통 배출량 계산하기 </label>
 	                                <div class="input-group outer-container" style="width: 100%;">
-									    <input type="text" style="height: auto;" class="form-control" id="address" name="address" placeholder=" 도착지 주소를 입력하세요">
+									    <input type="text" style="height: auto;" class="form-control" id="place" name="place" placeholder=" 도착지 주소를 입력하세요">
 									    <button class="btn btn-success" style="width: 80px;" type="submit" onclick="searchAndCalculateDistance()">계산</button>
 									</div>
-		                                <p id="result"></p> <!-- 검색된 위치의 좌표와 거리를 표시할 요소 -->
+		                              <p id="result"></p>  <!-- 검색된 위치의 좌표와 거리를 표시할 요소 -->
 	                            </td>
 	                        </tr>    
-	                        
 <!-- ========================================================= 탄소계산기 end ======================================================== -->
 	                        <tr>
 	                            <td colspan="2">
-	                                <label for="place">장소</label>
-	                                <input class="form-control" type="text" id="place" name="place">
-	                            </td>
-	                        </tr>
-	                        <tr>
-	                            <td colspan="2">
-	                                <label for="memo">메모</label>
-	                                <input class="form-control" type="text" id="memo" name="memo">
+                                <label for="smoke">금연(개비)</label>
+                                  <form action="/action_page.php">
+									    <select class="form-select form-control"  type="text" id="smoke" name="smoke" onchange="calculateAndShow()">
+										     <c:forEach var="i" begin="1" end="20">
+										      <option value="${i}" >${i}</option>
+									      		</c:forEach>
+									    </select>
+									    <p id="showResult"></p>
+									  </form>
 	                            </td>
 	                        </tr>
 	                        <tr>
@@ -239,7 +265,6 @@
 	                        <tr>
 	                            <td colspan="2">
 	                                <label for="title2">제목</label>
-	                                <input class="ms-5 me-2" type="checkbox" id="importance2" name="importance">중요
 	                                <input class="form-control" type="text" id="title2" name="title">
 	                            </td>
 	                        </tr>
@@ -257,30 +282,30 @@
 	                                </select>
 	                            </td>
 	                        </tr>
-	                        <tr>
-	                            <td>
-	                                <label for="endDate2">종료일</label>
-	                                <input class="form-control" type="date" id="endDate2" name="endDate">
-	                            </td>
-	                            <td>
-	                                <label for="endTime2">종료시간</label>
-	                                <select class="form-control" name="endTime" id="endTime2">
-	                                <c:forEach var="tl" items="${timeList}">
-	                                    <option value="${tl}" >${tl}</option>
-	                                </c:forEach>
-	                                </select>
-	                            </td>
-	                        </tr>
-	                        <tr>
+<!-- ========================================================= 탄소계산기 start ========================================================= -->
+	                         <tr>
 	                            <td colspan="2">
-	                                <label for="place2">장소</label>
-	                                <input class="form-control" type="text" id="place2" name="place">
+	                            	<p id="demo"></p> <!-- 현재 위치를 표시할 요소 -->
+	                                <label for="place">대중교통 배출량 계산하기 </label>
+	                                <div class="input-group outer-container" style="width: 100%;">
+									    <input type="text" style="height: auto;" class="form-control" id="place2" name="place" placeholder=" 도착지 주소를 입력하세요">
+									    <button class="btn btn-success" style="width: 80px;" type="submit" onclick="searchAndCalculateDistance()">계산</button>
+									</div>
+		                                 <p id="result"></p>  <!-- 검색된 위치의 좌표와 거리를 표시할 요소 -->
 	                            </td>
-	                        </tr>
-	                        <tr>
+	                        </tr>    
+	                        
+<!-- ========================================================= 탄소계산기 end ======================================================== -->
+	                         <tr>
 	                            <td colspan="2">
-	                                <label for="memo2">메모</label>
-	                                <input class="form-control" type="text" id="memo2" name="memo">
+                                <label for="smoke">금연(개비)</label>
+                                 <form action="/action_page.php">
+								    <select class="form-select form-control"  type="text" id="smoke2" name="smoke">
+									     <c:forEach var="i" begin="1" end="20">
+									      <option value="${i}" >${i}</option>
+								      		</c:forEach>
+								    </select>
+						  		</form>
 	                            </td>
 	                        </tr>
 	                        <tr>

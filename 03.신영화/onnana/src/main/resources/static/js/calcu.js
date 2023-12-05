@@ -17,7 +17,7 @@ function showPosition(position) {
 getLocation();
 
 function searchAndCalculateDistance() {
-  var address = document.getElementById('address').value;
+  var address = document.getElementById('place').value;
   var baseUrl = "https://dapi.kakao.com/v2/local/search/address.json";
   var query = encodeURIComponent(address);
   var url = baseUrl + "?query=" + query;
@@ -67,4 +67,3 @@ function searchAndCalculateDistance() {
     }
   });
 }
-	urlConn.setDoOutput(true);

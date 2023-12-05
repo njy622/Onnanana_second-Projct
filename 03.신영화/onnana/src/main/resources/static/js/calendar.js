@@ -20,11 +20,8 @@ function cellClick(date) {
 			minute = 0; hour = (hour + 1) % 24;
 		}
 		const startStr = ((hour >= 10) ? ''+hour : '0'+hour) + ':' + ((minute == 0) ? '00' : '30');
-		const endStr = ((hour >= 9) ? ''+(hour+1) : '0'+(hour+1)) + ':' + ((minute == 0) ? '00' : '30');
 		$('#startDate').val(dateForm);
 		$('#startTime').val(startStr);
-		$('#endDate').val(dateForm);
-		$('#endTime').val(endStr);
 		$('#addModal').modal('show');
 	}
 }
@@ -42,10 +39,8 @@ function schedClick(sid) {
 				$('#importance2').prop('checked', true);
 			$('#startDate2').val(sched.startTime.substring(0,10));
 			$('#startTime2').val(sched.startTime.substring(11,16));
-			$('#endDate2').val(sched.endTime.substring(0,10));
-			$('#endTime2').val(sched.endTime.substring(11,16));
 			$('#place2').val(sched.place);
-			$('#memo2').val(sched.memo);
+			$('#smoke2').val(sched.smoke);
 			$('#updateModal').modal('show');
 		}
 	});

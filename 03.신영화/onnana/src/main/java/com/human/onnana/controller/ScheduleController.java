@@ -8,6 +8,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.ibatis.javassist.compiler.TypeChecker;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -130,31 +131,44 @@ public class ScheduleController {
 		model.addAttribute("timeList", schedUtil.genTime());
 		return "schedule/calendar";
 	}
-
+	
+	
+	@ResponseBody
 	@PostMapping("/insert")
 	public String insert(HttpServletRequest req, HttpSession session, String uid) {
-		int isImportant = (req.getParameter("importance") == null) ? 0 : 1;
-		String title = req.getParameter("title");
+		
 		String startDate = req.getParameter("startDate");
 		String startTime = req.getParameter("startTime");
 		LocalDateTime startDateTime = LocalDateTime.parse(startDate + "T" + startTime + ":00");
-		String endDate = req.getParameter("endDate");
-		String endTime = req.getParameter("endTime");
-		LocalDateTime endDateTime = LocalDateTime.parse(endDate + "T" + endTime + ":00");
+		String title = req.getParameter("title");
 		String place = req.getParameter("place");
-		String memo = req.getParameter("memo");
+		String smoke = req.getParameter("smoke");
 		String sdate = startDate.replace("-", "");
+		
 		String sessUid = (String) session.getAttribute("sessUid");
-		
-		
-		Schedule schedule = new Schedule(sessUid, sdate, title, place, startDateTime, endDateTime, isImportant, memo);
+		Schedule schedule = new Schedule(sessUid, sdate, startDateTime, title, place, smoke);
 		schedService.insert(schedule);
-		// 게시판 글 전체 카운트
-		//session.setAttribute("sessAllId", schedService.getCount());
-		// 게시판 글 유저 카운트
-		//session.setAttribute("sessId", schedService.getUserCount(uid));
 		return "redirect:/schedule/calendar";
 	}
+	
+	@ResponseBody
+	@PostMapping("/count")
+	public String count(HttpSession session, String uid) {
+		
+		// 게시판 글 전체 카운트
+		session.setAttribute("sessAllId", schedService.getCount());
+		// 게시판 글 유저 카운트
+		session.setAttribute("sessId", schedService.getUserCount(uid));
+					
+		// 탄소배출감소량 전체 유저 카운트
+		session.setAttribute("sessAllCarbonId", schedService.getCarbonCount());
+		// 탄소배출감소량 한 유저 카운트
+		session.setAttribute("sessCarbonId", schedService.getCarbonUserCount(uid));
+		
+		return "";
+	}
+
+
 
 	// Ajax로 detail data를 전달함
 	@ResponseBody
@@ -163,31 +177,28 @@ public class ScheduleController {
 		Schedule sched = schedService.getSchedule(sid);
 		JSONObject jSched = new JSONObject();
 		jSched.put("sid", sid);
+		jSched.put("startTime", sched.getStartTime().toString());
 		jSched.put("title", sched.getTitle());
 		jSched.put("place", sched.getPlace());
-		jSched.put("startTime", sched.getStartTime().toString());
-		jSched.put("endTime", sched.getEndTime().toString());
-		jSched.put("isImportant", sched.getIsImportant());
-		jSched.put("memo", sched.getMemo());
+		jSched.put("smoke", sched.getSmoke().toString());
 		return jSched.toString();
 	}
 	
 	@PostMapping("/update")
 	public String update(HttpServletRequest req, HttpSession session) {
-		int isImportant = (req.getParameter("importance") == null) ? 0 : 1;
-		int sid = Integer.parseInt(req.getParameter("sid"));
-		String title = req.getParameter("title");
 		String startDate = req.getParameter("startDate");
 		String startTime = req.getParameter("startTime");
 		LocalDateTime startDateTime = LocalDateTime.parse(startDate + "T" + startTime + ":00");
-		String endDate = req.getParameter("endDate");
-		String endTime = req.getParameter("endTime");
-		LocalDateTime endDateTime = LocalDateTime.parse(endDate + "T" + endTime + ":00");
+		String title = req.getParameter("title");
 		String place = req.getParameter("place");
-		String memo = req.getParameter("memo");
+		String smoke = req.getParameter("smoke");
 		String sdate = startDate.replace("-", "");
+		
 		String sessUid = (String) session.getAttribute("sessUid");
-		Schedule schedule = new Schedule(sid, sessUid, sdate, title, place, startDateTime, endDateTime, isImportant, memo);
+		System.out.println(title);
+		System.out.println(place);
+		System.out.println(smoke);
+		Schedule schedule = new Schedule(sessUid, sdate, startDateTime, title, place, smoke);
 		schedService.update(schedule);
 		return "redirect:/schedule/calendar";
 	}

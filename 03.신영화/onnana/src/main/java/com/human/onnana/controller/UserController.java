@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.human.onnana.entity.Button;
 import com.human.onnana.entity.User;
 import com.human.onnana.service.ScheduleService;
 import com.human.onnana.service.UserService;
@@ -116,7 +118,12 @@ public class UserController {
 			// 게시판 글 유저 카운트
 			session.setAttribute("sessId", schedService.getUserCount(uid));
 						
+			// 탄소배출감소량 전체 유저 카운트
+			session.setAttribute("sessAllCarbonId", schedService.getCarbonCount());
+			// 탄소배출감소량 한 유저 카운트
+			session.setAttribute("sessCarbonId", schedService.getCarbonUserCount(uid));
 			
+
 			// 환영 메세지
 			// 로그인 입력 잘못해도, home으로 바로 이동
 			model.addAttribute("msg", user.getUname() + "님 환영합니다.");
@@ -162,9 +169,7 @@ public class UserController {
 		return "common/alertMsg";
 	}
 	
-	
-	
-	
+
 	
 	@GetMapping("/analysis")
 	public String analysisForm() {
@@ -178,9 +183,17 @@ public class UserController {
 		
 		return "user/weather";
 	}
+	   
+	
 	@GetMapping("/dust")
-	public String dustForm() {
-		
-		return "user/dust";
+	   public String dustForm(Model model) {
+	      List<Button> buttons = new ArrayList<>();
+	        buttons.add(new Button("376,15,458,58", "modal1", "CustomButtonName1")); // 좌표 및 모달 ID를 설정
+	        buttons.add(new Button("500,60,700,80", "modal2", "다리")); // 다른 버튼 추가
+
+	        model.addAttribute("buttons", buttons);
+
+	      return "user/dust";
+	   }
+
 	}
-}

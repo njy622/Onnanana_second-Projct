@@ -20,17 +20,14 @@ public interface ScheduleDaoOracle {
 	List<Schedule> getSchedList(String uid, String startDate, String endDate);
 	
 	@Insert("INSERT INTO schedule VALUES"
-			+ " (DEFAULT, #{uid}, #{sdate}, #{title}, #{place, jdbcType=VARCHAR},"
-			+ " #{startTime}, #{endTime, jdbcType=VARCHAR}, #{isImportant}, #{memo, jdbcType=VARCHAR})")
+			+ " (DEFAULT, #{uid}, #{sdate}, #{startTime}, #{title}, #{place}, #{smoke})")
 	void insert(Schedule schedule);
 	
 	@Select("select * from schedule where sid=#{sid}")
 	Schedule getSchedule(int sid);
 	
-	@Update("update schedule set \"uid\"=#{uid}, sdate=#{sdate}, title=#{title},"
-			+ " place=#{place, jdbcType=VARCHAR}, startTime=#{startTime}, endTime=#{endTime, jdbcType=VARCHAR}, "
-			+ " isImportant=#{isImportant}, memo=#{memo, jdbcType=VARCHAR}"
-			+ " where sid=#{sid}")
+	@Update("update schedule set \"uid\"=#{uid}, sdate=#{sdate}, startTime=#{startTime}, title=#{title},"
+			+ " place=#{place}, smoke=#{smoke} where sid=#{sid}")
 	void update(Schedule schedule);
 	
 	@Delete("delete from schedule where sid=#{sid}")
@@ -46,14 +43,26 @@ public interface ScheduleDaoOracle {
 			+ "  ORDER BY startTime")
 	int getSchedCount(String uid, String startDate);
 
-	
+	// 유저 전체 캘린더 작성 카운트
 	@Select("select count(*) from schedule")
 	int count();
 	
-	
+	// 한 유저 캘린더 작성 카운트
 	@Select("SELECT COUNT(*)FROM schedule WHERE \"uid\" = #{uid}")
 	int userCount(String uid);
 	
+	// 유저 전체 캘린더 작성 카운트
+	@Select("SELECT  SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))) AS total_sum FROM schedule")
+	double carbonCount();
 	
-
+	// 유저 전체 캘린더 작성 카운트
+	@Select("SELECT  SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))) AS total_sum FROM schedule where \"uid\"= #{uid}")
+	double carbonUserCount(String uid);
+	
+	
+	
+	
+	
+	
+	
 }

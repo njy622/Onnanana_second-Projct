@@ -6,97 +6,100 @@ public class Schedule {
 	private int sid;
 	private String uid;
 	private String sdate;
+	private LocalDateTime startTime;
 	private String title;
 	private String place;
-	private LocalDateTime startTime;
-	private LocalDateTime endTime;
-	private int isImportant;
-	private String memo;
+	private String smoke;
 	
 	public Schedule() { }
-	public Schedule(String uid, String sdate, String title, String place, LocalDateTime startTime,
-			LocalDateTime endTime, int isImportant, String memo) {
-		this.uid = uid;
-		this.sdate = sdate;
-		this.title = title;
-		this.place = place;
-		this.startTime = startTime;
-		this.endTime = endTime;
-		this.isImportant = isImportant;
-		this.memo = memo;
-	}
-	public Schedule(int sid, String uid, String sdate, String title, String place, LocalDateTime startTime,
-			LocalDateTime endTime, int isImportant, String memo) {
+
+	public Schedule(int sid, String uid, String sdate, LocalDateTime startTime, String title, String place,
+			String smoke) {
+		super();
 		this.sid = sid;
 		this.uid = uid;
 		this.sdate = sdate;
+		this.startTime = startTime;
 		this.title = title;
 		this.place = place;
+		this.smoke = smoke;
+	}
+
+	
+
+
+	public Schedule(String uid, String sdate, LocalDateTime startTime, String title, String place, String smoke) {
+		super();
+		this.uid = uid;
+		this.sdate = sdate;
 		this.startTime = startTime;
-		this.endTime = endTime;
-		this.isImportant = isImportant;
-		this.memo = memo;
+		this.title = title;
+		this.place = place;
+		this.smoke = smoke;
 	}
-	
-	@Override
-	public String toString() {
-		return "Schedule [sid=" + sid + ", uid=" + uid + ", sdate=" + sdate + ", title=" + title + ", place=" + place
-				+ ", startTime=" + startTime + ", endTime=" + endTime + ", isImportant=" + isImportant + ", memo="
-				+ memo + "]";
-	}
-	
+
 	public int getSid() {
 		return sid;
 	}
+
 	public void setSid(int sid) {
 		this.sid = sid;
 	}
+
 	public String getUid() {
 		return uid;
 	}
+
 	public void setUid(String uid) {
 		this.uid = uid;
 	}
+
 	public String getSdate() {
 		return sdate;
 	}
+
 	public void setSdate(String sdate) {
 		this.sdate = sdate;
 	}
-	public String getTitle() {
-		return title;
-	}
-	public void setTitle(String title) {
-		this.title = title;
-	}
-	public String getPlace() {
-		return place;
-	}
-	public void setPlace(String place) {
-		this.place = place;
-	}
+
 	public LocalDateTime getStartTime() {
 		return startTime;
 	}
+
 	public void setStartTime(LocalDateTime startTime) {
 		this.startTime = startTime;
 	}
-	public LocalDateTime getEndTime() {
-		return endTime;
+
+	public String getTitle() {
+		return title;
 	}
-	public void setEndTime(LocalDateTime endTime) {
-		this.endTime = endTime;
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
-	public int getIsImportant() {
-		return isImportant;
+
+	public String getPlace() {
+		return place;
 	}
-	public void setIsImportant(int isImportant) {
-		this.isImportant = isImportant;
+
+	public void setPlace(String place) {
+		this.place = place;
 	}
-	public String getMemo() {
-		return memo;
+
+	public String getSmoke() {
+		return smoke;
 	}
-	public void setMemo(String memo) {
-		this.memo = memo;
+
+	public void setSmoke(String smoke) {
+		this.smoke = smoke;
 	}
+
+	@Override
+	public String toString() {
+		return "Schedule [sid=" + sid + ", uid=" + uid + ", sdate=" + sdate + ", startTime=" + startTime + ", title="
+				+ title + ", place=" + place + ", smoke=" + smoke + "]";
+	}
+
+
+
 }
