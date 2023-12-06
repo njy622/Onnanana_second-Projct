@@ -67,11 +67,26 @@
 		    <artifactId>json-simple</artifactId>
 		    <version>1.1.1</version>
 		</dependency>
+		
+		<!-- Selenium WebDriver -->
+	    <dependency>
+	        <groupId>org.seleniumhq.selenium</groupId>
+	        <artifactId>selenium-java</artifactId>
+	        <version>3.141.59</version> <!-- 최신 버전으로 업데이트 가능 -->
+	    </dependency>
+	   <dependency>
+	        <groupId>org.jsoup</groupId>
+	        <artifactId>jsoup</artifactId>
+	        <version>1.14.3</version> <!-- 최신 버전 사용 가능 -->
+	   </dependency>
+	   
+	  
 
 	</dependencies>
 
 	<build>
 		<plugins>
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -81,7 +96,10 @@
 					</image>
 				</configuration>
 			</plugin>
-		</plugins>
-	</build>
 
+		</plugins>
+		<sourceDirectory>src/main/java</sourceDirectory>
+   		<testSourceDirectory>src/test/java</testSourceDirectory>
+	</build>
+	
 </project>

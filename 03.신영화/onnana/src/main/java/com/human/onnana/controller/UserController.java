@@ -178,10 +178,10 @@ public class UserController {
 	}
 	
 
-	@GetMapping("/weather")
+	@GetMapping("/weather2")
 	public String weatherForm() {
 		
-		return "user/weather";
+		return "user/weather2";
 	}
 	   
 	
