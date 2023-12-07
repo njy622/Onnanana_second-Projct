@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block additional_head %} 
+    <style>
+        input {margin: 10px;}
+    </style>
+{% endblock %}
+{% block subtitle %}질병그래프{% endblock %}
+{% block content %}
+   
+    <body>
+        <form method="post" action="">
+            <select name="variable1">
+                {% for variable in variables1 %}
+                    <option value="{{ variable }}" {% if variable == selected_variable1 %}selected{% endif %}>{{ variable }}</option>
+                {% endfor %}
+            </select>
+            <select name="variable2">
+                {% for variable in variables2 %}
+                    <option value="{{ variable }}" {% if variable == selected_variable2 %}selected{% endif %}>{{ variable }}</option>
+                {% endfor %}
+            </select>
+            <!-- 집계 함수 선택 드롭다운 -->
+            <select name="agg_func">
+                <option value="최소" {% if selected_agg_func_korean == '최소' %}selected{% endif %}>최소</option>
+                <option value="최대" {% if selected_agg_func_korean == '최대' %}selected{% endif %}>최대</option>
+                <option value="평균" {% if selected_agg_func_korean == '평균' %}selected{% endif %}>평균</option>
+            </select>
+
+            <input type="submit" value="그래프 보기">
+        </form>
+        
+        {% if graph %}
+            <img src="{{ graph }}" alt="Disease Graph">
+        {% endif %}
+
+        <h4 style="text-align: center;">농도에 수치가 없는 것은 평균값의 이상, 이하 기준으로 했습니다.</h4>
+    </body>
+
+   
+{% endblock %}

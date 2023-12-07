@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, current_app, request, redirect, url_for
 import util.graph_util as gu
 import util.graph_util as gu
+import numpy as np
 
 
 graph_bp = Blueprint('graph_bp', __name__)
@@ -16,11 +17,11 @@ def variables():
 
 @graph_bp.route('/select-variable', methods=['GET', 'POST'])
 def select_variable():
-    variables = ['비염환자수', '아토피환자수', '천식환자수', '평균기온', '평균상대습도', '평균증기압', '평균최고기온',
-       '평균최저기온', '평균풍속', 'AVG_PM10', 'AVG_PM2.5', 'AVG_아황산', 'AVG_이산화',
-       'AVG_일산화', '차량수', 'AVG_구리', 'AVG_납', 'AVG_니켈', 'AVG_망간', 'AVG_비소',
-       'AVG_철', 'AVG_카드뮴', 'AVG_크롬']
-    selected_variable = '비염환자수'  # 초기 선택된 변수 설정
+    variables = ['비염환자(질병)', '아토피환자(질병)', '천식환자(질병)', '평균기온(기후)',
+       '상대습도(기후)', '증기압(기후)', '최고기온(기후)', '최저기온(기후)', '풍속(기후)', '미세먼지',
+       '초미세먼지', '아황산가스', '이산화질소', '일산화탄소', '구리(중금속)', '납(중금속)',
+       '니켈(중금속)', '망간(중금속)', '비소(중금속)', '철(중금속)', '카드뮴(중금속)', '크롬(중금속)']
+    selected_variable = '비염환자(질병)'  # 초기 선택된 변수 설정
 
     if request.method == 'POST':
         selected_variable = request.form.get('variable')
@@ -30,36 +31,87 @@ def select_variable():
 
     return render_template('/graph/variables_select.html', variables=variables, selected_variable=selected_variable, graph=graph, menu=menu)
 
+@graph_bp.route('/disease-graph', methods=['GET', 'POST'])
+def disease_graph():
+    # 사용자가 선택할 수 있는 변수 목록
+    variables1 = [
+        '미세먼지(농도)', '미세먼지(농도80)', '초미세먼지(농도)', '초미세먼지(농도35)', 
+        '아황산가스(농도0.05)', '아황산가스(농도)', '이산화질소(농도0.06)', '이산화질소(농도0.03)', 
+        '이산화질소(농도)', '일산화탄소(농도9)', '일산화탄소(농도)', '구리(농도)', '납(농도0.5)', 
+        '납(농도)', '니켈(농도)', '망간(농도)', '비소(농도)', '철(농도)', '카드뮴(농도)', '크롬(농도)'
+    ]
+    variables2 = ['비염환자(질병)', '아토피환자(질병)', '천식환자(질병)']
 
+    # 집계 함수 이름을 한글로 매핑
+    aggregation_functions_korean = {'min': '최소', 'max': '최대', 'mean': '평균'}
+    # 집계 함수 이름을 영어로 매핑하는 딕셔너리 생성
+    aggregation_functions_english = {v: k for k, v in aggregation_functions_korean.items()}
+    aggregation_functions = list(aggregation_functions_korean.values())
 
+    # 기본값 설정
+    selected_variable1 = '이산화질소(농도0.03)'
+    selected_variable2 = '천식환자(질병)'
+    selected_agg_func = 'min'
+    selected_agg_func_korean = aggregation_functions_korean[selected_agg_func]
 
+    if request.method == 'POST':
+        selected_variable1 = request.form.get('variable1')
+        selected_variable2 = request.form.get('variable2')
+        selected_agg_func_korean = request.form.get('agg_func')
+        
+        # 한글 집계 함수 이름을 영어로 매핑
+        selected_agg_func = aggregation_functions_english.get(selected_agg_func_korean, 'min')
 
+        # 선택된 함수에 따른 그래프 생성
+        agg_func = {
+            'min': np.min,
+            'max': np.max,
+            'mean': np.mean
+        }.get(selected_agg_func, np.min)
 
-@graph_bp.route('/station', methods=['GET','POST'])
-def station():
-    if request.method == 'GET':
-        return render_template('/map/station_form.html' ,menu=menu)
+        graph = gu.get_disease_graph(selected_variable1, selected_variable2, agg_func, selected_agg_func_korean)
     else:
-        stations = request.form.getlist('station')
-        stations = [station for station in stations if len(station.strip()) != 0]
-        gu.get_station_map(current_app.root_path, stations)     # static/img/station_map.html 파일
-        return render_template('/map/station_res.html', menu=menu)
+        graph = None
+        selected_agg_func_korean = aggregation_functions_korean[selected_agg_func]
 
-@graph_bp.route('/cctv')
-def cctv():
-    gu.get_cctv(current_app.static_folder)      # static/img/cctv.html 파일
-    return render_template('/map/cctv.html')
 
-@graph_bp.route('/cctv_pop', methods=['GET','POST'])
-def cctv_pop():
-    if request.method == 'GET':
-        columns = ['CCTV댓수','최근증가율','인구수','내국인','외국인','고령자','외국인 비율','고령자 비율']
-        colormaps = ['RdPu','Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds', 'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd',  'BuPu',
-                        'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn']
-        return render_template('/map/cctv_pop_form.html', columns=columns, colormaps=colormaps, menu=menu)
+
+    return render_template('/graph/disease_graph.html', 
+                           variables1=variables1, 
+                           variables2=variables2, 
+                           aggregation_functions=aggregation_functions, 
+                           selected_variable1=selected_variable1, 
+                           selected_variable2=selected_variable2, 
+                           selected_agg_func=selected_agg_func, 
+                           selected_agg_func_korean=selected_agg_func_korean, 
+                           graph=graph, 
+                           menu=menu)
+
+@graph_bp.route('/corona-graph', methods=['GET', 'POST'])
+def corona_graph():
+    # 시도와 변수 목록을 제공합니다.
+    sidos = [
+    '서울특별시', '부산광역시', '대구광역시', '인천광역시',
+    '광주광역시', '대전광역시', '울산광역시', '세종특별자치시',
+    '경기도', '충청북도', '충청남도', '전라북도',
+    '전라남도', '경상북도', '경상남도']
+
+    variables = ['비염환자(질병)', '아토피환자(질병)', '천식환자(질병)', '평균기온(기후)',
+       '상대습도(기후)', '증기압(기후)', '최고기온(기후)', '최저기온(기후)', '풍속(기후)', '미세먼지',
+       '초미세먼지', '아황산가스', '이산화질소', '일산화탄소', '구리(중금속)', '납(중금속)',
+       '니켈(중금속)', '망간(중금속)', '비소(중금속)', '철(중금속)', '카드뮴(중금속)', '크롬(중금속)']  # 예시
+
+    # 기본값 설정
+    selected_sido = '서울특별시'
+    selected_variable = '미세먼지'
+
+    if request.method == 'POST':
+        selected_sido = request.form.get('sido')
+        selected_variable = request.form.get('variable')
+
+        # 선택된 시도와 변수에 따른 그래프 생성
+        graph = gu.get_corona_graph(selected_sido, selected_variable)
     else:
-        column = request.form['column']
-        colormap = request.form['colormap']
-        gu.get_cctv_pop(current_app.static_folder, column, colormap)    # static/img/cctv_pop.html 파일
-        return render_template('/map/cctv_pop_res.html', column=column, colormap=colormap, menu=menu)
-    
+        graph = None
+
+    return render_template('/graph/corona_graph.html', sidos=sidos, variables=variables, selected_sido=selected_sido, selected_variable=selected_variable, graph=graph, menu=menu)

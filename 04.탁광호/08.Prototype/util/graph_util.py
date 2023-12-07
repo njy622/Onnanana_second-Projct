@@ -7,19 +7,20 @@ import matplotlib.pyplot as plt
 import io
 import base64
 from flask import current_app
+from datetime import datetime
 plt.rcParams['font.family'] = 'Malgun Gothic'
 plt.rcParams['axes.unicode_minus'] = False
 
 def get_variables_graph():
     
     # 현재 애플리케이션의 정적 파일 경로를 사용하여 파일 경로 설정
-    filename = os.path.join(current_app.static_folder, 'data/월별데이터합침2015-2022.csv')
+    filename = os.path.join(current_app.static_folder, 'data/월별데이터합침2015-2022(콜롬명수정).csv')
     
     # 데이터 로드
     df = pd.read_csv(filename)
 
     # 'BAD' 문자를 포함하는 컬럼 제외
-    result_df = df.loc[:, ~df.columns.str.contains('BAD')]
+    result_df = df.loc[:, ~df.columns.str.contains('농도')]
 
     # 날짜 데이터 변환
     result_df['Year'] = result_df['STD_YYYYMM'].astype(str).str[:4].astype(int)
@@ -51,17 +52,22 @@ def get_variables_graph():
     return f'data:image/png;base64,{graph_url}'
 
 def get_variables_graph_select(selected_variable):
-    filename = os.path.join(current_app.static_folder, 'data/월별데이터합침2015-2022.csv')
+    filename = os.path.join(current_app.static_folder, 'data/월별데이터합침2015-2022(콜롬명수정).csv')
     df = pd.read_csv(filename)
 
 
-    result_df = df.loc[:, ~(df.columns.str.contains('BAD') | df.columns.str.contains('STD') | df.columns.str.contains('SIDO'))]
+    result_df = df.loc[:, ~(df.columns.str.contains('농도') | df.columns.str.contains('STD') | df.columns.str.contains('SIDO') | df.columns.str.contains('차량수'))]
 
-    # 선택된 변수와 다른 모든 변수 간의 상관관계 계산
+    # 상관관계 계산
     target_corr = result_df.corrwith(result_df[selected_variable]).sort_values(ascending=False)
 
-    # 선택된 변수 제거
-    target_corr = target_corr.drop(labels=[selected_variable])
+    # 선택된 변수가 '환자수'를 포함하면 '환자수'를 포함하는 열 제거
+    if '질병' in selected_variable:
+        target_corr = target_corr[~target_corr.index.str.contains('질병')]
+
+    # 선택된 변수가 target_corr 인덱스에 존재하는지 확인 후 제거
+    if selected_variable in target_corr.index:
+        target_corr = target_corr.drop(labels=[selected_variable])
 
     # 상관계수를 막대 그래프로 표시합니다.
     plt.figure(figsize=(9, 6))  # 그래프 크기 조정
@@ -79,125 +85,84 @@ def get_variables_graph_select(selected_variable):
     return f'data:image/png;base64,{graph_url}'
 
 
+def get_disease_graph(column1, column2, agg_func, agg_func_name_korean):
+    # 데이터 파일 경로 설정 및 데이터 로드
+    filename = os.path.join(current_app.static_folder, 'data/월별데이터합침2015-2022(콜롬명수정).csv')
+    df = pd.read_csv(filename)
 
-def get_station_map(root_path, stations):
-    # 도로명 주소 구하기
-    # filename = '../04.지도시각화/keys/도로명주소apiKey.txt'
-    filename = os.path.join(root_path, 'static/keys/도로명주소apiKey.txt')
-    with open(filename) as file:
-        road_key = file.read()
+    # 필요한 컬럼만 필터링
+    result_df = df.loc[:, (df.columns.str.contains('농도') | df.columns.str.contains('질병'))]
 
-    base_url = 'https://www.juso.go.kr/addrlink/addrLinkApi.do'
-    params1 = f'confmKey={road_key}&currentPage=1&countPerPage=10'
-    road_addr_list = []
-    for station in stations:
-        params2 = f'keyword={quote(station)}&resultType=json'
-        url = f'{base_url}?{params1}&{params2}'
-        result = requests.get(url)
-        if result.status_code == 200:
-            res = json.loads(result.text)
-            road_addr_list.append(res['results']['juso'][0]['roadAddr'])
-        else:
-            print(result.status_code)
-    df = pd.DataFrame({'이름': stations, '주소': road_addr_list})
+    # 선택된 컬럼에 따른 집계(최소값 또는 최대값)
+    agg_result = result_df.groupby(column1)[column2].agg(agg_func).reset_index()
 
-    # 위도, 경도 좌표 구하기
-    filename = os.path.join(root_path, 'static/keys/카카오apiKey.txt')
-    with open(filename) as file:
-        kakao_key = file.read()
-    base_url = 'https://dapi.kakao.com/v2/local/search/address.json'
-    header = {'Authorization': f'KakaoAK {kakao_key}'}
+    # 막대 그래프 그리기
+    plt.figure(figsize=(8, 6))
+    
+    # 'Y'와 'N' 값에 따라 색상을 지정합니다.
+    colors = ["green" if x == "좋음" else "red" for x in agg_result[column1]]
+    sns.barplot(x=column1, y=column2, data=agg_result, palette=colors)
 
-    lat_list, lng_list = [], []
-    for i in df.index:
-        url = f'{base_url}?query={quote(df["주소"][i])}'
-        result = requests.get(url, headers=header).json()
-        lat_list.append(float(result['documents'][0]['y']))
-        lng_list.append(float(result['documents'][0]['x']))
-    df['위도'] = lat_list
-    df['경도'] = lng_list
+    # 그래프 제목 설정
+    title = f'{column1}에 따른 {column2}의 {agg_func_name_korean}값 비교'
+    plt.title(title)
 
-    # map 그리기
-    map = folium.Map(location=[df.위도.mean(), df.경도.mean()], zoom_start=14)  # Center position
-    for i in df.index:
-        folium.Marker(
-            location=[df.위도[i], df.경도[i]],       
-            tooltip=df.이름[i],
-            popup=folium.Popup(df.주소[i], max_width=200)
-        ).add_to(map)   
-    filename = os.path.join(root_path, 'static/img/station_map.html')
-    map.save(filename)
+     # 집계 함수 확인
+    print("사용된 집계 함수:", agg_func.__name__)
 
-def get_text_location(geo_str):
-    gu_dict = {}
-    for gu in geo_str['features']:
-        for coord in gu['geometry']['coordinates']:
-            geo = np.array(coord)
-            gu_dict[gu['id']] = [np.mean(geo[:,1]), np.mean(geo[:,0])]
-    return gu_dict
+    img = io.BytesIO()
+    plt.savefig(img, format='png', bbox_inches='tight')
+    img.seek(0)
+    graph_url = base64.b64encode(img.getvalue()).decode()
+    plt.close()
 
-def get_cctv(static_path):
-    filename = f'{static_path}/data/서울시 구별 CCTV 인구 현황.csv'
-    df = pd.read_csv(filename, index_col='구별')
-    geo_data = json.load(open(f'{static_path}/data/seoul_geo_simple.json', encoding='utf-8'))
+    return f'data:image/png;base64,{graph_url}'
 
-    map = folium.Map([37.55, 126.98], zoom_start=11, tiles='Stamen Toner')
-    folium.Choropleth(
-        geo_data=geo_data,      # GEO 지도 데이터
-        data=df.CCTV댓수,       # 단계구분도로 보여줄 데이터
-        columns=[df.index, df.CCTV댓수],        # 데이터프레임에서 추출할 항목
-        fill_color='RdPu',      # Colormap
-        key_on='feature.id'     # 지도에서 조인할 항목
-    ).add_to(map)
-    gu_dict = get_text_location(geo_data)
-    for gu_name in df.index:
-        folium.map.Marker(
-            location=gu_dict[gu_name],
-            icon = folium.DivIcon(icon_size=(80,20), icon_anchor=(20,0),
-                        html=f'<span style="font-size: 10pt">{gu_name}</span>')
-    ).add_to(map)
-    map.save(f'{static_path}/img/cctv.html')
 
-def get_cctv_pop(static_path, column, colormap):
-    filename = f'{static_path}/data/서울시 구별 CCTV 인구 현황.csv'
-    df = pd.read_csv(filename, index_col='구별')
-    geo_data = json.load(open(f'{static_path}/data/seoul_geo_simple.json', encoding='utf-8'))
 
-    map = folium.Map([37.55, 126.98], zoom_start=11, tiles='Stamen Toner')
-    folium.Choropleth(
-        geo_data=geo_data,      # GEO 지도 데이터
-        data=df[column],        # 단계구분도로 보여줄 데이터
-        columns=[df.index, df[column]],     # 데이터프레임에서 추출할 항목
-        fill_color=colormap,    # Colormap
-        key_on='feature.id'     # 지도에서 조인할 항목
-    ).add_to(map)
-    gu_dict = get_text_location(geo_data)
-    for gu_name in df.index:
-        folium.map.Marker(
-            location=gu_dict[gu_name],
-            icon = folium.DivIcon(icon_size=(80,20), icon_anchor=(20,0),
-                        html=f'<span style="font-size: 10pt">{gu_name}</span>')
-    ).add_to(map)
-    map.save(f'{static_path}/img/cctv_pop.html')
+def get_corona_graph(sido, variable):
+    filename = os.path.join(current_app.static_folder, 'data/월별데이터합침2015-2022(콜롬명수정).csv')
+    df = pd.read_csv(filename)
 
-def get_coord(static_path, place):
-    filename = os.path.join(static_path, 'keys/도로명주소apiKey.txt')
-    with open(filename) as file:
-        road_key = file.read()
-    base_url = 'https://www.juso.go.kr/addrlink/addrLinkApi.do'
-    params1 = f'confmKey={road_key}&currentPage=1&countPerPage=10'
-    params2 = f'keyword={quote(place)}&resultType=json'
-    url = f'{base_url}?{params1}&{params2}'
-    result = requests.get(url).json()
-    road_addr = result['results']['juso'][0]['roadAddr']
+    # 선택한 시도에 대한 데이터 필터링 및 날짜 변환
+    filtered_df = df[df['SIDO'] == sido]
+    filtered_df['STD_YYYYMM'] = pd.to_datetime(filtered_df['STD_YYYYMM'], format='%Y%m')
 
-    filename = os.path.join(static_path, 'keys/카카오apiKey.txt')
-    with open(filename) as file:
-        kakao_key = file.read()
-    base_url = 'https://dapi.kakao.com/v2/local/search/address.json'
-    header = {'Authorization': f'KakaoAK {kakao_key}'}
-    url = f'{base_url}?query={quote(road_addr)}'
-    result = requests.get(url, headers=header).json()
-    lat = float(result['documents'][0]['y'])
-    lng = float(result['documents'][0]['x'])
-    return lat, lng
+    # 코로나19 기간 설정
+    pre_covid_start = datetime(2010, 1, 1)
+    pre_covid_end = datetime(2019, 12, 31)
+    covid_start = datetime(2020, 1, 1)
+    covid_end = datetime(2021, 12, 31)
+
+    # 데이터 프레임 필터링
+    pre_covid_df = filtered_df[(filtered_df['STD_YYYYMM'] >= pre_covid_start) & (filtered_df['STD_YYYYMM'] <= pre_covid_end)]
+    covid_df = filtered_df[(filtered_df['STD_YYYYMM'] >= covid_start) & (filtered_df['STD_YYYYMM'] <= covid_end)]
+
+    # 각 기간의 평균 계산
+    pre_covid_avg = pre_covid_df[variable].mean()
+    covid_avg = covid_df[variable].mean()
+
+    # 시각화
+    plt.figure(figsize=(10, 6))
+    sns.lineplot(x='STD_YYYYMM', y=variable, data=pre_covid_df, marker='o', label='코로나19 이전')
+    sns.lineplot(x='STD_YYYYMM', y=variable, data=covid_df, marker='o', label='코로나19 기간')
+
+    # 평균선 추가
+    plt.axhline(pre_covid_avg, color='blue', linestyle='--', label='코로나19 이전 평균')
+    plt.axhline(covid_avg, color='orange', linestyle='--', label='코로나19 기간 평균')
+
+    plt.title(f'{sido} {variable} 코로나19 이전 및 기간 동안 년월별 변화')
+    plt.xlabel('년월')
+    plt.ylabel(variable)
+    plt.xticks(rotation=45)
+    plt.legend()
+    plt.grid(True)
+
+    # 이미지로 변환 및 Base64 인코딩
+    img = io.BytesIO()
+    plt.savefig(img, format='png', bbox_inches='tight')
+    img.seek(0)
+    graph_url = base64.b64encode(img.getvalue()).decode()
+    plt.close()
+
+    return f'data:image/png;base64,{graph_url}'
