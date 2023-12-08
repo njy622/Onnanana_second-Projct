@@ -260,7 +260,11 @@ public class ScheduleController {
 		
 ///////////////////////////////////////////////////////////////////////////////////////////////////////		
 	}
-	
+	@GetMapping("/delete/{sid}")
+	public String delete(@PathVariable int sid) {
+		schedService.delete(sid);
+		return "redirect:/schedule/calendar";
+	}
 	
 	@PostMapping("/delete/{sid}")
 	@ResponseBody

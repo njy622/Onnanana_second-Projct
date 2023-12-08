@@ -58,7 +58,7 @@
 	function update(){
 		var startDate = $('#startDate2').val();
 		var startTime = $('#startTime2').val();
-		var title = $('#title2').val();				// insert에 들어가는 데이터 id로 불러와서 변수에 넣음
+		var title = $('#title2').val();				// update에 들어가는 데이터 id로 불러와서 변수에 넣음
 		var place = $('#place2').val();
 		var smoke = $('#smoke2').val();
 		
@@ -260,7 +260,7 @@ function readJs() {
 	                                <label for="title">합 산</label>
 	                                <div class="input-group outer-container" style="width: 100%;">
 									    <input class="form-control" type="text" id="title" name="title" disabled>
-									    <button class="btn btn-success" style="width: 80px;" type="submit" onclick="readJs()"><i class="fa-solid fa-calculator"></i></button>
+									    <button class="btn btn-success" style="width: 80px;" onclick="readJs()"><i class="fa-solid fa-calculator"></i></button>
 									</div>
 	                            </td>
 	                        </tr>   
@@ -268,7 +268,7 @@ function readJs() {
 	                        
 	                        <tr>
 	                            <td colspan="2" style="text-align: right;">
-	                                <button class="btn btn-primary me-2" type="submit" onclick="insert()">제출</button>
+	                                <button class="btn btn-primary me-2" onclick="insert()">제출</button>
 	                                <!-- <button class="btn btn-secondary" type="reset">취소</button> -->
 	                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">종료</button>
 	                            </td>
@@ -318,7 +318,7 @@ function readJs() {
 	                                <label for="place">거리에 따른 배출 감소량 계산하기</label>
 	                                <div class="input-group outer-container" style="width: 100%;">
 									    <input type="text" style="height: auto;" class="form-control" id="place2" name="place" placeholder=" 도착지 주소를 입력하면 현재위치부터 계산합니다">
-									    <button class="btn btn-success" style="width: 80px;" type="submit" onclick="searchAndCalculateDistance()">계산</button>
+									    <button class="btn btn-success" style="width: 80px;" onclick="searchAndCalculateDistance()">계산</button>
 									</div>
 		                              <p id="result"></p>  <!-- 검색된 위치의 좌표와 거리를 표시할 요소 -->
 	                            </td>
@@ -344,15 +344,15 @@ function readJs() {
 	                                <label for="title">합 산</label>
 	                                <div class="input-group outer-container" style="width: 100%;">
 									    <input class="form-control" type="text" id="title2" name="title" disabled>
-									    <button class="btn btn-success" style="width: 80px;" type="submit" onclick="readJs()"><i class="fa-solid fa-calculator"></i></button>
+									    <button class="btn btn-success" style="width: 80px;"  onclick="readJs()"><i class="fa-solid fa-calculator"></i></button>
 									</div>
 	                            </td>
 	                        </tr>   
 	                        <tr>
 	                        <tr>
 	                            <td colspan="2" style="text-align: right;">
-	                                <button class="btn btn-success me-2" type="submit"  onclick="update()">수정</button>
-	                                <button class="btn btn-danger me-2" type="button" data-bs-dismiss="modal" onclick="deleteSchedule()">삭제</button>
+	                                <button class="btn btn-success me-2" onclick="update()">수정</button>
+	                                <button class="btn btn-danger me-2"  data-bs-dismiss="modal" onclick="deleteSchedule()">삭제</button>
 									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">종료</button>
 	                            </td>
 	                        </tr>
@@ -374,7 +374,7 @@ function readJs() {
 			
 				<!-- Modal body -->
 				<div class="modal-body">
-					<form action="/onnana/schedule/insertAnniv" method="post">
+					<!-- <form action="/onnana/schedule/insertAnniv" method="post"> -->
 						<table class="table table-borderless">
 	                        <tr>
 	                            <td>
@@ -396,7 +396,7 @@ function readJs() {
 	                            </td>
 	                        </tr>
 	                    </table>
-					</form>
+					<!-- </form> -->
 				</div>
 			</div>
 		</div>

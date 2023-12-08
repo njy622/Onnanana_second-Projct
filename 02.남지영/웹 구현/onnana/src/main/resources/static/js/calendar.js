@@ -45,15 +45,39 @@ function schedClick(sid) {
 			$('#updateModal').modal('show');
 		}
 	});
+	
 }
 
 function deleteSchedule() {
 	let sid = $('#sid2').val();
 	const answer = confirm('정말로 삭제하시겠습니까?');
-	if (answer) {
-		location.href = '/onnana/schedule/delete/' + sid;
+			if (answer) {
+				//location.href = '/onnana/schedule/delete/' + sid;
+	
+    $.ajax({
+        type: "POST",
+        url: "/onnana/schedule/delete/" + sid, // 스케줄 컨트롤러안의 함수 불러오는 경로
+        data: {sid},
+        success: function(response){
+            // JSON 응답을 파싱
+        	var data = JSON.parse(response); 
+			
+            //각 변수에 접근하여, 변경된 세션 다시 불러오기
+            
+            $('#asideSessId').text(data.countUser); //한 유저의 참여일수 합계
+            $('#asideSessCarbonId').text(data.countUserCarbon);//한 유저의 감소량 합계
+            
+            $('#asideSessAllId').text(data.count);//전체유저 인원수
+            $('#asidesessAllCarbonId').text(data.countCarbon); //전체유저의 감소량 합계
+			
+			 $('#addModal').modal('hide');
+	            location.href = '/onnana/schedule/calendar';
+     		
+     			location.reload();
+        }
+        });
+        }
 	}
-}
 
 
 
