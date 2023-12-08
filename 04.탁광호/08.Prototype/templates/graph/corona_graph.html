@@ -19,12 +19,18 @@
                     <option value="{{ variable }}" {% if selected_variable == variable %}selected{% endif %}>{{ variable }}</option>
                 {% endfor %}
             </select>
-            <input type="submit" value="그래프 보기">
+            <div style="display: inline-block;">
+                <input type="submit" value="그래프 보기">
+                {% if similar_impact %}
+                    <p style="display: inline;">{{ similar_impact }}</p>
+                {% endif %}
+            </div>
         </form>
 
         {% if graph %}
             <img src="{{ graph }}" alt="코로나19 기간 대비 데이터 비교 그래프">
         {% endif %}
     </body>
+
     
 {% endblock %}

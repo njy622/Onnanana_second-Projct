@@ -105,13 +105,19 @@ def corona_graph():
     selected_sido = '서울특별시'
     selected_variable = '미세먼지'
 
+    # 유사한 증감폭 메시지 변수 초기화
+    similar_impact_message = None
+
     if request.method == 'POST':
         selected_sido = request.form.get('sido')
         selected_variable = request.form.get('variable')
 
-        # 선택된 시도와 변수에 따른 그래프 생성
-        graph = gu.get_corona_graph(selected_sido, selected_variable)
-    else:
-        graph = None
+        # 선택된 시도와 변수에 따른 그래프 생성 및 코로나 증감폭 계산
+        graph_url, percent_change = gu.get_corona_graph(selected_sido, selected_variable)
 
-    return render_template('/graph/corona_graph.html', sidos=sidos, variables=variables, selected_sido=selected_sido, selected_variable=selected_variable, graph=graph, menu=menu)
+        # 유사한 증감폭 찾기
+        similar_impact_message = gu.find_similar_covid_impact(selected_sido, selected_variable, percent_change)
+    else:
+        graph_url = None
+
+    return render_template('/graph/corona_graph.html', sidos=sidos, variables=variables, selected_sido=selected_sido, selected_variable=selected_variable, graph=graph_url, similar_impact=similar_impact_message, menu=menu)
