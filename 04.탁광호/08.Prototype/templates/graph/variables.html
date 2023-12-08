@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block additional_head %} 
+    <style>
+        input {margin: 10px;}
+    </style>
+{% endblock %}
+{% block subtitle %}상관관계그래프{% endblock %}
+{% block content %}
+   
+    <body>
+        <!-- 이미지 클릭 시 팝업 함수 호출 -->
+        <img src="{{ variables_graph }}" alt="상관 관계 그래프" style="margin-bottom: 50px; cursor: pointer;" onclick="openImagePopup(this.src)">
+
+        <!-- 자바스크립트로 팝업 이미지 뷰어 구현 -->
+        <script>
+            function openImagePopup(src) {
+                var newWindow = window.open('', '_blank', 'width=1280,height=1024');
+                newWindow.document.write('<img src="' + src + '" alt="이미지 미리보기" style="max-width:100%;height:auto;">');
+            }
+        </script>
+    </body>
+
+
+   
+{% endblock %}
