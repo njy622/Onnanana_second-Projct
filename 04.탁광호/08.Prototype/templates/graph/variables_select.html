@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block additional_head %} 
+    <style>
+        input {margin: 10px;}
+    </style>
+{% endblock %}
+{% block subtitle %}선택상관관계 그래프{% endblock %}
+{% block content %}
+   
+    <body>
+        <!-- 현재 URL로 POST 요청을 보내는 폼 -->
+        <form method="post" action="">
+            <select name="variable">
+                {% for variable in variables %}
+                    <option value="{{ variable }}" {% if variable == selected_variable %}selected{% endif %}>{{ variable }}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="상관관계 보기">
+        </form>
+        
+        {% if graph %}
+            <img src="{{ graph }}" alt="상관 관계 그래프">
+        {% endif %}
+    </body>
+
+   
+{% endblock %}
