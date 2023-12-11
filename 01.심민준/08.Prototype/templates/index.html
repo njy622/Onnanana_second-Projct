@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <script>
+        function submitForm(nx, ny, stationName) {
+            // 각 버튼에 대한 값을 설정
+            document.getElementById('nx').value = nx;
+            document.getElementById('ny').value = ny;
+            document.getElementById('stationName').value = stationName;
+
+            // 폼 제출
+            document.getElementById('weatherForm').submit();
+        }
+    </script>
+</head>
+<body>
+    <h2>Weather App</h2>
+
+    <!-- 입력 폼과 버튼 추가 -->
+    <form id="weatherForm" action="/get_weather" method="post">
+        <label for="nx">nx:</label>
+        <input type="text" name="nx" id="nx" required>
+        <br>
+        <label for="ny">ny:</label>
+        <input type="text" name="ny" id="ny" required>
+        <br>
+        <label for="stationName">측정소명:</label>
+        <input type="text" name="stationName" id="stationName" required>
+        <br>
+
+        <!-- 각 버튼에 대한 클릭 이벤트 추가 -->
+        <button type="button" onclick="submitForm('54', '124', '영흥')">버튼 1</button>
+        <button type="button" onclick="submitForm('55', '125', '다른측정소')">버튼 2</button>
+        <!-- 추가 버튼들도 필요에 따라 계속해서 추가 -->
+
+    </form>
+
+    <!-- 날씨 데이터를 표시하는 부분 -->
+    <div>
+        <pre>${weatherData}</pre>
+    </div>
+</body>
+</html>
