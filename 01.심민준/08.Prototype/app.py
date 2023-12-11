@@ -1,81 +1,247 @@
-from flask import Flask, render_template, request, flash, session, send_from_directory
-from bp.crawling import crawl_bp
-from bp.map import map_bp
-from bp.user import user_bp
-from bp.chatbot import chatbot_bp, get_air_quality
-from bp.schedule import schdedule_bp
-import os, json
-import util.map_util as mu
-import util.weather_util as wu
-import util.image_util as iu
-import db_sqlite.profile_dao as pdao
+from flask import Flask, jsonify, request, render_template
+from datetime import datetime, timedelta
 import requests
+import pandas as pd
+from flask_cors import CORS
+import csv
+from draw_map import  BORDER_LINES, drawKorea, drawKoreaMinus
 
 app = Flask(__name__)
-app.secret_key = 'qwert12345'       # flash와 session을 사용하려면 반드시 설정해야 함
-app.config['SESSION_COOKIE_PATH'] = '/'
-
-app.register_blueprint(crawl_bp, url_prefix='/crawling')    # localhost:5000/crawling/* 는 crawl bp가 처리
-app.register_blueprint(map_bp, url_prefix='/map')
-app.register_blueprint(user_bp, url_prefix='/user')
-app.register_blueprint(chatbot_bp, url_prefix='/chatbot')
-app.register_blueprint(schdedule_bp, url_prefix='/schedule')
-# 이미지를 저장한 폴더 설정
-app.config['UPLOAD_FOLDER'] = 'static/img'
-
 
 # 서버 시작 전에 실행될 함수
 @app.before_first_request
 def before_first_request():
-    # 이 부분에 실행되길 원하는 함수 호출
-    get_air_quality()
 
-# for AJAX ###################################################
-@app.route('/weather')
-def weather():
-    # 서울시 영등포구 + '청' -> 도로명 주소 -> 카카오 로컬 -> 좌표 획득
-    addr = request.args.get('addr') 
-    lat, lng = mu.get_coord(app.static_folder, addr + '청')
-    html = wu.get_weather(app.static_folder, lat, lng)
-    return html
+    # 기본 URL 및 API 키 설정
+    base_url = "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty"
+    with open('keys/에어코리아api2.txt') as file:
+        service_key = file.read()  # 발급받은 에어코리아 API 키 입력
 
-@app.route('/changeProfile', methods=['GET','POST'])
-def change_profile():
-    if request.method == 'GET':
-        profile = pdao.get_profile(session['profile'][0])
-        return json.dumps(profile)
+    # 예제 데이터프레임 생성
+    main = pd.read_csv('data/카토그램_최종.csv', encoding='utf-8')
+
+    # 결과를 저장할 리스트
+    results_list = []
+
+    # 요청을 나누어 보내기
+    chunk_size = 50
+    max_retries = 3
+
+    for i in range(0, len(main), chunk_size):
+        chunk = main.iloc[i:i+chunk_size]
+        
+        # 각 측정소에 대한 데이터 수집
+        for index, row in chunk.iterrows():
+            retry_count = 0
+
+            while retry_count < max_retries:
+                try:
+                    params = {
+                        'serviceKey': service_key,
+                        'returnType': 'JSON',
+                        'numOfRows': 24,
+                        'pageNo': 1,
+                        'stationName': row['측정소명'],
+                        'dataTerm': 'DAILY',
+                        'ver': "1.4"
+                    }
+
+                    res = requests.get(url=base_url, params=params)
+
+                    # 응답 데이터 정리
+                    response = res.json()['response']['body']
+                    
+                    # 데이터가 존재하면 처리
+                    if 'items' in response and response['items']:
+                        data = response['items']
+                        
+                        # 데이터를 날짜와 시간에 대한 기준으로 정렬
+                        sorted_data = sorted(data, key=lambda x: x['dataTime'], reverse=True)
+
+                        # 최신 데이터 선택
+                        latest_data = None
+
+                        for data in sorted_data:
+                            pm10_value = data.get('pm10Value')
+                            if pm10_value and pm10_value != '-':
+                                latest_data = data
+                                break
+
+                        # 최신 데이터가 없으면 첫 번째 데이터 선택
+                        if not latest_data and sorted_data:
+                            latest_data = sorted_data[0]
+
+                        result = {
+                            '날짜': latest_data['dataTime'],
+                            '이름': latest_data['stationName'],
+                            '측정망 정보': latest_data['mangName'],
+                            '아황산가스 농도': latest_data['so2Value'],
+                            '일산화탄소 농도': latest_data['coValue'],
+                            '오존 농도': latest_data['o3Value'],
+                            '이산화질소 농도': latest_data['no2Value'],
+                            '미세먼지(PM10) 농도': latest_data.get('pm10Value', 0),
+                            '초미세먼지(PM2.5) 농도': latest_data.get('pm25Value', 0)
+                        }
+
+                        results_list.append(result)
+                        break  # 성공한 경우 while 루프 종료
+                    else:
+                        results_list.append({})
+                        break  # 성공했지만 데이터가 비어있는 경우 while 루프 종료
+
+                except requests.exceptions.RequestException as e:
+                    print(f"Request failed: {e}")
+                    retry_count += 1
+                    print(f"Retrying... (Attempt {retry_count}/{max_retries})")
+
+                    if retry_count == max_retries:
+                        print(f"Max retries reached. Skipping request for {row['측정소명']}")
+                        break  # 최대 재시도 횟수에 도달하면 while 루프 종료
+
+    # 결과 리스트의 길이를 250개로 맞추기
+    results_list.extend([{}] * (len(main) - len(results_list)))
+
+    # '미세먼지' 데이터를 숫자로 변환하고, 빈 데이터는 0으로 변경
+    main['미세먼지'] = pd.to_numeric([entry.get('미세먼지(PM10) 농도', 0) for entry in results_list], errors='coerce')
+    main['미세먼지'] = main['미세먼지'].fillna(0)
+
+    # '미세먼지' 처리 이후에 그래프 그리기
+    drawKorea('미세먼지', main, 'Blues', save_filename='../onnana/src/main/resources/static/img/카토그램.png')
+
+def get_weather(nx, ny):
+    base_url = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst"
+    with open('static/keys/기상청api.txt') as file:
+        service_key = file.read()
+
+    # 웹 요청할 base_date, base_time 계산
+    now = datetime.now()
+
+    if now.minute <= 40:
+        if now.hour == 0:
+            base_date = (now - timedelta(days=1)).strftime('%Y%m%d')
+            base_time = '2300'
+        else:
+            base_date = now.strftime('%Y%m%d')
+            base_time = (now - timedelta(hours=1)).strftime('%H00')
     else:
-        email = request.form['email']
-        try:
-            file_image = request.files['image']
-            image = file_image.filename
-            filename = os.path.join(app.static_folder, f'upload/{file_image.filename}')
-            file_image.save(filename)
-            mtime = iu.change_profile(app.static_folder, filename, session['uid'])
-        except:
-            image = request.form['hiddenImage']     # image의 변화가 없으면 hiddenImage값을 사용
-            mtime = 0
-        state_msg = request.form['stateMsg']
-        github = request.form['github']
-        insta = request.form['insta']
-        addr = request.form['addr']
-        params = [image, state_msg, github, insta, addr, email]
-        pdao.update_profile(params)
-        # github, insta, addr 값이 추가되면 need_refresh 값을 1로 세팅 --> 윈도우 Reload 하게 함
-        need_refresh = 0 if session['profile'][3] and session['profile'][4] and session['profile'][5] else 1
-        profile = [email, image, state_msg, github, insta, addr]
-        session['profile'] = profile
-        profile.append(session['uid'])
-        profile.append(mtime)
-        profile.append(need_refresh)
-        return json.dumps(profile)
-###################################################
+        base_date = base_date = now.strftime('%Y%m%d') 
+        base_time = now.strftime('%H00')
 
-@app.route('/')
-def home():
-    menu = {'ho':1, 'us':0, 'cr':0, 'ma':0, 'cb':0, 'sc':0}
-    # flash('Welcome to my Web!!!')
-    return render_template('home.html', menu=menu)
+    params = {
+        'serviceKey': service_key,
+        'numOfRows': 10,
+        'pageNo': 1,
+        'dataType': 'JSON',
+        'base_date': base_date,
+        'base_time': base_time,
+        'nx': nx,
+        'ny': ny,
+    }
+
+    res = requests.get(url=base_url, params=params)
+
+    data = res.json()
+    data = data['response']['body']['items']['item']
+
+    categorys = {
+        'T1H': '기온',
+        'RN1': '1시간 강수량',
+        'UUU': '동서바람성분',
+        'VVV': '남북바람성분',
+        'REH': '습도',
+        'PTY': '강수형태',
+        'VEC': '풍향',
+        'WSD': '풍속',
+    }
+
+    results = {}
+    for d in data:
+        category = categorys[d['category']]
+        value = d['obsrValue']
+
+        if category == '기온':
+            value = f"{value}°C"
+        elif category == '1시간 강수량':
+            value = f"{value}mm"
+        elif category in ['동서바람성분', '남북바람성분', '풍속']:
+            value = f"{value}m/s"
+        elif category == '습도':
+            value = f"{value}%"
+        elif category == '풍향':
+            value = int(value)
+            if 0 <= value <= 45:
+                value = "북동"
+            elif 46 <= value <= 90:
+                value = "동"
+            elif 91 <= value <= 135:
+                value = "남동"
+            elif 136 <= value <= 180:
+                value = "남"
+            elif 181 <= value <= 225:
+                value = "남서"
+            elif 226 <= value <= 270:
+                value = "서"
+            elif 271 <= value <= 315:
+                value = "북서"
+            elif 316 <= value <= 360:
+                value = "북"
+
+        results[category] = value
+
+    return results
+
+def get_air_quality(station_name):
+    with open('static/keys/에어코리아api.txt') as file:
+        air_service_key = file.read()
+    air_base_url = "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty"
+
+    params = {
+        'serviceKey': air_service_key,
+        'returnType': 'JSON',
+        'numOfRows': 24,
+        'pageNo': 1,
+        'stationName': station_name,
+        'dataTerm': 'DAILY',
+        'ver': "1.4"
+    }
+
+    res = requests.get(url=air_base_url, params=params)
+
+    data = res.json()
+    data = data['response']['body']['items']
+
+    sorted_data = sorted(data, key=lambda x: x['dataTime'], reverse=True)
+    latest_data = sorted_data[0]
+
+    results = {
+        '날짜': latest_data['dataTime'],
+        '이름': latest_data['stationName'],
+        '측정망 정보': latest_data['mangName'],
+        '아황산가스 농도': latest_data['so2Value'] + "ppm",
+        '일산화탄소 농도': latest_data['coValue'] + "ppm",
+        '오존 농도': latest_data['o3Value'] + "ppm",
+        '이산화질소 농도': latest_data['no2Value'] + "ppm",
+        '미세먼지(PM10) 농도': latest_data['pm10Value'] + "ug/m³",
+        '초미세먼지(PM2.5) 농도': latest_data['pm25Value'] + "ug/m³"
+    }
+
+    return results
+
+
+@app.route('/get_weather', methods=['GET'])
+def get_weather_route():
+    # 클라이언트로부터 받은 요청 파라미터에서 nx와 ny를 추출
+    nx = request.args.get('nx')
+    ny = request.args.get('ny')
+
+    if nx is not None and ny is not None:
+        # 기상 정보를 가져오는 함수 호출
+        weather_result = get_weather(nx, ny)
+
+        # 결과를 JSON으로 반환
+        return jsonify(weather_result)
+    else:
+        return jsonify({'error': 'Invalid request parameters'})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)     # 외부접속을 허용하려면 host='0.0.0.0'
+    app.run(host='0.0.0.0', port=5000)

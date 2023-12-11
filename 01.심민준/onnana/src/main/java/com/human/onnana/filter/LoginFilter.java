@@ -35,11 +35,11 @@ public class LoginFilter extends HttpFilter implements Filter{
 		String sessionUid = (String) session.getAttribute("sessUid");
 		
 		// 로그인해야만 들어올 수 있는 영역 만들기
-		String[] urlPatterns = {"/user/list", "/user/update", "/user/delete", "/schedule"};
+		String[] urlPatterns = {"/user/list", "/user/update", "/user/delete", "/schedule/calendar"};
 		for (String routing: urlPatterns) {
 			if (uri.contains(routing)) {		
 				if (sessionUid == null || sessionUid.equals("")) //위의 창을 들어갈때, 로그인이 안되어있으면
-					httpResponse.sendRedirect("/onnana/user/login");  //로그인 창으로 보내짐
+					httpResponse.sendRedirect("/onnana/home");  //로그인 창으로 보내짐
 				break;
 			}
 		}

@@ -16,13 +16,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.human.onnana.entity.Button;
 import com.human.onnana.entity.User;
+import com.human.onnana.service.ScheduleService;
 import com.human.onnana.service.UserService;
 
 @Controller
 @RequestMapping("/user")
 public class UserController {
 	@Autowired private UserService userService;
+	@Autowired private ScheduleService schedService;
+
 
 	@GetMapping("/update/{uid}")
 	@ResponseBody	
@@ -108,6 +112,17 @@ public class UserController {
 			session.setAttribute("sessUname", user.getUname());
 			session.setAttribute("sessEmail", user.getEmail());
 			
+			// 게시판 글 전체 카운트
+			session.setAttribute("sessAllId", schedService.getCount());
+			// 게시판 글 유저 카운트
+			session.setAttribute("sessId", schedService.getUserCount(uid));
+						
+			// 탄소배출감소량 전체 유저 카운트
+			session.setAttribute("sessAllCarbonId", schedService.getCarbonCount());
+			// 탄소배출감소량 한 유저 카운트
+			session.setAttribute("sessCarbonId", schedService.getCarbonUserCount(uid));
+			
+
 			// 환영 메세지
 			// 로그인 입력 잘못해도, home으로 바로 이동
 			model.addAttribute("msg", user.getUname() + "님 환영합니다.");
@@ -145,7 +160,7 @@ public class UserController {
 			User user = new User(uid, hashedPwd, uname, email);
 			userService.insertUser(user);
 			model.addAttribute("msg", "등록을 마쳤습니다. 로그인 하세요.");
-			model.addAttribute("url", "/onnana/user/login");
+			model.addAttribute("url", "/onnana/home");
 		} else {
 			model.addAttribute("msg", "패스워드 입력이 잘못되었습니다.");
 			model.addAttribute("url", "/onnana/user/register");
@@ -154,11 +169,7 @@ public class UserController {
 	}
 	
 	
-	@GetMapping("/calendar")
-	public String calendarForm() {
-		
-		return "user/calendar";
-	}
+	
 	
 	
 	@GetMapping("/analysis")
@@ -173,9 +184,15 @@ public class UserController {
 		
 		return "user/weather";
 	}
-	@GetMapping("/dust")
-	public String dustForm() {
-		
-		return "user/dust";
-	}
+	   @GetMapping("/dust")
+	   public String dustForm(Model model) {
+	      List<Button> buttons = new ArrayList<>();
+	        buttons.add(new Button("376,15,458,58", "modal1")); // 좌표 및 모달 ID를 설정
+	        buttons.add(new Button("50,60,70,80", "modal2")); // 다른 버튼 추가
+
+	        model.addAttribute("buttons", buttons);
+
+	      return "user/dust";
+	   }
+
 }
