@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd 
 import matplotlib as mpl 
 import matplotlib.pyplot as plt 
+import matplotlib.patches as mpatches
+
 # 한글폰트 사용
 mpl.rcParams['axes.unicode_minus'] = False
 mpl.rcParams['font.family'] = 'Malgun Gothic'
@@ -66,7 +68,7 @@ def drawKorea(targetData, blockedMap, cmapname, save_filename=None ,border_lines
         if 0 <= row[targetData] <= 30:
             annocolor = 'black'
         elif 30 < row[targetData] <= 80:
-            annocolor = 'green'
+            annocolor = 'white'
         elif 80 < row[targetData] <= 150:
             annocolor = 'yellow'
         else:
@@ -87,6 +89,14 @@ def drawKorea(targetData, blockedMap, cmapname, save_filename=None ,border_lines
 
     cb = plt.colorbar(shrink=.1, aspect=10)
     cb.set_label(datalabel)
+    
+    # 범례 추가
+    legend_labels = ['0-30', '31-80', '81-150', '151+']
+    legend_colors = ['black', 'white', 'yellow', 'red']
+    legend_patches = [mpatches.Patch(color=color, label=label) for color, label in zip(legend_colors, legend_labels)]
+    legend = plt.legend(handles=legend_patches, title='미세먼지 농도', loc='upper left', bbox_to_anchor=(1, 0.4))
+    legend.get_frame().set_facecolor('lightgray')  # 배경 색을 lightgray로 지정
+
     
     if save_filename:
         plt.savefig(save_filename, dpi=300)
