@@ -99,7 +99,7 @@ def drawKorea(targetData, blockedMap, cmapname, save_filename=None ,border_lines
 
     
     if save_filename:
-        plt.savefig(save_filename, dpi=300)
+        plt.savefig(save_filename, dpi=72)
 
     plt.tight_layout()
     plt.show()
