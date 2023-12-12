@@ -4,114 +4,75 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<%@ include file="../common/head.jspf" %>
-	
-	    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var buttons = [
-                { x: 1200, y: 1000, text: "머리", contents: "머리는 어디에 안좋을까" },
-                { x: 800, y: 250, text: "몸", contents: "몸은 왜.."  },
-                { x: 800, y: 350, text: "다리", contents: "다리에 알배겼어요,..."  }
-            ];
-            
-         
-            
+   <%@ include file="../common/head.jspf" %>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <!-- Bootstrap CSS -->
+   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
-            buttons.forEach(function(btnInfo) {
-                var btn = document.createElement("button");
-                btn.innerHTML = btnInfo.text;
-                btn.style.position = "absolute";
-                btn.style.left = btnInfo.x + "px";
-                btn.style.top = btnInfo.y + "px";
-                document.body.appendChild(btn);
+   <style>
+       /* 추가된 CSS 스타일 */
+       .button-container {
+           position: absolute;
+           top: 0;
+           left: 0;
+           right: 0;
+           text-align: center;
+           z-index: 2;
+           margin-right: 0px;
+       }
+   </style>
+ 
 
-                btn.onclick = function() {
-                    var modal = document.getElementById("myModal");
-                    var span = document.getElementsByClassName("close")[0];
-                    var modalText = document.getElementById("modalText");
-
-                    modal.style.display = "block";
-                    modalText.innerText = "버튼 " + btnInfo.contents + "이 클릭되었습니다.";
-
-                    span.onclick = function() {
-                        modal.style.display = "none";
-                    };
-
-                    window.onclick = function(event) {
-                        if (event.target == modal) {
-                            modal.style.display = "none";
-                        }
-                    };
-                };
-            });
-        });
-   		</script>
-   		
-   		
-   		<style>
-        /* 모달 스타일 */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-    </style>
 </head>
 <body>
-	<%@ include file="../common/top.jspf" %>
-	<div class ="container" style="margin-top:80px">
-		<div class="row">
-			<%@ include file="../common/aside.jspf" %>
-			<!-- ===============내가 작성할 부분 ================ -->
-			<div class="col-9">
-            <h3 class="mt-3"><strong>대기오염 정의 띄우는창</strong></h3>
-            <hr>
-            
-               <!-- 이미지 -->
-             <div style="position: relative;">
-                 <img src="../img/body.jpg" alt="이미지" id="myImage">
-               
-                 <!-- 모달 -->
-                 <div id="myModal" class="modal">
-                     <div class="modal-content">
-                         <span class="close">&times;</span>
-                         <p id="modalText">모달 내용</p>
-                     </div>
-                 </div>
-             </div>
-                           
-         </div>
-			<!-- ===============내가 작성할 부분 ================ -->
-		</div>
-	</div>
-	<%@ include file="../common/bottom.jspf" %>
+   <%@ include file="../common/top.jspf" %>
+   <div class="container" style="margin-top:80px">
+      <div class="row">
+         <%@ include file="../common/aside.jspf" %>
+         <!-- ================ 내가 작성할 부분 =================== -->
+         <div class="col-sm-9 mt-3 ms-1 position-relative">
+            <div>
+               <img id="myImage" src="/onnana/img/body.jpg" class="img-fluid" alt="Image" style="width:70%; z-index: 1;">
+               <!-- 버튼을 포함하는 컨테이너 추가 -->
+               <div class="button-container">
+                   <div class="row">
+                       <div class="col">
+                           <button onclick="changeImage('미세먼지질환.jpg')" class="btn btn-outline-dark">미세먼지</button>
+                       </div>
+                       <div class="col">
+                           <button onclick="changeImage('초미세먼지 질환.jpg')" class="btn btn-outline-dark">초미세먼지</button>
+                       </div>
+                       <div class="col">
+                           <button onclick="changeImage('일산화탄소.jpg')" class="btn btn-outline-dark">일산화탄소</button>
+                       </div>
+                       <div class="col">
+                           <button onclick="changeImage('이산화질소.jpg')" class="btn btn-outline-dark">이산화질소</button>
+                       </div>
+                       <div class="col">
+                           <button onclick="changeImage('아황산가스.jpg')" class="btn btn-outline-dark">아황산가스</button>
+                       </div>
+                       <div class="col">
+                           <button onclick="changeImage('대기오염물질(중금속).jpg')" class="btn btn-outline-dark">중금속</button>
+                       </div>
+                   </div>
+               </div>
+            </div>
+          </div>
+      </div>
+   </div>
+
+	 <script>
+	    function changeImage(imageName) {
+	        document.getElementById('myImage').src = '/onnana/img/' + imageName;
+	    }
+	</script>
+
+
+   <%@ include file="../common/bottom.jspf" %>
+
+   <!-- jQuery와 Bootstrap JS -->
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+   
 </body>
 </html>

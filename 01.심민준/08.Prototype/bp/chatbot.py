@@ -139,7 +139,7 @@ def get_air_quality():
     
     return drawKorea('미세먼지', main, 'Blues', save_filename='static/img/카토그램.png')
     
-
+@chatbot_bp.route('/')
     
 @chatbot_bp.route('/counsel_rest')
 def consel_rest():

@@ -1,34 +1,19 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%-- <body> 좌측에 있는 aside menu --%>
-<!-- 
-       <div class="col-3">
-                <img src="https://picsum.photos/256/256" class="rounded-circle" width="90%">
-                <div class="mt-2">
-                    오늘의 상태 메세지를 이 자리에 적습니다.
-                    <a href="#"><span class="badge bg-secondary">수정</span></a>
-                </div>
-                <div class="mt-5">
-                    <i class="fa fa-envelope me-1"></i>${empty sessEmail ? "Email" : sessEmail}<br>
-                    <i class="fa-brands fa-github me-1"></i><a href="#">Github ID</a><br>
-                    <i class="fa-brands fa-square-instagram me-1"></i><a href="#">Instargram ID</a><br>
-                    <i class="fa-solid fa-location-dot me-1"></i>서울시 영등포구
-                        <a href="#"><span class="badge bg-secondary">날씨</span></a><br>
-                    <button class="btn btn-sm btn-outline-primary mt-3">Edit Profile</button>
-                </div>
-            </div>
-             
-프로파일 데이터 -->
 
-<!-- 로그인 폼 불러오기 -->
+<script>
+</script>
 
 <div class="col-3 mt-5" style="margin-left:-30px">
 	<c:if test="${not empty sessUid}">
 	    <span class="navbar-text me-3">${sessUname}님의 그린 발자취.</span>
 	    
-	    <p>함께 참여한 사람들 카운트(일수): ${sessAllId}</p>
-	    <p>나의 캠페인 참여 일수 카운트 : ${sessId}</p>
-	    <p>나의 탄소감소량(총계?/월별리셋?)</p>
-	    <p>오늘의 탄소줄이는 꿀팁</p>
+	    <p>캠페인 함께 참여한 총 일수: ${sessAllId} 일</p>
+	    <p>User 총 탄소 감소량(총합): ${sessAllCarbonId} kg</p>
+	   	<p>나의 캠페인 참여 일수 카운트 : ${sessId} 일</p>
+	    <p>나의 탄소감소량(총계): ${sessCarbonId} kg</p>
+	    
+	    <p>탄소줄이는 팁</p>
 	    <p>회원 등급 표기</p>
 	    
 	</c:if>

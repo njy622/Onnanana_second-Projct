@@ -96,7 +96,6 @@
 		        }
 		    </script>
         
-		</div>
     </div> 
 </div>
 <%@ include file="../common/bottom.jspf" %>

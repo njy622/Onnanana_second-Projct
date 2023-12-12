@@ -5,18 +5,19 @@
 <html>
 <head>
     <%@ include file="../common/head.jspf" %>
-    <style>
+     <style>
         #cartogram {
             width: 100%;
             cursor: pointer;
+            position: relative; /* 이미지 위치 기준으로 버튼을 배치하기 위해 상대 위치 설정 */
         }
 
         .transparent-button {
             background-color: transparent;
-            position: sticky;
+            position: absolute;
             cursor: pointer;
-            width: 36px; /* 버튼의 너비 설정 */
-            height: 29px; /* 버튼의 높이 설정 */
+            border: none;
+            padding: 0;
         }
     </style>
 </head>
@@ -29,9 +30,9 @@
         <div class="col-9">
             <h3 class="mt-3"><strong>기상 예보 띄우는창</strong></h3>
             <hr>
-            <div class="container" id="map" style="height: 500px;">
-                <!-- 이미지 표시 -->
-                <img id="cartogram" src="/onnana/img/카토그램.png" alt="Example Image">
+            <div class="container" id="map" style="height: 500px; position: relative;">
+	            <!-- 이미지 표시 -->
+	    		<img id="cartogram" src="/onnana/img/카토그램.png" alt="Example Image">
                 <!-- 여러 개의 버튼 -->
                 <c:forEach var="index" begin="1" end="2">
                     <form action="${pageContext.request.contextPath}/buttonAction" method="post"
