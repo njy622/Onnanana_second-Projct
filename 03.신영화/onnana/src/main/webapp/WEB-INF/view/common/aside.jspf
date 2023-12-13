@@ -1,19 +1,38 @@
+<%@page import="com.human.onnana.utility.AsideUtil"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%-- <body> 좌측에 있는 aside menu --%>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Page Title</title>
+    <!-- jQuery 라이브러리 추가 -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-<script>
-</script>
+</head>
 
-<div class="col-3 mt-5" style="margin-left:-30px">
+<body>
+    <!-- <body> 좌측에 있는 aside menu -->
+    <div class="col-3 mt-5" style="margin-left:-30px">
+
 	<c:if test="${not empty sessUid}">
-	    <span class="navbar-text me-3">${sessUname}님의 그린 발자취.</span>
+	    <h5 class="navbar-text me-3" style="color:green;"><i class="fa-solid fa-tree"></i>${sessUname}님의 그린 발자취.</h5>
+	   	<p class="ms-4">그린캠페인 참여일 : <span id="asideSessId">${sessId}</span> 일</p>
+	    <p class="ms-4">나의 감소량: <span id="asideSessCarbonId">${sessCarbonId}</span> kg</p>
+	    <hr>
+	    <h5  style="color:green;"><i class="fa-solid fa-people-carry-box"></i> 그린캠페인에 함께한 우리들</h5>
+	    <p class="ms-4"> 그린캠페인 참여인원 : <span id="asideSessAllId">${sessAllId}</span> 명</p>
+	    <p class="ms-4"> 캠페인 배출 감소량 : <span id="asidesessAllCarbonId">${sessAllCarbonId}</span> kg</p>
 	    
-	    <p>캠페인 함께 참여한 총 일수: ${sessAllId} 일</p>
-	    <p>User 총 탄소 감소량(총합): ${sessAllCarbonId} kg</p>
-	   	<p>나의 캠페인 참여 일수 카운트 : ${sessId} 일</p>
-	    <p>나의 탄소감소량(총계): ${sessCarbonId} kg</p>
-	    
-	    <p>탄소줄이는 팁</p>
+		 <p>
+            <strong>TIP:</strong>
+            <%-- quotes.txt 파일이 static/data 디렉터리에 있다고 가정합니다 --%>
+             <% 
+            com.human.onnana.utility.AsideUtil asideUtil = new com.human.onnana.utility.AsideUtil();
+            String quote = asideUtil.getTodayQuote("/static/data/quotes.txt"); 
+            %>
+            <%= quote %>
+        </p>
 	    <p>회원 등급 표기</p>
 	    
 	</c:if>
@@ -51,7 +70,11 @@
 	</c:if>
 		<hr>
 		<p>현재 기상정보 표기</p>
+		<img src="/demo/img/addr.png" height="16" class="me-2">서울시 영등포구
+        <a href="#"><span class="badge bg-secondary">날씨</span></a><br>
 	    <p>팀원이름</p>
 		<img src="/onnana/img/nanana.gif" width="70%" >
 	
 </div>
+</body>
+</html>

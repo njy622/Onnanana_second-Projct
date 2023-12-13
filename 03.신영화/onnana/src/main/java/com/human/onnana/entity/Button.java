@@ -1,41 +1,29 @@
 package com.human.onnana.entity;
 
 public class Button {
-    private String coordinates;
+    private String coords;
     private String modalId;
-    private String buttonName;
 
-    public Button(String coordinates, String modalId, String buttonName) {
-        this.coordinates = coordinates;
+    // 생성자, 게터, 세터 등 필요한 메서드를 추가하세요
+
+    public Button(String coords, String modalId) {
+        this.coords = coords;
         this.modalId = modalId;
-        this.buttonName = buttonName;
     }
 
-	public String getCoordinates() {
-		return coordinates;
-	}
+    public String getCoords() {
+        return coords;
+    }
 
-	public void setCoordinates(String coordinates) {
-		this.coordinates = coordinates;
-	}
+    public void setCoords(String coords) {
+        this.coords = coords;
+    }
 
-	public String getModalId() {
-		return modalId;
-	}
+    public String getModalId() {
+        return modalId;
+    }
 
-	public void setModalId(String modalId) {
-		this.modalId = modalId;
-	}
-
-	public String getButtonName() {
-		return buttonName;
-	}
-
-	public void setButtonName(String buttonName) {
-		this.buttonName = buttonName;
-	}
-    
-    // Getter 및 Setter 메서드 생략 (필요에 따라 추가)
-    
-    
+    public void setModalId(String modalId) {
+        this.modalId = modalId;
+    }
 }
