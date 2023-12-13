@@ -8,14 +8,19 @@ import javax.servlet.http.HttpSession;
 import org.json.simple.JSONObject;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.human.onnana.entity.Button;
 import com.human.onnana.entity.User;
@@ -178,12 +183,28 @@ public class UserController {
 	}
 	
 
-	@GetMapping("/weather2")
+	@GetMapping("/weather")
 	public String weatherForm() {
+		
+		return "user/weather";
+	}
+	   
+	
+	@GetMapping("/weather2")
+	public String weatherForm2() {
 		
 		return "user/weather2";
 	}
-	   
+	
+	@Configuration
+	public class WebConfig implements WebMvcConfigurer {
+	    @Override
+	    public void addCorsMappings(CorsRegistry registry) {
+	        registry.addMapping("/get_button_data")
+	                .allowedOrigins("http://localhost:5000"); // 허용할 오리진을 정확하게 명시
+	    }
+	}
+	
 	
 	@GetMapping("/dust")
 	   public String dustForm(Model model) {

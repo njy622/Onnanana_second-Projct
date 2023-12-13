@@ -14,6 +14,33 @@
 	    <p>나의 탄소감소량(총계): ${sessCarbonId} kg</p>
 	    
 	    <p>탄소줄이는 팁</p>
+	    <div class="mt-2">
+                    오늘의 명언을 이 자리에 적습니다.
+                    <a href="#"><span class="badge bg-secondary">수정</span></a>
+        </div>
+        <!-- Ajax를 이용하여 명언을 불러오는 스크립트 -->
+		<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+		<script>
+		    $(document).ready(function() {
+		        // 명언을 가져오는 함수
+		        function getQuote() {
+		            $.ajax({
+		                type: "GET",
+		                url: "/getTodayQuote",  // 수정이 필요한 URL로 변경
+		                success: function(response) {
+		                    // 서버로부터 받은 명언을 표시할 곳에 삽입
+		                    $("#quote-container").text(response);
+		                },
+		                error: function(error) {
+		                    console.error("명언을 가져오는 동안 오류 발생:", error);
+		                }
+		            });
+		        }
+		
+		        // 페이지 로드 시 명언을 가져와서 표시
+		        getQuote();
+		    });
+		</script>
 	    <p>회원 등급 표기</p>
 	    
 	</c:if>
@@ -51,6 +78,9 @@
 	</c:if>
 		<hr>
 		<p>현재 기상정보 표기</p>
+		<img src="/demo/img/addr.png" height="16" class="me-2">서울시 영등포구
+                        <a href="#"><span class="badge bg-secondary">날씨</span></a><br>
+                    <button class="btn btn-sm btn-outline-primary mt-3">Edit Profile</button>
 	    <p>팀원이름</p>
 		<img src="/onnana/img/nanana.gif" width="70%" >
 	
