@@ -15,9 +15,11 @@
     <script src="/onnana/js/calendar.js?v=2"></script>
     <script src="/onnana/js/calcu.js"></script>
     
+    <!-- =================== 탄소계산기 스크립트 start =================== -->
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery 라이브러리 -->    
 	<script>
 
+   <!-- =================== 탄소계산기 end =================== -->
    
 // <!-- ========================= insert 함수 form태그없이 함수로 제출버튼 구현 ======================== -->
 	function insert(){
@@ -61,11 +63,11 @@
 		var smoke = $('#smoke2').val();
 		let sid = $('#sid2').val();
 
-		
+		console.log(place);
 	    $.ajax({
 	        type: "POST",
 	        url: "/onnana/schedule/update", // 스케줄 컨트롤러안의 함수 불러오는 경로
-	        data: {sid,startDate, startTime, title, place, smoke},
+	        data: {startDate, startTime, title, place, smoke, sid},
 	        success: function(response){
 	            // JSON 응답을 파싱
 	        	var data = JSON.parse(response); 
@@ -88,6 +90,7 @@
 	
 
 	</script>                       
+	             
 	                        
     
 </head>
@@ -219,16 +222,16 @@
 <!-- ========================================================= 탄소계산기 end ======================================================== -->
 	                        <tr>
 	                            <td colspan="2">
-                                <label for="smoke">금연(개비) 배출 감소량</label>
-                                  <form action="/action_page.php">
+                                <label for="smoke">흡연(개비) 배출량</label>
+                                  <!--  <form action="/action_page.php">  -->
 									    <select class="form-select form-control"  type="text" id="smoke" name="smoke" onchange="calculateAndShow()">
 										     <c:forEach var="i" begin="1" end="20">
 										      <option value="${i}" >${i}</option>
 									      		</c:forEach>
 									    </select>
 									    <p id="showResult"  style="display: none;"></p>
-									    <p>※ 산출방식: 14g/개</p>
-									  </form>
+									    <p>※ 산출방식: 14g/개 (※감소량에서 차감됩니다.)</p>
+									 <!--   </form> -->
 	                            </td>
 	                        </tr>
 	                         <tr>
@@ -304,7 +307,7 @@
 	                         <tr>
 	                            <td colspan="2">
                                 <label for="smoke">금연(개비) 배출 감소량</label>
-                                  <form action="/action_page.php">
+                                 <!--  <form action="/action_page.php">  -->
 									    <select class="form-select form-control"  type="text" id="smoke2" name="smoke" onchange="calculateAndShow2()">
 										     <c:forEach var="i" begin="1" end="20">
 										      <option value="${i}" >${i}</option>
@@ -312,7 +315,7 @@
 									    </select>
 									    <p id="showResult2"  style="display: none;"></p>
 									    <p>※ 산출방식: 14g/개</p>
-									  </form>
+									 <!--   </form> -->
 	                            </td>
 	                        </tr>
 	                         <tr>

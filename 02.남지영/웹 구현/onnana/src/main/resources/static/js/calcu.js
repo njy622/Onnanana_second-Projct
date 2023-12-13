@@ -16,10 +16,11 @@ function getLocation() {
 function showPosition(position) {
   hereLat = position.coords.longitude;
   hereLon = position.coords.latitude;
-  document.getElementById("demo").innerHTML = "현재 위치 위도:" + hereLat + ", 경도:" + hereLon;
+ // document.getElementById("demo").innerHTML = "현재 위치 위도:" + hereLat + ", 경도:" + hereLon;
 }
 
 getLocation();
+
 
 function searchAndCalculateDistance() {
   var address = document.getElementById('place').value;					
@@ -95,7 +96,7 @@ function readJs() {
     let smokeCarbon = parseInt($('#smoke').val()) * 14 / 1000;
 	
   	
-    let totalCarbon = carbonEmission + smokeCarbon;
+    let totalCarbon = carbonEmission - smokeCarbon;
     document.getElementById('showResult').innerText = totalCarbon.toFixed(2);
 
     // 입력값이 변경될 때마다 제목에 결과값 추가
@@ -189,7 +190,7 @@ function readJs2() {
     let smokeCarbon = parseInt($('#smoke2').val()) * 14 / 1000;
 	
   	
-    let totalCarbon = carbonEmission + smokeCarbon;
+    let totalCarbon = carbonEmission - smokeCarbon;
     document.getElementById('showResult2').innerText = totalCarbon.toFixed(2);
 
     // 입력값이 변경될 때마다 제목에 결과값 추가

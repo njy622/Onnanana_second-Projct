@@ -88,3 +88,13 @@ function addAnniversary() {
 function addAnnivList() {
 	$('#addAnnivListModal').modal('show');
 }
+
+
+
+// 숫자로만 된 문자열로 변환하는 함수
+function extractNumericValue(dateString) {
+    // 숫자만 남기고 제거하고 싶다면, 정규식을 사용해 숫자만 남기고 나머지는 제거합니다.
+    const numericString = dateString.replace(/\D/g, '');
+    return numericString;
+}
+
