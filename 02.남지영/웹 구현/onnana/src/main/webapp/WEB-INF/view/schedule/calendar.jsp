@@ -15,11 +15,9 @@
     <script src="/onnana/js/calendar.js?v=2"></script>
     <script src="/onnana/js/calcu.js"></script>
     
-    <!-- =================== 탄소계산기 스크립트 start =================== -->
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery 라이브러리 -->    
 	<script>
 
-   <!-- =================== 탄소계산기 end =================== -->
    
 // <!-- ========================= insert 함수 form태그없이 함수로 제출버튼 구현 ======================== -->
 	function insert(){
@@ -61,12 +59,13 @@
 		var title = $('#title2').val();				// update에 들어가는 데이터 id로 불러와서 변수에 넣음
 		var place = $('#place2').val();
 		var smoke = $('#smoke2').val();
-		
+		let sid = $('#sid2').val();
+
 		
 	    $.ajax({
 	        type: "POST",
 	        url: "/onnana/schedule/update", // 스케줄 컨트롤러안의 함수 불러오는 경로
-	        data: {startDate, startTime, title, place, smoke},
+	        data: {sid,startDate, startTime, title, place, smoke},
 	        success: function(response){
 	            // JSON 응답을 파싱
 	        	var data = JSON.parse(response); 
@@ -87,29 +86,6 @@
 	
 
 	
-//담배 갯수 선택한 값에 * 14g 연산 후  kg으로 출력하는 함수
-function calculateAndShow() {
-   document.getElementById('showResult').innerText = $('#smoke').val() * 14 / 1000;
-}
-//거리환산+ 담배환산 값을 제목에 넣는 함수
-function readJs() {
-	
-	//거리 환산해서 탄소배출량 출력
-    let carbonEmission = parseFloat((document.getElementById('result').innerText).match(/\d+/)[0]);
-
-  //담배 갯수 선택한 값에 * 14g 연산 후  kg으로 출력
-    let smokeCarbon = parseInt($('#smoke').val()) * 14 / 1000;
-	
-  	
-    let totalCarbon = carbonEmission + smokeCarbon;
-    document.getElementById('showResult').innerText = totalCarbon.toFixed(2);
-
-    // 입력값이 변경될 때마다 제목에 결과값 추가
-    let titleElement = document.getElementById('title');
-    let currentTitle = titleElement.value;
-    titleElement.value = currentTitle.split('-')[0].trim() + '- ' + totalCarbon.toFixed(2) + 'kg 감소';
-}
-
 
 	</script>                       
 	                        
@@ -235,7 +211,7 @@ function readJs() {
 	                                <label for="place">거리에 따른 배출 감소량 계산하기</label>
 	                                <div class="input-group outer-container" style="width: 100%;">
 									    <input type="text" style="height: auto;" class="form-control" id="place" name="place" placeholder=" 도착지 주소를 입력하면 현재위치부터 계산합니다">
-									    <button class="btn btn-success" style="width: 80px;" type="submit" onclick="searchAndCalculateDistance()">계산</button>
+									    <button class="btn btn-success" style="width: 80px;" onclick="searchAndCalculateDistance()">계산</button>
 									</div>
 		                              <p id="result"></p>  <!-- 검색된 위치의 좌표와 거리를 표시할 요소 -->
 	                            </td>
@@ -318,9 +294,9 @@ function readJs() {
 	                                <label for="place">거리에 따른 배출 감소량 계산하기</label>
 	                                <div class="input-group outer-container" style="width: 100%;">
 									    <input type="text" style="height: auto;" class="form-control" id="place2" name="place" placeholder=" 도착지 주소를 입력하면 현재위치부터 계산합니다">
-									    <button class="btn btn-success" style="width: 80px;" onclick="searchAndCalculateDistance()">계산</button>
+									    <button class="btn btn-success" style="width: 80px;" onclick="searchAndCalculateDistance2()">계산</button>
 									</div>
-		                              <p id="result"></p>  <!-- 검색된 위치의 좌표와 거리를 표시할 요소 -->
+		                              <p id="result2"></p>  <!-- 검색된 위치의 좌표와 거리를 표시할 요소 -->
 	                            </td>
 	                        </tr>  
 	                        
@@ -329,12 +305,12 @@ function readJs() {
 	                            <td colspan="2">
                                 <label for="smoke">금연(개비) 배출 감소량</label>
                                   <form action="/action_page.php">
-									    <select class="form-select form-control"  type="text" id="smoke2" name="smoke" onchange="calculateAndShow()">
+									    <select class="form-select form-control"  type="text" id="smoke2" name="smoke" onchange="calculateAndShow2()">
 										     <c:forEach var="i" begin="1" end="20">
 										      <option value="${i}" >${i}</option>
 									      		</c:forEach>
 									    </select>
-									    <p id="showResult"  style="display: none;"></p>
+									    <p id="showResult2"  style="display: none;"></p>
 									    <p>※ 산출방식: 14g/개</p>
 									  </form>
 	                            </td>
@@ -344,7 +320,7 @@ function readJs() {
 	                                <label for="title">합 산</label>
 	                                <div class="input-group outer-container" style="width: 100%;">
 									    <input class="form-control" type="text" id="title2" name="title" disabled>
-									    <button class="btn btn-success" style="width: 80px;"  onclick="readJs()"><i class="fa-solid fa-calculator"></i></button>
+									    <button class="btn btn-success" style="width: 80px;"  onclick="readJs2()"><i class="fa-solid fa-calculator"></i></button>
 									</div>
 	                            </td>
 	                        </tr>   

@@ -36,8 +36,6 @@ function schedClick(sid) {
 			let sched = JSON.parse(jsonSched);
 			$('#sid2').val(sched.sid);
 			$('#title2').val(sched.title);
-			if (sched.isImportant == 1)
-				$('#importance2').prop('checked', true);
 			$('#startDate2').val(sched.startTime.substring(0,10));
 			$('#startTime2').val(sched.startTime.substring(11,16));
 			$('#place2').val(sched.place);
