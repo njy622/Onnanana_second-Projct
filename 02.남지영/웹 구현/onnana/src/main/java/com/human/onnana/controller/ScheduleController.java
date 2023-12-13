@@ -208,6 +208,8 @@ public class ScheduleController {
 		return jSched.toString();
 	}
 	
+	
+	@ResponseBody
 	@PostMapping("/update")
 	public String update(HttpServletRequest req, HttpSession session) {
 		String startDate = req.getParameter("startDate");
@@ -216,14 +218,17 @@ public class ScheduleController {
 		String title = req.getParameter("title");
 		String place = req.getParameter("place");
 		String smoke = req.getParameter("smoke");
+		int sid = Integer.parseInt(req.getParameter("sid"));
 		String sdate = startDate.replace("-", "");
 		
 		String sessUid = (String) session.getAttribute("sessUid");
-		Schedule schedule = new Schedule(sessUid, sdate, startDateTime, title, place, smoke);
-		schedService.insert(schedule);
+		Schedule schedule = new Schedule(sid, sessUid, sdate, startDateTime, title, place, smoke);
+		System.out.println(schedule);
+		schedService.update(schedule);
 		
 ///////////////// 캘린더 생성 되었을때 , DB베이스와 웹서버 연동 실시간으로 되도록 설정///////////////////////////
-
+		
+		
 		
 		// 전체 유저의 참여인원을 카운트 값 불러오는것
 		int count = schedService.getCount();
@@ -258,7 +263,6 @@ public class ScheduleController {
 
 		return jsonResponse;
 		
-///////////////////////////////////////////////////////////////////////////////////////////////////////		
 	}
 	@GetMapping("/delete/{sid}")
 	public String delete(@PathVariable int sid) {

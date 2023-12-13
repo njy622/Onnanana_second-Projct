@@ -24,6 +24,14 @@
             border: 1px solid #ccc;
             background-color: #f4f4f4;
         }
+		#result1 {
+			position: absolute;
+            top: 70px;
+            right: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f4f4f4;
+        }
         
         .weather-button {
             position: absolute;
@@ -69,6 +77,7 @@
 				<!-- 나머지 버튼들도 동일한 방식으로 클래스와 데이터 속성을 설정합니다. -->
 				
 				<div id="result"></div>
+				<div id="result1"></div>
 				
 				<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 				<script>
@@ -108,7 +117,7 @@
 				            success: function(response) {
 				                // 받은 JSON 데이터의 특정 속성을 선택하여 출력
 				                var resultText = JSON.stringify(response);
-				                $("#result").text(resultText);
+				                $("#result1").text(resultText);
 				            },
 				            error: function(error) {
 				                console.error("에러:", error);
