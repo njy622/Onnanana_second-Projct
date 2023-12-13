@@ -24,6 +24,14 @@
             border: 1px solid #ccc;
             background-color: #f4f4f4;
         }
+		#result1 {
+			position: absolute;
+            top: 70px;
+            right: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f4f4f4;
+        }
         
         .weather-button {
             position: absolute;
@@ -69,6 +77,7 @@
 				<!-- 나머지 버튼들도 동일한 방식으로 클래스와 데이터 속성을 설정합니다. -->
 				
 				<div id="result"></div>
+				<div id="result1"></div>
 				
 				<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 				<script>
@@ -93,6 +102,24 @@
 				                // 받은 JSON 데이터의 특정 속성을 선택하여 출력
 				                var resultText = "기온: " + response['기온'] + ", 습도: " + response['습도'] +  ", 강수량: " + response['1시간 강수량'] + ", 풍향: " + response['풍향'] + ", 풍속: " + response['풍속'];
 				                $("#result").text(resultText);
+				            
+				             // 습도를 나타내는 물방울 이미지를 생성
+				                var humidityElement = $('<div class="humidity-container">');
+				                humidityElement.css({
+				                    'background-image': 'url(' + dropImage + ')',
+				                    'width': '30px',
+				                    'height': '30px',
+				                    'display': 'inline-block',
+				                    'vertical-align': 'middle',
+				                    'margin-left': '10px',
+				                });
+
+				                // 습도 값을 나타내는 엘리먼트를 생성
+				                var humidityValueElement = $('<span class="humidity-value">');
+				                humidityValueElement.text(response['습도'] + '%');
+
+				                // 생성한 엘리먼트들을 #result 엘리먼트에 추가
+				                $("#result").append(humidityElement).append(humidityValueElement);
 				            },
 				            error: function(error) {
 				                console.error("에러:", error);
@@ -108,7 +135,7 @@
 				            success: function(response) {
 				                // 받은 JSON 데이터의 특정 속성을 선택하여 출력
 				                var resultText = JSON.stringify(response);
-				                $("#result").text(resultText);
+				                $("#result1").text(resultText);
 				            },
 				            error: function(error) {
 				                console.error("에러:", error);
