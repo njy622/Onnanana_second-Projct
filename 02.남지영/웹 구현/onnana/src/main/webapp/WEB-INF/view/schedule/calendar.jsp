@@ -15,11 +15,9 @@
     <script src="/onnana/js/calendar.js?v=2"></script>
     <script src="/onnana/js/calcu.js"></script>
     
-    <!-- =================== 탄소계산기 스크립트 start =================== -->
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery 라이브러리 -->    
 	<script>
 
-   <!-- =================== 탄소계산기 end =================== -->
    
 // <!-- ========================= insert 함수 form태그없이 함수로 제출버튼 구현 ======================== -->
 	function insert(){
@@ -67,7 +65,7 @@
 	    $.ajax({
 	        type: "POST",
 	        url: "/onnana/schedule/update", // 스케줄 컨트롤러안의 함수 불러오는 경로
-	        data: {startDate, startTime, title, place, smoke, sid},
+	        data: {sid,startDate, startTime, title, place, smoke},
 	        success: function(response){
 	            // JSON 응답을 파싱
 	        	var data = JSON.parse(response); 
