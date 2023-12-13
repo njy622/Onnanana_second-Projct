@@ -191,29 +191,51 @@ def get_weather(nx, ny):
 
     return results
 
-def get_air_quality(station_name):
+def get_air_quality(station_Name):
+    
+    # 측정소별 실시간 측정정보 조회 (매시 15분 내외 업데이트)
+    base_url = "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty"
     with open('static/keys/에어코리아api2.txt') as file:
-        air_service_key = file.read()
-    air_base_url = "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty"
-
+        service_key = file.read()       # 발급받은 에어코리아 API 키 입력
+        
+    # 웹 요청시 같이 전달될 데이터 = 요청 메시지
     params = {
-        'serviceKey': air_service_key,
-        'returnType': 'JSON',
-        'numOfRows': 24,
-        'pageNo': 1,
-        'stationName': station_name,
-        'dataTerm': 'DAILY',
-        'ver': "1.4"
+        'serviceKey' : service_key,
+        'returnType' : 'JSON',
+        'numOfRows' : 24,
+        'pageNo' : 1,
+        'stationName' : station_Name, # 시도 이름
+        'dataTerm' : 'DAILY',
+        'ver' : "1.4" # 오퍼레이션 버전
     }
 
-    res = requests.get(url=air_base_url, params=params)
+    res = requests.get(url=base_url , params=params)
 
-    data = res.json()
-    data = data['response']['body']['items']
+    # 응답 데이터 정리
+    
+    response = res.json()['response']['body']
+    
+    # 데이터가 존재하면 처리
+    if 'items' in response and response['items']:
+        data = response['items']
+        
+        # 데이터를 날짜와 시간에 대한 기준으로 정렬
+        sorted_data = sorted(data, key=lambda x: x['dataTime'], reverse=True)
 
-    sorted_data = sorted(data, key=lambda x: x['dataTime'], reverse=True)
-    latest_data = sorted_data[0]
+        # 최신 데이터 선택
+        latest_data = None
 
+        for data in sorted_data:
+            pm10_value = data.get('pm10Value')
+            if pm10_value and pm10_value != '-':
+                latest_data = data
+                break
+
+        # 최신 데이터가 없으면 첫 번째 데이터 선택
+        if not latest_data and sorted_data:
+            latest_data = sorted_data[0]
+    
+    # 최종 데이터 생성
     results = {
         '날짜': latest_data['dataTime'],
         '이름': latest_data['stationName'],
@@ -226,6 +248,7 @@ def get_air_quality(station_name):
         '초미세먼지(PM2.5) 농도': latest_data['pm25Value'] + "ug/m³"
     }
 
+    # pprint(results)
     return results
 
 
@@ -244,6 +267,18 @@ def get_weather_route():
     else:
         return jsonify({'error': 'Invalid request parameters'})
 
+@app.route('/get_air_quality' , methods=['GET'])
+def get_air_quality_route():
+    
+    name = request.args.get('name')
+    
+    if name is not None:
+        air_result = get_air_quality(name)
+        
+        return jsonify(air_result)
+    else:
+        return jsonify({'error': 'Invalid request parameters'})
+    
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
