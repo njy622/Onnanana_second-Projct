@@ -4,23 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import org.json.simple.JSONObject;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
 
 import com.human.onnana.entity.Button;
 import com.human.onnana.entity.User;
@@ -174,7 +174,9 @@ public class UserController {
 		return "common/alertMsg";
 	}
 	
-
+	
+	
+	
 	
 	@GetMapping("/analysis")
 	public String analysisForm() {
@@ -188,33 +190,51 @@ public class UserController {
 		
 		return "user/weather";
 	}
-	   
 	
-	@GetMapping("/weather2")
-	public String weatherForm2() {
-		
-		return "user/weather2";
-	}
+	@PostMapping("/getAirQuality")
+    public String getAirQuality(@RequestBody String stationName) {
+        StringBuilder result = new StringBuilder();
+
+        try {
+            String apiUrl = "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty";
+            String serviceKey = "nBg+Hwr/AcIl8mQ6pviMUSuy9Te5CDEJKfw5CIJn6tTDevZ5u3SL7vCng8+lzQcmLlJ7o6Eqy91xpF+4UMQzGA=="; // 여기에 서비스 키 입력
+
+            String dataType = "json";
+            int numOfRows = 1;
+            int pageNo = 1;
+            String dataTerm = "DAILY";
+            String version = "1.4";
+
+            String urlString = String.format("%s?serviceKey=%s&returnType=%s&numOfRows=%d&pageNo=%d&stationName=%s&dataTerm=%s&ver=%s",
+                    apiUrl, serviceKey, dataType, numOfRows, pageNo, stationName, dataTerm, version);
+
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+
+            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line;
+            while ((line = rd.readLine()) != null) {
+                result.append(line);
+            }
+            rd.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result.toString();
+    }
 	
-	@Configuration
-	public class WebConfig implements WebMvcConfigurer {
-	    @Override
-	    public void addCorsMappings(CorsRegistry registry) {
-	        registry.addMapping("/get_button_data")
-	                .allowedOrigins("http://localhost:5000"); // 허용할 오리진을 정확하게 명시
-	    }
-	}
 	
-	
-	@GetMapping("/dust")
+	   @GetMapping("/dust")
 	   public String dustForm(Model model) {
 	      List<Button> buttons = new ArrayList<>();
-	        buttons.add(new Button("376,15,458,58", "modal1", "CustomButtonName1")); // 좌표 및 모달 ID를 설정
-	        buttons.add(new Button("500,60,700,80", "modal2", "다리")); // 다른 버튼 추가
+	        buttons.add(new Button("376,15,458,58", "modal1")); // 좌표 및 모달 ID를 설정
+	        buttons.add(new Button("50,60,70,80", "modal2")); // 다른 버튼 추가
 
 	        model.addAttribute("buttons", buttons);
 
 	      return "user/dust";
 	   }
 
-	}
+}

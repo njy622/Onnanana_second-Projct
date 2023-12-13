@@ -15,7 +15,7 @@ import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.IOException;
+
 import javax.imageio.ImageIO;
 import javax.net.ssl.HttpsURLConnection;
 
@@ -25,9 +25,6 @@ import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-
-
-
 @Service
 public class AsideUtil {
 	@Value("${roadAddrKey}") private String roadAddrKey;
@@ -36,16 +33,20 @@ public class AsideUtil {
 
 	
 	// ★★ 오늘의 명언 ★★
-    public static String getTodayQuote(String filename) {
-        String result = null;
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(filename));
-            int index = (int) Math.floor(Math.random() * 100);
+	public String getTodayQuote(String filename) {
+		String result = null;
+		try {
+            // 파일 경로를 상대 경로로 설정
+            String path = "src/main/resources/static/data/quotes.txt";
+            File file = new File(path);
+
+            BufferedReader br = new BufferedReader(new FileReader(file), 1024);
+            int index = (int) Math.floor(Math.random() * 30);
             for (int i = 0; i <= index; i++) {
                 result = br.readLine();
             }
             br.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return result;

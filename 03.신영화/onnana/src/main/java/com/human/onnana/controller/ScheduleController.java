@@ -3,7 +3,9 @@ package com.human.onnana.controller;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.google.gson.Gson;
 import com.human.onnana.entity.Anniversary;
 import com.human.onnana.entity.SchDay;
 import com.human.onnana.entity.Schedule;
@@ -137,6 +140,7 @@ public class ScheduleController {
 	@PostMapping("/insert")
 	public String insert(HttpServletRequest req, HttpSession session, String uid) {
 		
+		
 		String startDate = req.getParameter("startDate");
 		String startTime = req.getParameter("startTime");
 		LocalDateTime startDateTime = LocalDateTime.parse(startDate + "T" + startTime + ":00");
@@ -148,27 +152,47 @@ public class ScheduleController {
 		String sessUid = (String) session.getAttribute("sessUid");
 		Schedule schedule = new Schedule(sessUid, sdate, startDateTime, title, place, smoke);
 		schedService.insert(schedule);
-		return "redirect:/schedule/calendar";
+		
+///////////////// 캘린더 생성 되었을때 , DB베이스와 웹서버 연동 실시간으로 되도록 설정///////////////////////////
+
+		
+		// 전체 유저의 참여인원을 카운트 값 불러오는것
+		int count = schedService.getCount();
+		// 전체 유저의 참여인원을 카운트 세션값을 다시 불러오는것
+		session.setAttribute("sessAllId", count);
+		// 탄소배출감소량 전체 유저 카운트 값 불러오는것
+		Double countCarbon = schedService.getCarbonCount();
+		// 탄소배출감소량 전체 유저 카운트 세션값을 다시 불러오는것
+		session.setAttribute("sessAllCarbonId", countCarbon);
+		
+		
+		// 유저의 참여 일수를 카운트 값 불러오는것
+		int countUser = schedService.getUserCount(sessUid);
+		// 유저의 참여 일수를 카운트 세션값을 다시 불러오는것
+		session.setAttribute("sessId", countUser);
+		
+		// 탄소배출감소량 한 유저 카운트 값 불러오는것
+		Double countUserCarbon =  schedService.getCarbonUserCount(sessUid);
+		// 탄소배출감소량 한 유저 카운트 세션값을 다시 불러오는것
+		session.setAttribute("sessCarbonId", countUserCarbon);
+		
+		
+		// count 외에도 여러 변수를 포함한 JSON 객체를 생성합니다.
+		Map<String, Object> response = new HashMap<>();
+		response.put("count", count);
+		response.put("countCarbon", countCarbon);
+		response.put("countUser", countUser);
+		response.put("countUserCarbon", countUserCarbon);
+
+		// Map을 JSON 문자열로 변환합니다.
+		String jsonResponse = new Gson().toJson(response);
+
+		return jsonResponse;
+		
+///////////////////////////////////////////////////////////////////////////////////////////////////////		
 	}
 	
-	@ResponseBody
-	@PostMapping("/count")
-	public String count(HttpSession session, String uid) {
-		
-		// 게시판 글 전체 카운트
-		session.setAttribute("sessAllId", schedService.getCount());
-		// 게시판 글 유저 카운트
-		session.setAttribute("sessId", schedService.getUserCount(uid));
-					
-		// 탄소배출감소량 전체 유저 카운트
-		session.setAttribute("sessAllCarbonId", schedService.getCarbonCount());
-		// 탄소배출감소량 한 유저 카운트
-		session.setAttribute("sessCarbonId", schedService.getCarbonUserCount(uid));
-		
-		return "";
-	}
-
-
+	
 
 	// Ajax로 detail data를 전달함
 	@ResponseBody
@@ -184,8 +208,9 @@ public class ScheduleController {
 		return jSched.toString();
 	}
 	
+	@ResponseBody
 	@PostMapping("/update")
-	public String update(HttpServletRequest req, HttpSession session) {
+	public String update(@PathVariable int sid, HttpServletRequest req, HttpSession session) {
 		String startDate = req.getParameter("startDate");
 		String startTime = req.getParameter("startTime");
 		LocalDateTime startDateTime = LocalDateTime.parse(startDate + "T" + startTime + ":00");
@@ -195,18 +220,100 @@ public class ScheduleController {
 		String sdate = startDate.replace("-", "");
 		
 		String sessUid = (String) session.getAttribute("sessUid");
-		System.out.println(title);
-		System.out.println(place);
-		System.out.println(smoke);
 		Schedule schedule = new Schedule(sessUid, sdate, startDateTime, title, place, smoke);
 		schedService.update(schedule);
-		return "redirect:/schedule/calendar";
+		
+///////////////// 캘린더 생성 되었을때 , DB베이스와 웹서버 연동 실시간으로 되도록 설정///////////////////////////
+		
+		
+		Schedule sched = schedService.getSchedule(sid);
+		
+		// 전체 유저의 참여인원을 카운트 값 불러오는것
+		int count = schedService.getCount();
+		// 전체 유저의 참여인원을 카운트 세션값을 다시 불러오는것
+		session.setAttribute("sessAllId", count);
+		// 탄소배출감소량 전체 유저 카운트 값 불러오는것
+		Double countCarbon = schedService.getCarbonCount();
+		// 탄소배출감소량 전체 유저 카운트 세션값을 다시 불러오는것
+		session.setAttribute("sessAllCarbonId", countCarbon);
+		
+		
+		// 유저의 참여 일수를 카운트 값 불러오는것
+		int countUser = schedService.getUserCount(sessUid);
+		// 유저의 참여 일수를 카운트 세션값을 다시 불러오는것
+		session.setAttribute("sessId", countUser);
+		
+		// 탄소배출감소량 한 유저 카운트 값 불러오는것
+		Double countUserCarbon =  schedService.getCarbonUserCount(sessUid);
+		// 탄소배출감소량 한 유저 카운트 세션값을 다시 불러오는것
+		session.setAttribute("sessCarbonId", countUserCarbon);
+		
+		
+		// count 외에도 여러 변수를 포함한 JSON 객체를 생성합니다.
+		Map<String, Object> response = new HashMap<>();
+		response.put("sched", sched);
+		response.put("count", count);
+		response.put("countCarbon", countCarbon);
+		response.put("countUser", countUser);
+		response.put("countUserCarbon", countUserCarbon);
+
+		// Map을 JSON 문자열로 변환합니다.
+		String jsonResponse = new Gson().toJson(response);
+
+		return jsonResponse;
+		
 	}
-	
 	@GetMapping("/delete/{sid}")
 	public String delete(@PathVariable int sid) {
 		schedService.delete(sid);
 		return "redirect:/schedule/calendar";
+	}
+	
+	@PostMapping("/delete/{sid}")
+	@ResponseBody
+	public String delete(@PathVariable int sid, HttpSession session) {
+		
+		schedService.delete(sid);
+		
+		
+///////////////// 캘린더 생성 되었을때 , DB베이스와 웹서버 연동 실시간으로 되도록 설정///////////////////////////
+		String sessUid = (String) session.getAttribute("sessUid");
+
+
+		// 전체 유저의 참여인원을 카운트 값 불러오는것
+		int count = schedService.getCount();
+		// 전체 유저의 참여인원을 카운트 세션값을 다시 불러오는것
+		session.setAttribute("sessAllId", count);
+		// 탄소배출감소량 전체 유저 카운트 값 불러오는것
+		Double countCarbon = schedService.getCarbonCount();
+		// 탄소배출감소량 전체 유저 카운트 세션값을 다시 불러오는것
+		session.setAttribute("sessAllCarbonId", countCarbon);
+		
+		
+		// 유저의 참여 일수를 카운트 값 불러오는것
+		int countUser = schedService.getUserCount(sessUid);
+		// 유저의 참여 일수를 카운트 세션값을 다시 불러오는것
+		session.setAttribute("sessId", countUser);
+		
+		// 탄소배출감소량 한 유저 카운트 값 불러오는것
+		Double countUserCarbon =  schedService.getCarbonUserCount(sessUid);
+		// 탄소배출감소량 한 유저 카운트 세션값을 다시 불러오는것
+		session.setAttribute("sessCarbonId", countUserCarbon);
+		
+		
+		// count 외에도 여러 변수를 포함한 JSON 객체를 생성합니다.
+		Map<String, Object> response = new HashMap<>();
+		response.put("count", count);
+		response.put("countCarbon", countCarbon);
+		response.put("countUser", countUser);
+		response.put("countUserCarbon", countUserCarbon);
+		
+		// Map을 JSON 문자열로 변환합니다.
+		String jsonResponse = new Gson().toJson(response);
+		
+		return jsonResponse;
+
+		//return "redirect:/schedule/calendar";
 	}
 	
 	@PostMapping("/insertAnniv")

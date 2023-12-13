@@ -5,10 +5,10 @@
 </style>
 <%-- <body> 상단에 있는 navigation bar --%>
 
-   <nav class="navbar navbar-expand-sm bg-white navbar-light fixed-top text-black" style="margin-left: 8%">
+   <nav class="navbar navbar-expand-sm bg-white navbar-light fixed-top text-black"  width="100%">
         <div class="container-fluid">
             <ul class="navbar-nav">
-                <a  style="margin-right: 40px" class="navbar-brand" href="/onnana/home"><img src="/onnana/img/onna.png" height="70"></a>
+                <a  style="margin-right: 100px; margin-left: 120px" class="navbar-brand" href="/onnana/home"><img src="/onnana/img/onna.png" height="70"></a>
                 
                 <li class="nav-item ms-5">
                     <a class="nav-link ${menu eq 'board' ? 'active' : ''}" href="/onnana/user/dust"><i class="fa-solid fa-question"></i> 대기오염</a>
