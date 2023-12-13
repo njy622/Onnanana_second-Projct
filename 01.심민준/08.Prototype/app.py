@@ -240,12 +240,12 @@ def get_air_quality(station_Name):
         '날짜': latest_data['dataTime'],
         '이름': latest_data['stationName'],
         '측정망 정보': latest_data['mangName'],
-        '아황산가스 농도': latest_data['so2Value'] + "ppm",
-        '일산화탄소 농도': latest_data['coValue'] + "ppm",
-        '오존 농도': latest_data['o3Value'] + "ppm",
-        '이산화질소 농도': latest_data['no2Value'] + "ppm",
-        '미세먼지(PM10) 농도': latest_data['pm10Value'] + "ug/m³",
-        '초미세먼지(PM2.5) 농도': latest_data['pm25Value'] + "ug/m³"
+        '아황산가스 농도': latest_data['so2Value'],
+        '일산화탄소 농도': latest_data['coValue'],
+        '오존 농도': latest_data['o3Value'],
+        '이산화질소 농도': latest_data['no2Value'],
+        '미세먼지(PM10) 농도': latest_data['pm10Value'],
+        '초미세먼지(PM2.5) 농도': latest_data['pm25Value']
     }
 
     # pprint(results)
