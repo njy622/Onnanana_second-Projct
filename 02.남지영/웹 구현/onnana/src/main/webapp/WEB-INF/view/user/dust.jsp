@@ -18,6 +18,7 @@
            z-index: 2;
            display: flex;
            flex-direction: column;
+           margin-left: -100px; 
        }
 
        /* 간격을 조절하는 CSS 스타일 추가 */
@@ -25,10 +26,6 @@
            margin-bottom: 5px; /* 원하는 간격에 맞게 조절하세요 */
        }
 
-       .image-container {
-           position: relative;
-           margin-left: 200px; /* 이미지와 버튼 간의 여백 조절 */
-       }
               
         #image-description {
            position: relative;
@@ -41,17 +38,17 @@
 </head>
 <body>
    <%@ include file="../common/top.jspf" %>
-   <div class="container" style="margin-top: 80px; margin-bottom: 100px;">
+   <div class="container" style="margin-top: 150px; margin-bottom: 100px;">
    
       <div class="row">
-         <%@ include file="../common/aside.jspf" %>
+         
          <!-- ================ 내가 작성할 부분 =================== -->
-         <div class="col-sm-9 mt-3 ms-1 position-relative">
+         <div class="col-6 mt-3">
             <div class="image-container">
                <!-- 이미지를 표시하는 부분 -->
-               <img id="myImage" src="/onnana/img/body.jpg" class="img-fluid" alt="Image" style="width:80%;">
+               <img id="myImage" src="/onnana/img/body.jpg" class="img-fluid" alt="Image" style="width:100%;">
            </div>
-           <div id="image-description"></div>
+           
            <div class="button-container">
                <button onclick="changeImage('body.jpg', '')" class="btn btn-outline-dark">초기화면</button>
                <button onclick="changeImage('미세먼지질환.jpg', '미세먼지 설명')" class="btn btn-outline-dark">미세먼지</button>
@@ -62,6 +59,9 @@
                <button onclick="changeImage('대기오염물질(중금속).jpg', '중금속 설명')" class="btn btn-outline-dark">중금속</button>
            </div>
          </div>
+	    <div class="col-6 mt-3">
+	            <div class="image-description" id="image-description"></div>
+	    </div>
       </div>
    </div>
 
