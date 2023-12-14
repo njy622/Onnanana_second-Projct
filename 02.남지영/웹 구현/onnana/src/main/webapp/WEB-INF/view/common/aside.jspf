@@ -10,72 +10,105 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 </head>
+<style>
+.transparent-btn {
+    position: relative; /* 버튼 내부 요소인 이미지를 상대적으로 위치시킵니다. */
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    width: 180px; /* 이미지의 너비를 조정하세요 */
+}
+
+.transparent-btn img {
+    position: absolute; /* 이미지를 버튼 내에서 절대적으로 위치시킵니다. */
+    top: -20px; /* 버튼의 상단에 배치합니다. */
+    left: -20px; /* 버튼의 좌측에 배치합니다. */
+    width: 180px; /* 이미지의 너비를 조정하세요 */
+    height: auto; /* 이미지의 높이를 조정하세요 */
+}
+
+</style>
 
 <body>
-    <!-- <body> 좌측에 있는 aside menu -->
-    <div class="col-3 mt-5" style="margin-left:-30px">
+<!-- 햄버거 아이콘 및 오프캔버스 메뉴 버튼 -->
+ <button class="transparent-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBackdrop"
+        aria-controls="offcanvasWithBackdrop" style="position: fixed; top: 0; left: 0; z-index: 999;">
+        <img src="/onnana/img/loading.gif" alt="Placeholder Image">
+        <p style="margin-top:90px; margin-left:-50px">User Menu</p>
+ </button>
 
-	<c:if test="${not empty sessUid}">
-	    <h5 class="navbar-text me-3" style="color:green;"><i class="fa-solid fa-tree"></i>${sessUname}님의 그린 발자취.</h5>
-	   	<p class="ms-4">그린캠페인 참여일 : <span id="asideSessId">${sessId}</span> 일</p>
-	    <p class="ms-4">나의 감소량: <span id="asideSessCarbonId">${sessCarbonId}</span> kg</p>
-	    <hr>
-	    <h5  style="color:green;"><i class="fa-solid fa-people-carry-box"></i> 그린캠페인에 함께한 우리들</h5>
-	    <p class="ms-4"> 그린캠페인 참여인원 : <span id="asideSessAllId">${sessAllId}</span> 명</p>
-	    <p class="ms-4"> 캠페인 배출 감소량 : <span id="asidesessAllCarbonId">${sessAllCarbonId}</span> kg</p>
-	    
-		 
-            <strong style="color:green;"><i class="fa-regular fa-lightbulb"></i> TIP:</strong>
-            <%-- quotes.txt 파일이 static/data 디렉터리에 있다고 가정합니다 --%>
-        <p>
-             <% 
-            com.human.onnana.utility.AsideUtil asideUtil = new com.human.onnana.utility.AsideUtil();
-            String quote = asideUtil.getTodayQuote("/static/data/quotes.txt"); 
-            %>
-            <%= quote %>
-        </p>
-	    <p>회원 등급 표기</p>
-	    
-	</c:if>
-	<c:if test="${empty sessUid}">
-	    <div class="container" style="width: 220px;">
-   		<div class="row">
-			<h4>
-				<strong>로그인</strong>
-				<span style="font-size:0.6em;">
-					<a href="/onnana/user/register" class="ms-5">
-						<i class="fa-solid fa-user-plus"></i> 회원가입</a>
-				</span>
-			</h4>
-			<hr>
-			<form action="/onnana/user/login" method="post">
-				<table class=table table-borderless">
-					<tr>
-						<td style="width: 35%"><label class="col-form-label"> ID</label></td>
-						<td style="width: 65%"><input type="text" name="uid" class="form-control"></td>
-					</tr>
-					<tr>
-						<td><label class="col-form-label"> PW</label></td>
-						<td><input type="password" name="pwd" class="form-control"></td>
-					</tr>
-					<tr>
-						<td colspan="2">
-							<input type="submit" class="btn btn-primary" value="로그인">
-							<input type="reset" class="btn btn-secondary" value="취소">
-						</td>
-					</tr>
-				</table>
-			</form>
-   		</div>
-   </div>
-	</c:if>
-		<hr>
-		<p>현재 기상정보 표기</p>
-		<i class="fa-solid fa-location-dot"></i> 서울시 영등포구
-        <a href="#"><span class="badge bg-secondary">날씨</span></a><br>
-	    <p>팀원이름</p>
-		<img src="/onnana/img/nanana.gif" width="70%" >
+<!-- Offcanvas 영역 -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasWithBackdrop" aria-labelledby="offcanvasWithBackdropLabel">
+    <div class="offcanvas-header" style="text-align:center;">
+        <img src="/onnana/img/onna.png" height="70">
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+    	<!-- <body> 좌측에 있는 aside menu -->
 	
-</div>
+		<c:if test="${not empty sessUid}">
+		    <h5 class="navbar-text me-3" style="color:green;"><i class="fa-solid fa-tree"></i>&nbsp;${sessUname}님의 그린 발자취.</h5>
+		   	<p class="ms-4">그린캠페인 참여일 : <span id="asideSessId">${sessId}</span> 일</p>
+		    <p class="ms-4">나의 감소량: <span id="asideSessCarbonId">${sessCarbonId}</span> kg</p>
+		    <hr>
+		    <h5  style="color:green;"><i class="fa-solid fa-people-carry-box"></i> 그린캠페인에 함께한 우리들</h5>
+		    <p class="ms-4"> 그린캠페인 참여인원 : <span id="asideSessAllId">${sessAllId}</span> 명</p>
+		    <p class="ms-4"> 캠페인 배출 감소량 : <span id="asidesessAllCarbonId">${sessAllCarbonId}</span> kg</p>
+		    
+			 
+	            <strong style="color:green;"><i class="fa-regular fa-lightbulb"></i> TIP</strong>
+	            <%-- quotes.txt 파일이 static/data 디렉터리에 있다고 가정합니다 --%>
+	        <p class="ms-4">
+	             <% 
+	            com.human.onnana.utility.AsideUtil asideUtil = new com.human.onnana.utility.AsideUtil();
+	            String quote = asideUtil.getTodayQuote("/static/data/quotes.txt"); 
+	            %>
+	            <%= quote %>
+	        </p>
+		    <p>회원 등급 표기</p>
+		    
+		</c:if>
+		<c:if test="${empty sessUid}">
+		    <div class="container" style="width: 100%;">
+	   		<div class="row">
+				<h4>
+					<strong>로그인</strong>
+					<span style="font-size:0.6em;">
+						<a href="/onnana/user/register" class="ms-5">
+							<i class="fa-solid fa-user-plus"></i> 회원가입</a>
+					</span>
+				</h4>
+				<hr>
+				<form action="/onnana/user/login" method="post">
+					<table class=table table-borderless">
+						<tr>
+							<td style="width: 35%"><label class="col-form-label"> ID</label></td>
+							<td style="width: 65%"><input type="text" name="uid" class="form-control"></td>
+						</tr>
+						<tr>
+							<td><label class="col-form-label"> PW</label></td>
+							<td><input type="password" name="pwd" class="form-control"></td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<input type="submit" class="btn btn-primary" value="로그인">
+								<input type="reset" class="btn btn-secondary" value="취소">
+							</td>
+						</tr>
+					</table>
+				</form>
+	   		</div>
+	   </div>
+		</c:if>
+			<hr>
+			<p>현재 기상정보 표기</p>
+			<i class="fa-solid fa-location-dot"></i> 서울시 영등포구
+	        <a href="#"><span class="badge bg-secondary">날씨</span></a><br>
+		    <p>팀원이름</p>
+			<img src="/onnana/img/nanana.gif" width="70%" >
+		
+	</div>
+ </div>
+    
 </body>
 </html>
