@@ -7,10 +7,13 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from datetime import datetime, timedelta
 from selenium.webdriver.common.by import By
+from flask_cors import CORS
+
 
 
 # Flask 웹 애플리케이션을 생성합니다.
 app = Flask(__name__)
+CORS(app)  # 모든 경로에 대해 CORS 허용
 
 def crawl_and_save_to_csv():
     data1 = []
@@ -75,6 +78,7 @@ def crawl_and_save_to_csv():
 
 # Flask 애플리케이션이 시작될 때 바로 크롤링을 실행합니다.
 crawl_and_save_to_csv()
+
 
 # 웹 브라우저에서 '/test' 경로로 접속했을 때 실행되는 함수를 정의합니다.
 @app.route('/test')
