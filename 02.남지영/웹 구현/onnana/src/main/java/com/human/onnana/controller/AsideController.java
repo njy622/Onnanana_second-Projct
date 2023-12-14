@@ -16,20 +16,20 @@ import com.human.onnana.utility.AsideUtil;
 @Controller
 @RequestMapping("/aside")
 public class AsideController {
+	
 	@Autowired private AsideUtil asideUtil;
 
-	
 	// ★★ 명언 ★★
-	@ResponseBody				// for ajax
-	@GetMapping("/stateMsg")
-	public String changeStateMsg(String stateMsg, HttpSession session) {
-		session.setAttribute("stateMsg", stateMsg);
-		return "0";
-	}
-	
-	
-
+		@ResponseBody				// for ajax
+		@GetMapping("/stateMsg")
+		public String changeStateMsg(String stateMsg, HttpSession session) {
+			session.setAttribute("stateMsg", stateMsg);
+			return "aside";
+		}
+    
 	// ★★ 웨더 ★★
+
+	
 	@ResponseBody				// for ajax
 	@GetMapping("/weather")
 	public String getWeather(@RequestParam(name="addr", defaultValue="경기도 수원시 장안구") String addr) {

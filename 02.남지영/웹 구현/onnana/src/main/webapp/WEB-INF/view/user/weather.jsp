@@ -4,6 +4,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <%@ include file="../common/head.jspf" %>
      <style>
 	   	#map-container {
@@ -14,25 +15,9 @@
      	#cartogram {
 		    width: 100%; /* 이미지의 가로 크기를 부모 컨테이너에 맞추기 */
 		    height: auto; /* 세로 크기는 자동으로 조절 */
+		    z-index: -1;
 		}
-        
-		#result {
-			position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            background-color: #f4f4f4;
-        }
-		#result1 {
-			position: absolute;
-            top: 70px;
-            right: 10px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            background-color: #f4f4f4;
-        }
-        
+      
         .weather-button {
             position: absolute;
             top: 50%;
@@ -44,8 +29,85 @@
             
             cursor: pointer;
         }
+        
+        .weather-info {
+	   		position: absolute;
+		    margin-left: 50px; /* 왼쪽 여백 설정 */
+		    padding: 10px;
+		    text-align: center; 
+		    font-size: 20px;
+		}
+		
+		.weather-info2 {
+	   		position: absolute;
+		    margin-left: 50px; /* 왼쪽 여백 설정 */
+		    text-align: left; 
+		    font-size: 14px;
+		    
+		}
+		
+		
+		th {
+			width: 500px;
+			height: 100px;
+			text-align: center;
+		}
+		
+		td {
+			text-align: center;
+		}
+		
+		 .table-cell {
+	        position: relative; /* 포지션 설정 */
+	        width: 100px; /* 원하는 셀 너비로 설정 */
+	        height: 100px; /* 원하는 셀 높이로 설정 */
+	        z-index: 1;
+	    }
+	
+	    .table-cell::before {
+	        content: ""; /* 가상 요소 생성 */
+	        position: absolute; /* 절대 위치 설정 */
+	        top: 10px;
+	        left: 20px;
+	        right: 0;
+	        bottom: 25px;
+	        width: 80px; 
+	        height: 80px; 
+	        background-image: url('/onnana/img/backimg.png'); /* 배경 이미지 설정 */
+	        background-size: cover; /* 이미지 크기 조절 */
+	        z-index: -1; /* 이미지를 텍스트 뒤로 보냄 */
+	    }
+	
+	    .text {
+	        position: relative; /* 포지션 설정 */
+	        z-index: 1; /* 텍스트를 이미지 위로 올림 */
+	    }
+	    /* 부모 요소인 h4에 display: inline-block 설정 */
+	    h4 {
+	        display: inline-block;
+	    }
+	
+	    /* 클릭한 버튼 ID 요소를 inline-block으로 설정하여 한 줄에 표시 */
+	    #clickedButtonId {
+	        display: inline-block;
+	    }	
+		
     </style>
-  
+  	<script>
+  	document.addEventListener('DOMContentLoaded', function() {
+  	    const buttons = document.querySelectorAll('.weather-button');
+  	    const displayId = document.getElementById('clickedButtonId');
+
+  	    buttons.forEach(button => {
+  	        button.addEventListener('click', function(event) {
+  	            const clickedButtonId = this.id;
+				document.querySelector("span").innerHTML = "(" + clickedButtonId + ")";
+  	            // HTML 화면에 출력
+  	        });
+  	    });
+  	});
+    
+  	</script>
 </head>
 <body>
 <%@ include file="../common/top.jspf" %>
@@ -53,9 +115,7 @@
     <div class="row">
       
         <!-- ================ 내가 작성할 부분 =================== -->
-        <div class="col-9">
-            <h3 class="mt-3"><strong>기상 예보 띄우는창</strong></h3>
-            <hr>
+        <div class="col-md-6">
             <div class="container" id="map-container"">
 	            <!-- 이미지 표시 -->
 	    		<img id="cartogram" src="/onnana/img/카토그램.png" alt="Example Image">
@@ -76,8 +136,8 @@
 				
 				<!-- 나머지 버튼들도 동일한 방식으로 클래스와 데이터 속성을 설정합니다. -->
 				
-				<div id="result"></div>
-				<div id="result1"></div>
+				<!-- <div id="result"></div>
+				<div id="result1"></div> -->
 				
 				<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 				<script>
@@ -99,15 +159,24 @@
 				            url: "http://localhost:5000/get_weather",  // 플라스크 서버 주소로 업데이트하세요
 				            data: { nx: nx, ny: ny },
 				            success: function(response) {
-				                // 받은 JSON 데이터의 특정 속성을 선택하여 출력
-				                var resultText = "기온: " + response['기온'] + ", 습도: " + response['습도'] +  ", 강수량: " + response['1시간 강수량'] + ", 풍향: " + response['풍향'] + ", 풍속: " + response['풍속'];
-				                $("#result").text(resultText);
+				                var tableContent = '<table style="width:600px;">';
+				                tableContent += '<tr>';
+				                tableContent += '<th colspan="3"><h1><i class="fa-solid fa-temperature-low"></i>&nbsp;' + response['기온'] + '</h1></th>';
+				                tableContent += '</tr>';
+				                tableContent += '<tr><td><i class="fa-solid fa-droplet" style="color:DodgerBlue;"></i>&nbsp; 습도 </td><td>' 
+				                				+ '<i class="fa-solid fa-cloud-showers-heavy" style="color:DodgerBlue;"></i>&nbsp; 강수량 </td><td>'
+				                				+ '<i class="fa-solid fa-wind"style="color:DodgerBlue;"></i>&nbsp; 바람 </td></tr>';
+				                tableContent += '<tr><td>' + response['습도']  + '</td><td>' + response['1시간 강수량'] + '</td><td>' + response['풍향'] + ' , ' + response['풍속'] + '</td></tr>';
+				                tableContent += '</table>';
+
+				                $("#result").html(tableContent);
 				            },
 				            error: function(error) {
 				                console.error("에러:", error);
 				            }
 				        });
 				    }
+
 				
 				    function sendRequestAirQuality(name) {
 			            $.ajax({
@@ -115,15 +184,28 @@
 			                url: "http://localhost:5000/get_air_quality",
 			                data: { name: name },
 			                success: function(response) {
-			                    var resultText = "일시: " + response['날짜'] + '\n' +
-			                                     "미세먼지: "+ response['미세먼지(PM10) 농도'] + '\n' +
-			                                     "초미세먼지: " + response['초미세먼지(PM2.5) 농도'] + '\n' +
-			                                     "이산화질소: " + response['이산화질소 농도'] + '\n' +
-			                                     "아황산가스: " + response['아황산가스 농도'] + '\n' +
-			                                     "오존: " + response['오존 농도'] + '\n' +
-			                                     "측정소명/측정망정보: " + response['이름'] + "/" + response['측정망 정보'];
-			                    resultText = resultText.replace(/\n/g, '<br>');
-			                    $("#result1").html(resultText);
+			                    var tableContent2 = '<table style="margin-top:200px; width:600px;">';
+			                    	tableContent2 += '<tr>';
+			                    	tableContent2 += '<th class="table-cell">' + response['미세먼지(PM10) 농도'] + '<small class="unit">㎍/m³</small></th>' +
+								                        '<th class="table-cell">' + response['초미세먼지(PM2.5) 농도'] + '<small class="unit">㎍/m³</small></th>' +
+								                        '<th class="table-cell">' + response['이산화질소 농도'] + '<small class="unit">ppm</small></th>' +
+								                        '<th class="table-cell">' + response['아황산가스 농도'] + '<small class="unit">ppm</small></th>' +
+								                        '<th class="table-cell">' + response['오존 농도'] + '<small class="unit">ppm</small></th>';
+			                    	tableContent2 += '</tr>';
+			                    	tableContent2 += '<tr>';
+			                    	tableContent2 += '<td>'+ '미세먼지<small class="unit">(PM10)</small>' +'</td>' + '<td>'+ '초미세먼지<small class="unit">(PM2.5)</small>' +'</td>' 
+			                    					+ '<td>'+ '이산화질소' +'</td>' + '<td>'+ '아황산가스' +'</td>' + '<td>'+ '오존' +'</td>';
+			                    	tableContent2 += '</tr>';
+			                    	tableContent2 += '<tr>';
+			                    	tableContent2 += '<td colspan="5" style="text-align:right;margin-top:100px;">'+ '측정소명(측정망정보): ' + response['이름'] + '(' + response['측정망 정보'] + ')&nbsp;&nbsp;&nbsp;&nbsp;' + "기준일시: " + response['날짜'] + '</td>'; 
+			                    	tableContent2 += '</tr>';
+			                    	tableContent2 += '<tr>';
+			                    	tableContent2 += '<td colspan="5" style="text-align:right;">정보출처: 대기질정보(한국환경공단), 기상정보(기상청)</td>'; 
+			                    	tableContent2 += '</tr>';
+			                    	
+			                                     
+			                                   
+                                $("#result1").html(tableContent2);
 			                },
 			                error: function(error) {
 			                    console.error("에러:", error);
@@ -137,9 +219,30 @@
             </div>
 
         </div>
+       <div class="col-6 mt-3">
+		    <div style="text-align:center;">
+	        	<h4 style="color:DodgerBlue;"><i class="fa-solid fa-cloud-sun"></i>&nbsp;오늘의 기상정보&nbsp;&nbsp;&nbsp;</h4>
+		        <!-- 클릭한 버튼의 ID를 출력하는 부분 -->
+				<span id="clickedButtonId"></span>
+		        <hr style="margin-bottom:-10px;">
+		    </div>
+		    <div class="d-flex justify-content-start" style="border: none;">
+		        <div id="result" class="weather-info">
+		            <!-- sendRequestWeather 함수가 호출되면 자동으로 결과가 표시됩니다. -->
+		        </div>
+		    </div>
+		    <div class="d-flex justify-content-start" style="border: none;">
+		        <div id="result1" class="weather-info2">
+		            <!-- sendRequestWeather 함수가 호출되면 자동으로 결과가 표시됩니다. -->
+		        </div>
+		    </div>
+		</div>
 
-    </div>
+	</div>
+
 </div>
+
+
 <%@ include file="../common/bottom.jspf" %>
 </body>
 </html>
