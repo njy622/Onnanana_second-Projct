@@ -82,10 +82,32 @@
 	        position: relative; /* 포지션 설정 */
 	        z-index: 1; /* 텍스트를 이미지 위로 올림 */
 	    }
-			
+	    /* 부모 요소인 h4에 display: inline-block 설정 */
+	    h4 {
+	        display: inline-block;
+	    }
+	
+	    /* 클릭한 버튼 ID 요소를 inline-block으로 설정하여 한 줄에 표시 */
+	    #clickedButtonId {
+	        display: inline-block;
+	    }	
 		
     </style>
-  
+  	<script>
+  	document.addEventListener('DOMContentLoaded', function() {
+  	    const buttons = document.querySelectorAll('.weather-button');
+  	    const displayId = document.getElementById('clickedButtonId');
+
+  	    buttons.forEach(button => {
+  	        button.addEventListener('click', function(event) {
+  	            const clickedButtonId = this.id;
+				document.querySelector("span").innerHTML = "(" + clickedButtonId + ")";
+  	            // HTML 화면에 출력
+  	        });
+  	    });
+  	});
+    
+  	</script>
 </head>
 <body>
 <%@ include file="../common/top.jspf" %>
@@ -139,11 +161,11 @@
 				            success: function(response) {
 				                var tableContent = '<table style="width:600px;">';
 				                tableContent += '<tr>';
-				                tableContent += '<th colspan="3"><h1><i class="fa-solid fa-temperature-low"></i>' + response['기온'] + '</h1></th>';
+				                tableContent += '<th colspan="3"><h1><i class="fa-solid fa-temperature-low"></i>&nbsp;' + response['기온'] + '</h1></th>';
 				                tableContent += '</tr>';
-				                tableContent += '<tr><td><i class="fa-solid fa-droplet" style="color:DodgerBlue;"></i> 습도 </td><td>' 
-				                				+ '<i class="fa-solid fa-cloud-showers-heavy" style="color:DodgerBlue;"></i> 강수량 </td><td>'
-				                				+ '<i class="fa-solid fa-wind"style="color:DodgerBlue;"></i> 바람 </td></tr>';
+				                tableContent += '<tr><td><i class="fa-solid fa-droplet" style="color:DodgerBlue;"></i>&nbsp; 습도 </td><td>' 
+				                				+ '<i class="fa-solid fa-cloud-showers-heavy" style="color:DodgerBlue;"></i>&nbsp; 강수량 </td><td>'
+				                				+ '<i class="fa-solid fa-wind"style="color:DodgerBlue;"></i>&nbsp; 바람 </td></tr>';
 				                tableContent += '<tr><td>' + response['습도']  + '</td><td>' + response['1시간 강수량'] + '</td><td>' + response['풍향'] + ' , ' + response['풍속'] + '</td></tr>';
 				                tableContent += '</table>';
 
@@ -198,6 +220,12 @@
 
         </div>
        <div class="col-6 mt-3">
+		    <div style="text-align:center;">
+	        	<h4 style="color:DodgerBlue;"><i class="fa-solid fa-cloud-sun"></i>&nbsp;오늘의 기상정보&nbsp;&nbsp;&nbsp;</h4>
+		        <!-- 클릭한 버튼의 ID를 출력하는 부분 -->
+				<span id="clickedButtonId"></span>
+		        <hr style="margin-bottom:-10px;">
+		    </div>
 		    <div class="d-flex justify-content-start" style="border: none;">
 		        <div id="result" class="weather-info">
 		            <!-- sendRequestWeather 함수가 호출되면 자동으로 결과가 표시됩니다. -->

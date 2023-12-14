@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.net.ssl.HttpsURLConnection;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -36,16 +35,21 @@ public class AsideUtil {
 	public String getTodayQuote(String filename) {
 		String result = null;
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(filename), 1024);
-			int index = (int) Math.floor(Math.random() * 100);
-			for (int i=0; i<=index; i++)
-				result = br.readLine();
-			br.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
+            // 파일 경로를 상대 경로로 설정
+            String path = "src/main/resources/static/data/quotes.txt";
+            File file = new File(path);
+
+            BufferedReader br = new BufferedReader(new FileReader(file), 1024);
+            int index = (int) Math.floor(Math.random() * 30);
+            for (int i = 0; i <= index; i++) {
+                result = br.readLine();
+            }
+            br.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 	
 	public String squareImage(String profilePath, String fname) {
 		String newFname = null;
