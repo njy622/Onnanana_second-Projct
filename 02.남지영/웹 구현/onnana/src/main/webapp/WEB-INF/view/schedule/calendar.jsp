@@ -13,10 +13,14 @@
         .disabled-link	{ pointer-events: none; }
     </style>
     <script src="/onnana/js/calendar.js?v=2"></script>
-    <script src="/onnana/js/calcu.js"></script>
+    <script src="/onnana/js/calcu.js" defer></script>
     
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery 라이브러리 -->    
+	
+	
+	
 	<script>
+
 
    
 // <!-- ========================= insert 함수 form태그없이 함수로 제출버튼 구현 ======================== -->
@@ -61,11 +65,11 @@
 		var smoke = $('#smoke2').val();
 		let sid = $('#sid2').val();
 
-		
+		console.log(place);
 	    $.ajax({
 	        type: "POST",
 	        url: "/onnana/schedule/update", // 스케줄 컨트롤러안의 함수 불러오는 경로
-	        data: {sid,startDate, startTime, title, place, smoke},
+	        data: {startDate, startTime, title, place, smoke, sid},
 	        success: function(response){
 	            // JSON 응답을 파싱
 	        	var data = JSON.parse(response); 
@@ -88,6 +92,7 @@
 	
 
 	</script>                       
+	             
 	                        
     
 </head>
@@ -99,7 +104,7 @@
         	<%@ include file="../common/aside.jspf" %>
         
         	<!-- ======================== main ======================== -->
-			<div class="col-sm-9 mt-3 ms-1">
+			<div class="mt-3 ms-1">
             	<h3 style="color:green;"><strong>그린캠페인 캘린더</strong></h3>
             	<hr>
                 <div class="d-flex justify-content-between">
@@ -111,7 +116,9 @@
                         <a href="/onnana/schedule/calendar/right"><i class="fa-solid fa-angle-right me-2"></i></a>
                         <a href="/onnana/schedule/calendar/right2"><i class="fa-solid fa-angles-right"></i></a>
                     </div>
-                    <div>
+                  
+                  	 <div>
+                  	 <!--  기념일 및 공휴일 추가 버튼 (사용안함으로 비활성화)
                     	<a href="#" onclick="addAnniversary()"><i class="fa-solid fa-pen me-2"></i></a>
                     	<%-- 관리자만이 공휴일/24절기 추가권한이 있음 --%>
         				<c:if test="${sessUid eq 'admin'}">
@@ -119,7 +126,7 @@
                     	</c:if>
                     	<c:if test="${sessUid ne 'admin'}">
        						<a href="#" class="disabled-link"><i class="fa-solid fa-calendar-plus"></i></a>
-       					</c:if>
+       					</c:if> -->
                     </div>
                 </div>
                 <table class="table table-bordered mt-2 mb-5">
@@ -211,7 +218,7 @@
 	                                <label for="place">거리에 따른 배출 감소량 계산하기</label>
 	                                <div class="input-group outer-container" style="width: 100%;">
 									    <input type="text" style="height: auto;" class="form-control" id="place" name="place" placeholder=" 도착지 주소를 입력하면 현재위치부터 계산합니다">
-									    <button class="btn btn-success" style="width: 80px;" onclick="searchAndCalculateDistance()">계산</button>
+									    <button id="calculateDistanceBtn"  class="btn btn-success" style="width: 80px;" onclick="searchAndCalculateDistance()">계산</button>
 									</div>
 		                              <p id="result"></p>  <!-- 검색된 위치의 좌표와 거리를 표시할 요소 -->
 	                            </td>
@@ -219,16 +226,16 @@
 <!-- ========================================================= 탄소계산기 end ======================================================== -->
 	                        <tr>
 	                            <td colspan="2">
-                                <label for="smoke">금연(개비) 배출 감소량</label>
-                                  <form action="/action_page.php">
-									    <select class="form-select form-control"  type="text" id="smoke" name="smoke" onchange="calculateAndShow()">
+                                <label for="smoke">흡연(개비) 배출량</label>
+                                  <!--  <form action="/action_page.php">  -->
+									    <select class="form-select form-control"  type="text" id="smoke" name="smoke">
 										     <c:forEach var="i" begin="1" end="20">
 										      <option value="${i}" >${i}</option>
 									      		</c:forEach>
 									    </select>
-									    <p id="showResult"  style="display: none;"></p>
-									    <p>※ 산출방식: 14g/개</p>
-									  </form>
+									     <p id="showResult"  style="display: none;"></p>
+									    <p>※ 산출방식: 14g/개 (※감소량에서 차감됩니다.)</p>
+									 <!--   </form> -->
 	                            </td>
 	                        </tr>
 	                         <tr>
@@ -294,7 +301,7 @@
 	                                <label for="place">거리에 따른 배출 감소량 계산하기</label>
 	                                <div class="input-group outer-container" style="width: 100%;">
 									    <input type="text" style="height: auto;" class="form-control" id="place2" name="place" placeholder=" 도착지 주소를 입력하면 현재위치부터 계산합니다">
-									    <button class="btn btn-success" style="width: 80px;" onclick="searchAndCalculateDistance2()">계산</button>
+									    <button class="btn btn-success"  id="calculateDistanceBtn2"  style="width: 80px;" onclick="searchAndCalculateDistance2()">계산</button>
 									</div>
 		                              <p id="result2"></p>  <!-- 검색된 위치의 좌표와 거리를 표시할 요소 -->
 	                            </td>
@@ -304,15 +311,15 @@
 	                         <tr>
 	                            <td colspan="2">
                                 <label for="smoke">금연(개비) 배출 감소량</label>
-                                  <form action="/action_page.php">
-									    <select class="form-select form-control"  type="text" id="smoke2" name="smoke" onchange="calculateAndShow2()">
+                                 <!--  <form action="/action_page.php">  -->
+									    <select class="form-select form-control"  type="text" id="smoke2" name="smoke"">
 										     <c:forEach var="i" begin="1" end="20">
 										      <option value="${i}" >${i}</option>
 									      		</c:forEach>
 									    </select>
-									    <p id="showResult2"  style="display: none;"></p>
+									     <p id="showResult2"  style="display: none;"></p>
 									    <p>※ 산출방식: 14g/개</p>
-									  </form>
+									 <!--   </form> -->
 	                            </td>
 	                        </tr>
 	                         <tr>
@@ -320,7 +327,7 @@
 	                                <label for="title">합 산</label>
 	                                <div class="input-group outer-container" style="width: 100%;">
 									    <input class="form-control" type="text" id="title2" name="title" disabled>
-									    <button class="btn btn-success" style="width: 80px;"  onclick="readJs2()"><i class="fa-solid fa-calculator"></i></button>
+									    <button  class="btn btn-success" style="width: 80px;"  onclick="readJs2()"><i class="fa-solid fa-calculator"></i></button>
 									</div>
 	                            </td>
 	                        </tr>   

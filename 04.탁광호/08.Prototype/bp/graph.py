@@ -1,12 +1,68 @@
-from flask import Blueprint, render_template, current_app, request, redirect, url_for
+from flask import Blueprint, render_template, current_app, request, redirect, url_for, jsonify
 import util.graph_util as gu
 import util.graph_util as gu
 import numpy as np
 
 
+
 graph_bp = Blueprint('graph_bp', __name__)
 
 menu = {'ho':0, 'us':0, 'cr':0, 'ma':1,'cb':0, 'sc':0}
+
+
+@graph_bp.route('/generate-graph', methods=['GET'])
+def generate_graph():
+    # 그래프 생성 함수 호출
+    graph_image = gu.get_variables_graph()
+    return jsonify({'image': graph_image})
+
+@graph_bp.route('/get-correlation-graph', methods=['POST'])
+def get_correlation_graph():
+    selected_variable = request.form.get('variable')
+    if selected_variable:
+        graph_image = gu.get_variables_graph_select(selected_variable)
+        return jsonify({'image': graph_image})
+    else:
+        return jsonify({'error': 'No variable selected'}), 400
+
+
+@graph_bp.route('/disease-graph-api', methods=['POST'])
+def generate_disease_graph():
+    selected_variable1 = request.form.get('variable1')
+    selected_variable2 = request.form.get('variable2')
+    selected_agg_func = request.form.get('agg_func') # 영어로 된 집계 함수 이름
+    selected_agg_func_korean = request.form.get('agg_func_korean') # 한글 집계 함수 이름
+
+    # 선택된 함수에 따른 그래프 생성
+    agg_func = {
+        'min': np.min,
+        'max': np.max,
+        'mean': np.mean
+    }.get(selected_agg_func, np.min)
+
+    graph_image = gu.get_disease_graph(selected_variable1, selected_variable2, agg_func, selected_agg_func_korean)
+
+    if graph_image:
+        return jsonify({'image': graph_image})
+    else:
+        return jsonify({'error': 'Failed to generate graph'}), 500
+    
+
+@graph_bp.route('/corona-graph-api', methods=['POST'])
+def corona_graph_api():
+    selected_sido = request.form.get('sido')
+    selected_variable = request.form.get('variable')
+
+    graph_url, percent_change = gu.get_corona_graph(selected_sido, selected_variable)
+    similar_impact_message = gu.find_similar_covid_impact(selected_sido, selected_variable, percent_change)
+
+    return jsonify({
+        'image': graph_url,
+        'percent_change': percent_change,
+        'similar_impact': similar_impact_message
+    })
+
+
 
 
 

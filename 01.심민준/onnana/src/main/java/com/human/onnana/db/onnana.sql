@@ -10,7 +10,8 @@ DROP TRIGGER TRI_schedule_sid;
 
 DROP TABLE anniversary CASCADE CONSTRAINTS;
 DROP TABLE schedule CASCADE CONSTRAINTS;
---  DROP TABLE users CASCADE CONSTRAINTS;
+DROP TABLE users CASCADE CONSTRAINTS;
+DROP TABLE weather_data CASCADE CONSTRAINTS;
 
 
 
@@ -34,7 +35,7 @@ CREATE SEQUENCE SEQ_schedule_sid INCREMENT BY 1 START WITH 1;
 CREATE TABLE anniversary
 (
 	aid number NOT NULL,
-	"uid" varchar2(12),
+	uid varchar2(12),
 	aname varchar2(32) NOT NULL,
 	adate char(8) NOT NULL,
 	isHoliday number DEFAULT 0 NOT NULL,
@@ -45,7 +46,7 @@ CREATE TABLE anniversary
 CREATE TABLE schedule
 (
 	sid number NOT NULL,
-	"uid" varchar2(12),
+	uid varchar2(12),
 	sdate char(8) NOT NULL,
 	startTime timestamp NOT NULL,
 	title varchar2(1000) NOT NULL,
@@ -55,30 +56,45 @@ CREATE TABLE schedule
 );
 
 
--- CREATE TABLE users
--- (
---	"uid" varchar2(12) NOT NULL,
---	pwd char(60) NOT NULL,
---	uname varchar2(16) NOT NULL,
---	email varchar2(40) NOT NULL,
---	regDate date DEFAULT SYSDATE,
---	isDeleted number DEFAULT 0,
---	PRIMARY KEY ("uid")
---);
+CREATE TABLE users
+(
+	uid varchar2(12) NOT NULL,
+	pwd char(60) NOT NULL,
+	uname varchar2(16) NOT NULL,
+	email varchar2(40) NOT NULL,
+	regDate date DEFAULT SYSDATE,
+	isDeleted number DEFAULT 0,
+	PRIMARY KEY (uid)
+);
+
+
+CREATE TABLE weather_data
+(
+	wid number NOT NULL,
+	wdate varchar2(255),
+	location varchar2(255),
+	average_temperature number,
+	min_temperature number,
+	max_temperature number,
+	precipitation number,
+	average_wind_speed number,
+	daily_snowfall number,
+	PRIMARY KEY (wid)
+);
 
 
 
 /* Create Foreign Keys */
 
 ALTER TABLE anniversary
-	ADD FOREIGN KEY ("uid")
-	REFERENCES users ("uid")
+	ADD FOREIGN KEY (uid)
+	REFERENCES users (uid)
 ;
 
 
 ALTER TABLE schedule
-	ADD FOREIGN KEY ("uid")
-	REFERENCES users ("uid")
+	ADD FOREIGN KEY (uid)
+	REFERENCES users (uid)
 ;
 
 
@@ -107,5 +123,4 @@ END;
 
 
 
-select * from schedule;
 
