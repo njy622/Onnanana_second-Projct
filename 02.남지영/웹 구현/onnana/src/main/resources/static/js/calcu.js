@@ -5,6 +5,8 @@
 
 var hereLat, hereLon;
 
+
+
 function getLocation() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(showPosition);
@@ -82,13 +84,9 @@ function searchAndCalculateDistance() {
 
 
 
-//담배 갯수 선택한 값에 * 14g 연산 후  kg으로 출력하는 함수
-function calculateAndShow() {
-   document.getElementById('showResult').innerText = $('#smoke').val() * 14 / 1000;
-}
+
 //거리환산+ 담배환산 값을 제목에 넣는 함수
 function readJs() {
-	
 	//거리 환산해서 탄소배출량 출력
     let carbonEmission = parseFloat((document.getElementById('result').innerText).match(/\d+/)[0]);
 
@@ -104,6 +102,7 @@ function readJs() {
     let currentTitle = titleElement.value;
     titleElement.value = currentTitle.split('-')[0].trim() + '- ' + totalCarbon.toFixed(2) + 'kg 감소';
 }
+
 
 
 
@@ -173,16 +172,9 @@ function searchAndCalculateDistance2() {
 
 
 
-
-
-
-//담배 갯수 선택한 값에 * 14g 연산 후  kg으로 출력하는 함수
-function calculateAndShow2() {
-   document.getElementById('showResult2').innerText = $('#smoke2').val() * 14 / 1000;
-}
 //거리환산+ 담배환산 값을 제목에 넣는 함수
 function readJs2() {
-	
+
 	//거리 환산해서 탄소배출량 출력
     let carbonEmission = parseFloat((document.getElementById('result2').innerText).match(/\d+/)[0]);
 
@@ -198,5 +190,7 @@ function readJs2() {
     let currentTitle = titleElement.value;
     titleElement.value = currentTitle.split('-')[0].trim() + '- ' + totalCarbon.toFixed(2) + 'kg 감소';
 }
+
+
 
 

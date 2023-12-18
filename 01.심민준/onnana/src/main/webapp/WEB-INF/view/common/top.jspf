@@ -3,12 +3,19 @@
 <style>
  li { margin-top:10px;}
 </style>
+
+<script>
+    function showLoginAlert() {
+        window.alert("로그인 후 이용 가능합니다.");
+    }
+</script>
+
 <%-- <body> 상단에 있는 navigation bar --%>
 
-   <nav class="navbar navbar-expand-sm bg-white navbar-light fixed-top text-black" style="margin-left: 8%">
+   <nav class="navbar navbar-expand-sm bg-white navbar-light fixed-top text-black"  width="100%" style="z-index: 800;">
         <div class="container-fluid">
             <ul class="navbar-nav">
-                <a  style="margin-right: 40px" class="navbar-brand" href="/onnana/home"><img src="/onnana/img/onna.png" height="70"></a>
+                <a  style="margin-right: 100px; margin-left: 120px" class="navbar-brand" href="/onnana/home"><img src="/onnana/img/onna.png" height="70"></a>
                 
                 <li class="nav-item ms-5">
                     <a class="nav-link ${menu eq 'board' ? 'active' : ''}" href="/onnana/user/dust"><i class="fa-solid fa-question"></i> 대기오염</a>
@@ -18,13 +25,29 @@
                     <a class="nav-link ${menu eq 'board' ? 'active' : ''}" href="/onnana/user/weather"><i class="fa-solid fa-cloud-sun"></i> 기상정보</a>
                 </li>
                 <li class="nav-item ms-3">
-                    <a class="nav-link ${menu eq 'schedule' ? 'active' : ''}" href="/onnana/schedule/calendar"><i class="fa-solid fa-calendar-days"></i> 캘린더</a>
-                </li>
+	                <c:choose>
+	                    <c:when test="${not empty sessUid}">
+	                            <a class="nav-link ${menu eq 'ai' ? 'active' : ''}" href="/onnana/schedule/calendar"><i class="fa-solid fa-calendar-days"></i> 캘린더</a>
+	                    </c:when>
+	                    <c:otherwise>
+	                        <!-- 로그인되지 않은 경우, 홈 페이지로 이동 -->
+	                            <a class="nav-link ${menu eq 'ai' ? 'active' : ''}" href="#" onclick="showLoginAlert()"><i class="fa-solid fa-calendar-days"></i> 캘린더</a>
+	                    </c:otherwise>
+	                </c:choose>
+	            </li>
                 <li class="nav-item dropdown ms-3">
                     <a class="nav-link ${menu eq 'ai' ? 'active' : ''}"  href="/onnana/user/analysis"><i class="fa-solid fa-brain"></i> 미래 예측</a>
                 </li>
                 <li class="nav-item ms-3">
-                    <a class="nav-link ${menu eq 'user' ? 'active' : ''}" href="/onnana/user/list/1"><i class="fas fa-user-friends"></i> 사용자</a>
+                	<c:choose>
+	                    <c:when test="${not empty sessUid}">
+	                            <a class="nav-link ${menu eq 'user' ? 'active' : ''}" href="/onnana/user/list/1"><i class="fas fa-user-friends"></i> 사용자</a>
+	                    </c:when>
+	                    <c:otherwise>
+	                        <!-- 로그인되지 않은 경우, 홈 페이지로 이동 -->
+	                            <a class="nav-link ${menu eq 'ai' ? 'active' : ''}" href="#" onclick="showLoginAlert()"><i class="fas fa-user-friends"></i> 사용자</a>
+	                    </c:otherwise>
+	                </c:choose>
                 </li>
                 
 
@@ -34,12 +57,7 @@
 		                <a class="ms-3" nav-link" href="/onnana/user/logout"><i class="fas fa-sign-out-alt"></i> 로그아웃</a>
                 	</div>
                 </c:if>
-                <!--
-                필요없는 카테고리
-                <c:if test="${empty sessUid}">
-                    <a class="nav-link" href="/onnana/user/login"><i class="fas fa-sign-in-alt"></i> 로그인</a>
-                </c:if>
-                -->
+              
                 </li>
             </ul>
             <c:if test="${not empty sessUname}">

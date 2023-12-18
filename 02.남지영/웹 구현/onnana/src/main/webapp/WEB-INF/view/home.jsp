@@ -12,10 +12,8 @@
 		<div class="row">
 			<%@ include file="common/aside.jspf" %> 
 			<!-- ================ 내가 작성할 부분 =================== -->
-			<div class="col-9">
 				
-				<img src="/onnana/img/home.jpg" width="100%" >
-			</div>
+				<img src="/onnana/img/home.jpg" width="80%" >
 			<!-- ================ 내가 작성할 부분 =================== -->
 		</div>
 	</div>
