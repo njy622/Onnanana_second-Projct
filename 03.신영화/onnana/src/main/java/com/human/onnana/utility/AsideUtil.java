@@ -1,3 +1,4 @@
+
 package com.human.onnana.utility;
 
 import java.awt.AlphaComposite;
@@ -7,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -22,8 +24,11 @@ import javax.net.ssl.HttpsURLConnection;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class AsideUtil {
@@ -120,46 +125,118 @@ public class AsideUtil {
 	}
 	
 	// 카카오 Local API - 위도, 경도
+
 	public List<String> getGeoCode(String roadAddr) {
-		List<String> list = new ArrayList<>();
-		String apiUrl = "https://dapi.kakao.com/v2/local/search/address.json";
-		try {
-			String keyword = URLEncoder.encode(roadAddr, "utf-8");
-			apiUrl += "?query=" + keyword;
-			URL url = new URL(apiUrl);
-			// 헤더 설정
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestProperty("Authorization", "KakaoAK " + kakaoApiKey);
-			conn.setDoInput(true);
-			
-			// 응답 결과 확인
-			int responseCode = conn.getResponseCode();
-//			System.out.println("responseCode: " + responseCode);
-			
-			// 데이터 수신
-			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
-			String line = null, result = "";
-			while ((line = br.readLine()) != null)
-				result += line;
-			br.close();
-			
-			JSONParser parser = new JSONParser();
-			JSONObject obj = (JSONObject) parser.parse(result);
-			JSONArray documents = (JSONArray) obj.get("documents");
-			JSONObject localItem = (JSONObject) documents.get(0);
-			list.add((String) localItem.get("x"));			// 경도
-			list.add((String) localItem.get("y"));			// 위도
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return list;
+	    List<String> list = new ArrayList<>();
+	    String apiUrl = "https://dapi.kakao.com/v2/local/search/address.json";
+	    try {
+	        String keyword = URLEncoder.encode(roadAddr, "utf-8");
+	        apiUrl += "?query=" + keyword;
+	        URL url = new URL(apiUrl);
+	        // 헤더 설정
+	        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+	        conn.setRequestProperty("Authorization", "KakaoAK " + kakaoApiKey);
+	        conn.setDoInput(true);
+
+	        // 응답 결과 확인
+	        int responseCode = conn.getResponseCode();
+
+	        // 데이터 수신
+	        BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
+	        String line = null, result = "";
+	        while ((line = br.readLine()) != null)
+	            result += line;
+	        br.close();
+
+	        
+	     // Kakao API 호출 후 응답 데이터 확인
+	        System.out.println("Kakao API Response: " + result);
+
+	        JSONParser parser = new JSONParser();
+	        Object obj = parser.parse(result);
+
+	        if (obj instanceof JSONObject) {
+	            JSONObject jsonObject = (JSONObject) obj;
+	            // "documents"가 JSONArray일 경우도 고려
+	            JSONArray documents = (JSONArray) jsonObject.get("documents");
+	            if (documents != null && !documents.isEmpty()) {
+	                JSONObject localItem = (JSONObject) documents.get(0);
+	                list.add((String) localItem.get("x"));   // 경도
+	                list.add((String) localItem.get("y"));   // 위도
+	            } else {
+	                // documents가 null이거나 비어있는 경우 처리
+	                System.out.println("Kakao API Response: documents is null or empty");
+	            }
+	        } else {
+	            // obj가 JSONObject가 아닌 경우 처리
+	            System.out.println("Kakao API Response: obj is not an instance of JSONObject");
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return list;
 	}
+
+
+	
+	public String getAddressFromCoordinates(Double latitude, Double longitude) {
+	    String address = null;
+	    try {
+	        // Reverse Geocoding API 호출을 위한 URL 생성
+	        String apiUrl = "https://dapi.kakao.com/v2/local/geo/coord2address.json?x=" + longitude + "&y=" + latitude;
+	        URL url = new URL(apiUrl);
+	        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+	        conn.setRequestProperty("Authorization", "KakaoAK " + kakaoApiKey);
+	        conn.setDoInput(true);
+
+	        // 응답 결과 확인
+	        int responseCode = conn.getResponseCode();
+	        if (responseCode == HttpURLConnection.HTTP_OK) {
+	            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
+	            String line = null, result = "";
+	            while ((line = br.readLine()) != null)
+	                result += line;
+	            br.close();
+
+	         // JSON 파싱 수정
+	            JSONParser parser = new JSONParser();
+	            Object obj = parser.parse(result);
+
+	            if (obj instanceof JSONObject) {
+	                JSONObject jsonObject = (JSONObject) obj;
+	                Object documents = jsonObject.get("documents");
+
+	                if (documents instanceof JSONArray) {
+	                    JSONArray documentsArray = (JSONArray) documents;
+	                    if (!documentsArray.isEmpty()) {
+	                        JSONObject firstDocument = (JSONObject) documentsArray.get(0);
+	                        JSONObject addressObject = (JSONObject) firstDocument.get("address");
+	                        address = (String) addressObject.get("region_2depth_name");
+	                    }
+	                } else if (documents instanceof JSONObject) {
+	                    JSONObject addressInfo = (JSONObject) documents;
+	                    JSONObject addressObject = (JSONObject) addressInfo.get("address");
+	                    address = (String) addressObject.get("region_2depth_name");
+	                }
+
+	            }
+
+	        }
+	    } catch (IOException | ParseException e) {
+	        System.err.println("Error during JSON parsing: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+	    return address;
+	}
+
+
+	
 	
 	// ★★★ OpenWeather API ★★
 	public String getWeather(String lon, String lat) {
 		String apiUrl = "https://api.openweathermap.org/data/2.5/weather";
-		apiUrl += "?lat=" + lat + "&lon=" + lon + "&appid=" + openWeatherApiKey
-					+ "&units=metric&lang=kr";
+		apiUrl += "?lat=37.5207569&lon=126.9003409&appid=7bf73c254c8083bf83a5f9b40a7146bf&units=metric";
+	
 		String weatherStr = null;
 		try {
 			URL url = new URL(apiUrl);
@@ -187,4 +264,6 @@ public class AsideUtil {
 		}
 		return weatherStr;
 	}
+	
 }
+
