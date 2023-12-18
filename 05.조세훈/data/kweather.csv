@@ -1,9 +1,9 @@
-이미지,생활지수,지수,안내멘트
-../img/icon_idx_carwash.png?ver=20231201,세차지수,0,오늘은 세차하기에 최악의 날씨
-../img/icon_idx_running.png?ver=20231201,달리기지수,17.5,오늘은 꼭 실내에서 운동하세요
-../img/icon_idx_washing.png?ver=20231201,빨래지수,68,밀린 빨래는 오늘 싹 다해요
-../img/icon_idx_sleep.png?ver=20231201,수면지수,20,수면지수가 낮은 날이에요
-../img/icon_idx_umb.png?ver=20231201,우산지수,60,비나 눈 예보 있으니 우산은 필수!
-../img/icon_life_uv.png?ver=20231201,자외선지수,1,자외선 걱정 없는 날이에요.
-../img/icon_life_cold.png?ver=20231201,감기지수,3,면역력에 좋은 야채를 많이 먹어요
-../img/icon_life_freez.png?ver=20231201,동파지수,25,오늘은 동파 걱정 끝!
+이미지,생활지수,지수,안내멘트,그래프 값,그래프 최댓값
+../img/icon_idx_carwash.png?ver=20231214,세차지수,30,오늘은 차량 내부 세차를 추천해요,30,100
+../img/icon_idx_running.png?ver=20231214,달리기지수,2.5,꼭 뛰고 싶다면 러닝머신을 이용하세요,2.5,100
+../img/icon_idx_washing.png?ver=20231214,빨래지수,10,옷을 위해 빨래는 다음으로 미뤄요,10,100
+../img/icon_idx_sleep.png?ver=20231214,수면지수,10,잠자기 전 가벼운 스트레칭 추천,10,100
+../img/icon_idx_umb.png?ver=20231214,우산지수,30,혹시 우산이 필요할 수도 있어요,30,100
+../img/icon_life_uv.png?ver=20231214,자외선지수,1,오늘은 안심하고 야외 활동하세요,25,100
+../img/icon_life_cold.png?ver=20231214,감기지수,4,외부 활동은 되도록 삼가요,100,100
+../img/icon_life_freez.png?ver=20231214,동파지수,25,동파지수가 매우 낮아요,25,100

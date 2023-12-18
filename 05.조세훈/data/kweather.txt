@@ -1,0 +1,4 @@
+이미지	생활지수	지수	안내멘트
+../img/icon_life_uv.png?ver=20231201	자외선지수	0	자외선 걱정 없는 날이에요.
+../img/icon_life_cold.png?ver=20231201	감기지수	3	노약자는 외부 활동을 되도록 삼가요
+../img/icon_life_freez.png?ver=20231201	동파지수	25	동파지수가 매우 낮아요
