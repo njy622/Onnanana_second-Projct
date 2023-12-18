@@ -4,17 +4,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestTemplate;
 
 import com.human.onnana.entity.Button;
 import com.human.onnana.entity.User;
@@ -184,6 +194,74 @@ public class UserController {
 		
 		return "user/weather";
 	}
+	
+	
+	
+	@PostMapping("/weather")
+	public String weatherProc(Model model) throws Exception {
+		URI uri = new URI("http://localhost:5000/test");
+		RestTemplate rest = new RestTemplate();
+		ResponseEntity<String> response = rest.getForEntity(uri, String.class);
+		JSONParser json = new JSONParser();
+		JSONArray arr = (JSONArray) json.parse(response.getBody());
+		List<List<String>> data = new ArrayList<>();
+		for (int i = 0; i < arr.size(); i++) {
+			JSONObject line = (JSONObject) arr.get(i);
+			List<String> buffer = new ArrayList<>();
+			buffer.add((String) line.get("이미지"));
+			buffer.add((String) line.get("생활지수"));
+			buffer.add(String.valueOf(line.get("지수")));
+			buffer.add((String) line.get("안내멘트"));
+			data.add(buffer);
+		}
+		model.addAttribute("data", data);
+		for (List<String> l: data) {
+			System.out.println(l.get(0) + ", " + l.get(1) + ", " + l.get(2) + ", " + l.get(3));
+		}
+		return "user/weatherRes";
+	}
+	
+	
+	
+	
+	
+	
+	
+	@PostMapping("/getAirQuality")
+    public String getAirQuality(@RequestBody String stationName) {
+        StringBuilder result = new StringBuilder();
+
+        try {
+            String apiUrl = "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty";
+            String serviceKey = "nBg+Hwr/AcIl8mQ6pviMUSuy9Te5CDEJKfw5CIJn6tTDevZ5u3SL7vCng8+lzQcmLlJ7o6Eqy91xpF+4UMQzGA=="; // 여기에 서비스 키 입력
+
+            String dataType = "json";
+            int numOfRows = 1;
+            int pageNo = 1;
+            String dataTerm = "DAILY";
+            String version = "1.4";
+
+            String urlString = String.format("%s?serviceKey=%s&returnType=%s&numOfRows=%d&pageNo=%d&stationName=%s&dataTerm=%s&ver=%s",
+                    apiUrl, serviceKey, dataType, numOfRows, pageNo, stationName, dataTerm, version);
+
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+
+            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line;
+            while ((line = rd.readLine()) != null) {
+                result.append(line);
+            }
+            rd.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result.toString();
+    }
+	
+	
 	   @GetMapping("/dust")
 	   public String dustForm(Model model) {
 	      List<Button> buttons = new ArrayList<>();

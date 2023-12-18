@@ -208,25 +208,27 @@ public class ScheduleController {
 		return jSched.toString();
 	}
 	
+	
 	@ResponseBody
 	@PostMapping("/update")
-	public String update(@PathVariable int sid, HttpServletRequest req, HttpSession session) {
+	public String update(HttpServletRequest req, HttpSession session) {
 		String startDate = req.getParameter("startDate");
 		String startTime = req.getParameter("startTime");
 		LocalDateTime startDateTime = LocalDateTime.parse(startDate + "T" + startTime + ":00");
 		String title = req.getParameter("title");
 		String place = req.getParameter("place");
 		String smoke = req.getParameter("smoke");
+		int sid = Integer.parseInt(req.getParameter("sid"));
 		String sdate = startDate.replace("-", "");
 		
 		String sessUid = (String) session.getAttribute("sessUid");
-		Schedule schedule = new Schedule(sessUid, sdate, startDateTime, title, place, smoke);
+		Schedule schedule = new Schedule(sid, sessUid, sdate, startDateTime, title, place, smoke);
+		System.out.println(schedule);
 		schedService.update(schedule);
 		
 ///////////////// 캘린더 생성 되었을때 , DB베이스와 웹서버 연동 실시간으로 되도록 설정///////////////////////////
 		
 		
-		Schedule sched = schedService.getSchedule(sid);
 		
 		// 전체 유저의 참여인원을 카운트 값 불러오는것
 		int count = schedService.getCount();
@@ -251,7 +253,6 @@ public class ScheduleController {
 		
 		// count 외에도 여러 변수를 포함한 JSON 객체를 생성합니다.
 		Map<String, Object> response = new HashMap<>();
-		response.put("sched", sched);
 		response.put("count", count);
 		response.put("countCarbon", countCarbon);
 		response.put("countUser", countUser);

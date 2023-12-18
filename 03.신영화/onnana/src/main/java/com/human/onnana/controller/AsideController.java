@@ -1,10 +1,14 @@
 package com.human.onnana.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,15 +33,21 @@ public class AsideController {
     
 	// ★★ 웨더 ★★
 
-	
-	@ResponseBody				// for ajax
-	@GetMapping("/weather")
-	public String getWeather(@RequestParam(name="addr", defaultValue="경기도 수원시 장안구") String addr) {
-		String place = addr + "청";
-		String roadAddr = asideUtil.getRoadAddr(place);
-		List<String> geoCode = asideUtil.getGeoCode(roadAddr);
-		String result = asideUtil.getWeather(geoCode.get(0), geoCode.get(1));
-		
-		return result;
-	}
+		// 날씨 정보 가져오기
+	    @ResponseBody
+	    @GetMapping("/weather")
+	    public ResponseEntity<Map<String, String>> getWeatherInfo(
+	            @RequestParam(name = "lat") String lat,
+	            @RequestParam(name = "lon") String lon) {
+	        String weather = asideUtil.getWeather(lat, lon);
+
+	     // 추가된 부분: 현재 위치의 이름 가져오기
+	        String location = asideUtil.getAddressFromCoordinates(Double.parseDouble(lat), Double.parseDouble(lon));
+	        
+	        Map<String, String> result = new HashMap<>();
+	        result.put("weather", weather);
+	        result.put("location", location); // 위치 정보를 서버에서 받아와서 설정
+
+	        return ResponseEntity.ok(result);
+	    }
 }

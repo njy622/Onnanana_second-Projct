@@ -7,8 +7,6 @@
     <title>Weather Data Visualization</title>
     <!-- chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- 안내메시지 창 만들때 사용되는 것-->
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-tooltip"></script>
     <style>
         div {
             display: flex;
@@ -22,7 +20,6 @@
         }
         .chart-container {
             position: relative;
-            text-align: center; /* 텍스트 중앙 정렬을 위한 추가 스타일 */
         }
         .chart-image {
             position: absolute;
@@ -91,6 +88,13 @@
 
                 var jsonData = data;
 
+                // 이미지 클릭 시의 동작을 처리하는 함수
+                function handleImageClick(index) {
+                    var clickedData = jsonData[index];
+                    var description = clickedData["안내멘트"];
+                    alert(description);
+                }
+
                 for (var i = 0; i < jsonData.length; i++) {
                     var labels = [jsonData[i]["생활지수"], ""];
 
@@ -113,23 +117,21 @@
                             responsive: false,
                             plugins: {
                                 tooltip: {
-                                    enabled: false,
+                                    enabled:false,
                                 },
                             },
-                            onHover: (event, chartElement) => {
-                                document.body.style.cursor = chartElement[0] ? 'pointer' : 'default';
+                            // onHover: (event, chartElement) => {
+                            //     document.body.style.cursor = chartElement[0] ? 'pointer' : 'default';
+                            // },
+                            // onClick: function (event, chartElement) {
+                            //     // console.log('Click event detected');
+                            //     var clickedIndex = this.chart.getElementAtEvent(event)[0];
+                            //     var clickedData = jsonData[clickedIndex];
+                            //     var description = clickedData["안내멘트"];
+                            //     alert(description); 
+                            // },
                             },
-                            onClick: (event, chartElement) => {
-                                if (chartElement[0]) {
-                                    // chartElement를 기반으로 원하는 동작 수행
-                                    console.log('Clicked on chart element:', chartElement[0]);
-                                }
-                            },
-                            tooltips: {
-                                enabled: false, // 툴팁 비활성화
-                            },
-                        },
-                    });
+                        });
 
                     // 이미지 URL 가져오기
                     var imageUrl = jsonData[i]["이미지"];
@@ -143,10 +145,20 @@
                     var chartContainer = document.getElementsByClassName('chart-container')[i];
                     chartContainer.appendChild(imgElement);
 
+                    // 이미지 클릭 이벤트 처리
+                    imgElement.addEventListener('click', (function(index) {
+                        return function() {
+                            handleImageClick(index);
+                        };
+                    })(i));
+
                     // 생활지수 텍스트 추가
                     var textElement = document.getElementById('text' + i);
                     textElement.textContent = jsonData[i]["생활지수"]  + jsonData[i]["그래프 값"];
-
+                    
+                    // var description = jsonData[i]["안내멘트"];
+                    // 안내멘트 업데이트
+                    // alert(description);
                 }
             })
             .catch(error => console.error('데이터 가져오는 중 오류 발생:', error));
