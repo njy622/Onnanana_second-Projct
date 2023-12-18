@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Data Visualization</title>
+    <!-- chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- 그래프를 표시할 Canvas 요소 -->
+    <canvas id="myChart" width="400" height="400"></canvas>
+
+    <!-- 스크립트로 데이터 추출 및 그래프 생성 -->
+    <script>
+        // Fetch API를 사용하여 서버에서 JSON 데이터를 비동기적으로 요청
+        fetch('http://localhost:5000/test')
+            .then(response => response.json())
+            .then(data => {
+                console.log("Data received:", data); // 데이터를 콘솔에 출력
+
+                // 전체 데이터 추출
+                var labels = data.map(item => item["생활지수"]);
+                var dataValues = data.map(item => item["그래프 값"]);
+                
+                // 데이터 확인을 위해 콘솔에 로그 출력
+		        console.log("Labels:", labels);
+		        console.log("Data Values:", dataValues);
+
+                // chart.js로 도넛 차트 생성
+                var ctx = document.getElementById('myChart').getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: dataValues,
+                            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4CAF50', '#9966FF'],
+                        }]
+                    },
+                });
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    </script>
+</body>
+</html>
