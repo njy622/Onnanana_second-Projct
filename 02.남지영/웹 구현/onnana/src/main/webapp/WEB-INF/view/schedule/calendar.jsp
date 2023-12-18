@@ -11,9 +11,16 @@
     <style>
         th { text-align: center; width: 14.28%;}
         .disabled-link	{ pointer-events: none; }
+        
+        .imgcampain {
+		  position: absolute; /* 이미지 위치 설정 */
+		  top: 0; /* 원하는 위치로 조정 */
+		  right: 0; /* 원하는 위치로 조정 */
+		  z-index: 800; /* 다른 요소들보다 위에 오도록 설정 */
+		}
     </style>
     <script src="/onnana/js/calendar.js?v=2"></script>
-    <script src="/onnana/js/calcu.js" defer></script>
+    <script src="/onnana/js/calcu.js" ></script>
     
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery 라이브러리 -->    
 	
@@ -89,32 +96,31 @@
 	}
 	
 
-	
 
 	</script>                       
 	             
 	                        
     
 </head>
-<body>
 	<%@ include file="../common/top.jspf" %>
+<body>
 	
 	<div class="container" style="margin-top: 80px;">
-        <div class="row">
+        <div class="d-flex">
         	<%@ include file="../common/aside.jspf" %>
         
         	<!-- ======================== main ======================== -->
-			<div class="mt-3 ms-1">
+			<div class="col-8 mt-3 ms-1">
             	<h3 style="color:green;"><strong>그린캠페인 캘린더</strong></h3>
             	<hr>
                 <div class="d-flex justify-content-between">
                     <div>${today}</div>
-                    <div>
-                        <a href="/onnana/schedule/calendar/left2"><i class="fa-solid fa-angles-left"></i></a>
-                        <a href="/onnana/schedule/calendar/left"><i class="fa-solid fa-angle-left ms-2"></i></a>
-                        <span class="badge bg-success mx-2">${year}.${month}</span>
-                        <a href="/onnana/schedule/calendar/right"><i class="fa-solid fa-angle-right me-2"></i></a>
-                        <a href="/onnana/schedule/calendar/right2"><i class="fa-solid fa-angles-right"></i></a>
+                    <div style="margin-left:-100px">
+                        <a href="/onnana/schedule/calendar/left2" style="color:green"><i class="fa-solid fa-angles-left"></i></a>
+                        <a href="/onnana/schedule/calendar/left"style="color:green"><i class="fa-solid fa-angle-left ms-2"></i></a>
+                        <span class="mx-2 ms-3 me-3" style="font-size:20px;">${year}.${month}</span>
+                        <a href="/onnana/schedule/calendar/right"style="color:green"><i class="fa-solid fa-angle-right me-2"></i></a>
+                        <a href="/onnana/schedule/calendar/right2"style="color:green"><i class="fa-solid fa-angles-right"></i></a>
                     </div>
                   
                   	 <div>
@@ -130,7 +136,7 @@
                     </div>
                 </div>
                 <table class="table table-bordered mt-2 mb-5">
-                    <tr>
+                    <tr class="bg-warning  bg-opacity-10">
                         <th class="text-danger">일</th>
                         <th>월</th><th>화</th><th>수</th><th>목</th><th>금</th>
                         <th class="text-primary">토</th>
@@ -160,13 +166,16 @@
                            	</c:if>
                             </div>
                         <c:forEach var="sched" items="${day.schedList}" varStatus="loop">
-                        	<div style="text-align:center; font-size:13px;"  class="${loop.first ? 'mt-1' : ''}" style="font-size: 12px;" onclick="schedClick(${sched.sid})">
-	                        	<!-- 글작성 시, 스탬프 찍기 -->
-								<img height="60px" src="/onnana/img/stamp.png">
-	                        	<br>
-	                        	${sched.title}
-                        	</div>
-                        </c:forEach>
+						    <div style="text-align: center; font-size: 13px; margin-top: ${loop.first ? '0' : '5px'}; font-size: 12px;" onclick="schedClick(${sched.sid})">
+						        <!-- 글작성 시, 스탬프 찍기 -->
+						        <div style="display: inline-block; float: right; margin-right: 2px;">
+						            <!-- Stamp Image -->
+									<img id="stampImage" height="30px" src="/onnana/img/stamp.png">
+									<span style="display: none;">${sched.title}</span>
+						        </div>
+						    </div>
+						</c:forEach>
+
                         </td>
                     </c:forEach>
                     </tr>
@@ -175,10 +184,82 @@
             </div>
 			<!-- =================== main =================== -->
             
-        </div>
-    </div>
-
+       
+<!-- =================================== 상세페이지 ============================================================= -->
+	<div class="col-4 ms-5 container border bg-warning p-2 text-dark bg-opacity-10" id="table-borderless" style="border-radius:.80rem!important; margin-top:60px; height:700px">
+	<input type="hidden" name="sid" id="sid2">
+		<table class="table table-borderless">
+             <h4 style="color:green; margin-top:10px;"><i class="fa-solid fa-leaf"></i>&nbsp; 감소한 탄소배출량 상세보기</h4>
+             <tr>
+	             <td>
+	                 <label for="startDate2">일 자</label>
+	                 <input class="form-control" type="date" id="startDate2" name="startDate">
+	             </td>
+             </tr>
+             <tr>
+	             <td style="display: none;">
+	                 <label for="startTime2">시작시간</label>
+	                 <select class="form-control" name="startTime" id="startTime2">
+	                 <c:forEach var="tl" items="${timeList}">
+	                     <option value="${tl}" >${tl}</option>
+	                 </c:forEach>
+	                 </select>
+	             </td>
+             </tr>
+<!-- ========================================================= 탄소계산기 start ========================================================= -->
+          <tr>
+             <td colspan="2">
+             	<p id="demo" style="display: none;"></p> <!-- 현재 위치를 표시할 요소 -->
+                 <label for="place">거리에 따른 배출 감소량 계산하기</label>
+                 <div class="input-group outer-container" style="width: 100%;">
+					<input type="text" style="height: auto;" class="form-control" id="place2" name="place" placeholder=" 도착지 주소를 입력하면 현재위치부터 계산합니다">
+					<button class="btn btn-success"  id="calculateDistanceBtn2"  style="width: 80px;" onclick="searchAndCalculateDistance2()">계산</button>
+					</div>
+                    <p id="result2"></p>  <!-- 검색된 위치의 좌표와 거리를 표시할 요소 -->
+             </td>
+         </tr>  
+         
+<!-- ========================================================= 탄소계산기 end ======================================================== -->
+          <tr>
+             <td colspan="2">
+                <label for="smoke">금연(개비) 배출 감소량</label>
+				<select class="form-select form-control"  type="text" id="smoke2" name="smoke"">
+				  <c:forEach var="i" begin="1" end="20">
+				<option value="${i}" >${i}</option>
+					</c:forEach>
+				</select>
+				 <p id="showResult2"  style="display: none;"></p>
+				<p>※ 산출방식: 14g/개</p>
+             </td>
+         </tr>
+          <tr>
+             <td colspan="2">
+                 <label for="title">합 산</label>
+                 <div class="input-group outer-container" style="width: 100%;">
+					<input class="form-control" type="text" id="title2" name="title" disabled>
+					<button  class="btn btn-success" style="width: 80px;"  onclick="readJs2()"><i class="fa-solid fa-calculator"></i></button>
+				</div>
+              </td>
+            </tr>   
+                <tr>
+                    <td colspan="2" style="text-align: right;">
+		                 <button class="btn btn-success me-2" onclick="update()">수정</button>
+		                 <button class="btn btn-danger me-2"  data-bs-dismiss="modal" onclick="deleteSchedule()">삭제</button>
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">종료</button>
+                    </td>
+                </tr>
+             </table>
+             <hr>
+             
+             
+             <img style="margin-left:50px" src="/onnana/img/greencam.png" width="300px">
+             
+		</div>
+	</div>
+ </div>
     <%@ include file="../common/bottom.jspf" %>
+    
+    
     
 <!---------------------------------------- Insert 프론트엔드  ------------------------------------------>
 	<div class="modal" id="addModal">
@@ -186,14 +267,13 @@
 			<div class="modal-content">
 				<!-- Modal Header -->
 				<div class="modal-header">
-					<h5 class="modal-title"><i class="fa-solid fa-leaf"></i> 오늘의 탄소감소량</h5>
+					<h5 class="modal-title"><i class="fa-solid fa-leaf"></i>&nbsp; 오늘의 탄소감소량</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 				</div>
 			
 				<!-- Modal body -->
 				<div class="modal-body">
 				
-					<!-- <form action="/onnana/schedule/insert" method="post"> -->
 						<table class="table table-borderless">
 	                       
 	                        
@@ -212,22 +292,87 @@
 	                            </td>
 	                        </tr>
 <!-- ========================================================= 탄소계산기 start ========================================================= -->
+	                         
 	                         <tr>
 	                            <td colspan="2">
-	                            	<p id="demo" style="display: none;"></p> <!-- 현재 위치를 표시할 요소 -->
-	                                <label for="place">거리에 따른 배출 감소량 계산하기</label>
-	                                <div class="input-group outer-container" style="width: 100%;">
-									    <input type="text" style="height: auto;" class="form-control" id="place" name="place" placeholder=" 도착지 주소를 입력하면 현재위치부터 계산합니다">
-									    <button id="calculateDistanceBtn"  class="btn btn-success" style="width: 80px;" onclick="searchAndCalculateDistance()">계산</button>
+	                         		<button type="button" class="btn btn-outline-success" data-bs-toggle="collapse" data-bs-target="#currentLocation">현재위치로 계산하려면 여기를 누르세요!</button>
+									<div id="currentLocation" class="collapse">
+		                            	<p id="demo" style="display: none;"></p> <!-- 현재 위치를 표시할 요소 -->
+		                                <label for="place">현재위치부터 계산하기</label>
+		                                <div class="input-group outer-container" style="width: 100%;">
+										    <input type="text" style="height: auto;" class="form-control" id="place" name="place" placeholder=" 도착지 주소를 입력하면 현재위치부터 계산합니다">
+										    <button id="calculateDistanceBtn"  class="btn btn-success" style="width: 80px;" onclick="searchAndCalculateDistance()">계산</button>
+										</div>
+			                              <p id="result"></p>  <!-- 검색된 위치의 좌표와 거리를 표시할 요소 -->
 									</div>
-		                              <p id="result"></p>  <!-- 검색된 위치의 좌표와 거리를 표시할 요소 -->
 	                            </td>
-	                        </tr>    
+	                        </tr>
+	                         <tr>
+	                            <td>
+	                                <label for="place">출발지 입력</label>
+	                            	<button type="button" class="btn btn-outline-success" onclick="addWaypoint()">+ 경유지 추가</button>
+	                                <div class="input-group outer-container" style="width: 100%;">
+									    <input type="text" style="height: auto;" class="form-control" id="startPlace" name="startPlace" placeholder=" 출발지 주소를 입력하면 현재위치부터 계산합니다">
+									</div>
+								</td>	
+							</tr>	
+	                        <tr>
+	                            <td>
+	                                <div id="waypointFields">
+									    <!-- 기본적인 경유지 입력 필드 하나 -->
+										<div id="waypointFields"></div>
+									</div>
+	                            </td>
+	                        </tr>
+	                        
+	                        <script>
+		                        let waypointCount = 0;
+	
+		                        function addWaypoint() {
+		                            if (waypointCount < 30) {
+		                                waypointCount++;
+	
+		                                const waypointFields = document.getElementById('waypointFields');
+	
+		                                // 새로운 경유지 입력 필드를 생성합니다.
+		                                const newWaypointField = document.createElement('div');
+		                                newWaypointField.className = 'waypointField';
+	
+		                                // 아이디 값으로 동적으로 숫자를 부여합니다.
+		                                newWaypointField.innerHTML = `
+		                                    <label for="waypoint${waypointCount}">경유지 입력</label>
+		                                    <div class="input-group outer-container" style="width: 100%;">
+		                                        <input type="text" style="height: auto;" class="form-control" id="waypoint${waypointCount}" name="waypoint" placeholder="경유지 주소를 입력하세요">
+		                                        <button class="btn btn-danger" style="width: 80px;" onclick="removeWaypoint(this)">삭제</button>
+		                                    </div>
+		                                `;
+	
+		                                waypointFields.appendChild(newWaypointField);
+		                            } else {
+		                                alert('최대 30개까지 추가할 수 있습니다.');
+		                            }
+		                        }
+	
+		                        function removeWaypoint(button) {
+		                            const waypointFields = document.getElementById('waypointFields');
+		                            const fieldToRemove = button.closest('.waypointField');
+		                            waypointFields.removeChild(fieldToRemove);
+		                            waypointCount--;
+		                        }
+							</script>    
+	                        <tr>
+							    <td colspan="2">
+							        <label for="place">도착지 입력</label>
+							        <div class="input-group outer-container" style="width: 100%;">
+							            <input type="text" style="height: auto;" class="form-control" id="endPlace" name="endPlace" placeholder="도착지 주소를 입력하세요">
+							            <button class="btn btn-primary" style="width: 80px;" onclick="stopoverCalculateDistance()">계산</button>
+							        </div>
+							    </td>
+							</tr>   
 <!-- ========================================================= 탄소계산기 end ======================================================== -->
 	                        <tr>
 	                            <td colspan="2">
                                 <label for="smoke">흡연(개비) 배출량</label>
-                                  <!--  <form action="/action_page.php">  -->
 									    <select class="form-select form-control"  type="text" id="smoke" name="smoke">
 										     <c:forEach var="i" begin="1" end="20">
 										      <option value="${i}" >${i}</option>
@@ -235,7 +380,6 @@
 									    </select>
 									     <p id="showResult"  style="display: none;"></p>
 									    <p>※ 산출방식: 14g/개 (※감소량에서 차감됩니다.)</p>
-									 <!--   </form> -->
 	                            </td>
 	                        </tr>
 	                         <tr>
@@ -251,183 +395,19 @@
 	                        
 	                        <tr>
 	                            <td colspan="2" style="text-align: right;">
-	                                <button class="btn btn-primary me-2" onclick="insert()">제출</button>
-	                                <!-- <button class="btn btn-secondary" type="reset">취소</button> -->
+	                                <button class="btn btn-success me-2" onclick="insert()">제출</button>
+	                               <!-- <button class="btn btn-secondary" type="reset">초기화</button> --> 
 	                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">종료</button>
 	                            </td>
 	                        </tr>
 	                        
 	                    </table>
-					<!-- </form> -->
 				</div>
 			</div>
 		</div>
 	</div>
 	
-	<div class="modal" id="updateModal">
-		<div class="modal-dialog">
-			<div class="modal-content">
-<!---------------------------------------- update 프론트엔드  ------------------------------------------>
-				<!-- Modal Header -->
-				<div class="modal-header">
-					<h5 class="modal-title"><i class="fa-solid fa-leaf"></i> 오늘의 탄소감소량 수정</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-				</div>
-			
-				<!-- Modal body -->
-				<div class="modal-body">
-				
-					<!--<form action="/onnana/schedule/update" method="post"> -->
-						<input type="hidden" name="sid" id="sid2">
-						<table class="table table-borderless">
-	                       
-	                            <td>
-	                                <label for="startDate2">일 자</label>
-	                                <input class="form-control" type="date" id="startDate2" name="startDate">
-	                            </td>
-	                            <td style="display: none;">
-	                                <label for="startTime2">시작시간</label>
-	                                <select class="form-control" name="startTime" id="startTime2">
-	                                <c:forEach var="tl" items="${timeList}">
-	                                    <option value="${tl}" >${tl}</option>
-	                                </c:forEach>
-	                                </select>
-	                            </td>
-	                        </tr>
-<!-- ========================================================= 탄소계산기 start ========================================================= -->
-	                         <tr>
-	                            <td colspan="2">
-	                            	<p id="demo" style="display: none;"></p> <!-- 현재 위치를 표시할 요소 -->
-	                                <label for="place">거리에 따른 배출 감소량 계산하기</label>
-	                                <div class="input-group outer-container" style="width: 100%;">
-									    <input type="text" style="height: auto;" class="form-control" id="place2" name="place" placeholder=" 도착지 주소를 입력하면 현재위치부터 계산합니다">
-									    <button class="btn btn-success"  id="calculateDistanceBtn2"  style="width: 80px;" onclick="searchAndCalculateDistance2()">계산</button>
-									</div>
-		                              <p id="result2"></p>  <!-- 검색된 위치의 좌표와 거리를 표시할 요소 -->
-	                            </td>
-	                        </tr>  
-	                        
-<!-- ========================================================= 탄소계산기 end ======================================================== -->
-	                         <tr>
-	                            <td colspan="2">
-                                <label for="smoke">금연(개비) 배출 감소량</label>
-                                 <!--  <form action="/action_page.php">  -->
-									    <select class="form-select form-control"  type="text" id="smoke2" name="smoke"">
-										     <c:forEach var="i" begin="1" end="20">
-										      <option value="${i}" >${i}</option>
-									      		</c:forEach>
-									    </select>
-									     <p id="showResult2"  style="display: none;"></p>
-									    <p>※ 산출방식: 14g/개</p>
-									 <!--   </form> -->
-	                            </td>
-	                        </tr>
-	                         <tr>
-	                            <td colspan="2">
-	                                <label for="title">합 산</label>
-	                                <div class="input-group outer-container" style="width: 100%;">
-									    <input class="form-control" type="text" id="title2" name="title" disabled>
-									    <button  class="btn btn-success" style="width: 80px;"  onclick="readJs2()"><i class="fa-solid fa-calculator"></i></button>
-									</div>
-	                            </td>
-	                        </tr>   
-	                        <tr>
-	                        <tr>
-	                            <td colspan="2" style="text-align: right;">
-	                                <button class="btn btn-success me-2" onclick="update()">수정</button>
-	                                <button class="btn btn-danger me-2"  data-bs-dismiss="modal" onclick="deleteSchedule()">삭제</button>
-									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">종료</button>
-	                            </td>
-	                        </tr>
-	                    </table>
-					<!-- </form> -->
-				</div>
-			</div>
-		</div>
-	</div>
 	
-	<div class="modal" id="addAnnivModal">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<!-- Modal Header -->
-				<div class="modal-header">
-					<h4 class="modal-title">기념일 추가</h4>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-				</div>
-			
-				<!-- Modal body -->
-				<div class="modal-body">
-					<!-- <form action="/onnana/schedule/insertAnniv" method="post"> -->
-						<table class="table table-borderless">
-	                        <tr>
-	                            <td>
-	                                <label for="title">제목</label>
-	                                <input class="ms-5 me-2" type="checkbox" name="holiday">공휴일
-	                                <input class="form-control" type="text" id="title" name="title">
-	                            </td>
-	                        </tr>
-	                        <tr>
-	                            <td>
-	                                <label for="annivDate">날짜</label>
-	                                <input class="form-control" type="date" id="annivDate" name="annivDate">
-	                            </td>
-	                        </tr>
-	                        <tr>
-	                            <td style="text-align: right;">
-	                                <button class="btn btn-primary me-2" type="submit">제출</button>
-	                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">종료</button>
-	                            </td>
-	                        </tr>
-	                    </table>
-					<!-- </form> -->
-				</div>
-			</div>
-		</div>
-	</div>
 	
-	<div class="modal" id="addAnnivListModal">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<!-- Modal Header -->
-				<div class="modal-header">
-					<h4 class="modal-title">공휴일/24절기 추가</h4>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-				</div>
-			
-				<!-- Modal body -->
-				<div class="modal-body">
-					<form action="/onnana/schedule/insertAnnivList" method="post">
-						<table class="table table-borderless">
-	                        <tr>
-	                            <td>
-	                            	<input type="radio" class="form-check-input" name="option" value="공휴일" checked> 공휴일
-	                            	<input type="radio" class="form-check-input ms-3" name="option" value="24절기"> 24절기
-	                            </td>
-	                        </tr>
-	                        <tr>
-	                            <td>
-	                                <label for="year">년도</label>
-	                                <select class="form-select" id="year" name="year">
-	                                	<option>2020</option>
-	                                	<option>2021</option>
-	                                	<option>2022</option>
-	                                	<option selected>2023</option>
-	                                	<option>2024</option>
-	                                	<option>2025</option>
-	                                </select>
-	                            </td>
-	                        </tr>
-	                        <tr>
-	                            <td style="text-align: right;">
-	                                <button class="btn btn-primary me-2" type="submit">제출</button>
-	                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">종료</button>
-	                            </td>
-	                        </tr>
-	                    </table>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
 </body>
 </html>

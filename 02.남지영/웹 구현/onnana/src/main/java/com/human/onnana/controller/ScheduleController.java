@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import com.human.onnana.entity.Anniversary;
 import com.human.onnana.entity.SchDay;
 import com.human.onnana.entity.Schedule;
+import com.human.onnana.entity.User;
 import com.human.onnana.service.AnniversaryService;
 import com.human.onnana.service.ScheduleService;
 import com.human.onnana.utility.SchedUtil;
@@ -132,8 +133,24 @@ public class ScheduleController {
 		model.addAttribute("month", String.format("%02d", month));
 		model.addAttribute("numberOfWeeks", calendar.size());
 		model.addAttribute("timeList", schedUtil.genTime());
+		model.addAttribute("menu", "calendar");
 		return "schedule/calendar";
 	}
+	
+	
+	
+	
+	@PostMapping("/calendar")
+	public String list(@PathVariable int page, HttpSession session, Model model, String uid, String sdate) {
+	    String sessUid = (String) session.getAttribute("sessUid");
+	    List<Schedule> userList = schedService.getuserdateCarvon(sessUid, sdate);
+	    model.addAttribute("userList", userList);
+	    model.addAttribute("sdate", sdate); // 해당 날짜도 함께 전달합니다.
+	    return "schedule/calendar";
+	}
+	
+	
+	
 	
 	
 	@ResponseBody

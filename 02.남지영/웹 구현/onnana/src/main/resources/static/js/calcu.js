@@ -3,9 +3,9 @@
  * 		탄소거리계산기를 구현한 코드
  */
 
+
+/* ================== 현재위치 경도 위도 구하는 코드 ===================== */
 var hereLat, hereLon;
-
-
 
 function getLocation() {
   if (navigator.geolocation) {
@@ -23,6 +23,9 @@ function showPosition(position) {
 
 getLocation();
 
+
+
+/* ================== 현재위치에서부터 도착지까지의 거리계산 및 탄소계산 ===================== */
 
 function searchAndCalculateDistance() {
   var address = document.getElementById('place').value;					
@@ -104,6 +107,96 @@ function readJs() {
 }
 
 
+/* ================================= 경유지까지의 거리계산 및 탄소계산 ======================================== */
+function stopoverCalculateDistance() {
+  var headers = {
+    'Authorization': 'KakaoAK db8c17d6893ffe5d073cd03b8bfe32b5'
+  };
+
+  var startQuery = encodeURIComponent(document.getElementById('startPlace').value);
+  var endQuery = encodeURIComponent(document.getElementById('endPlace').value);
+
+  var startUrl = "https://dapi.kakao.com/v2/local/search/address.json?query=" + startQuery;
+  var endUrl = "https://dapi.kakao.com/v2/local/search/address.json?query=" + endQuery;
+
+
+	
+  $.ajax({
+    url: startUrl,
+    headers: headers,
+    success: function (startResult) {
+      var startLat = startResult.documents[0].x;
+      var startLon = startResult.documents[0].y;
+		
+		
+      $.ajax({
+        url: endUrl,
+        headers: headers,
+        success: function (endResult) {
+          var endLat = endResult.documents[0].x;
+          var endLon = endResult.documents[0].y;
+
+          var waypointAddresses = document.getElementsByClassName('waypoint');
+          var waypoints = '';
+
+          for (var i = 0; i < waypointAddresses.length; i++) {
+            var waypointQuery = encodeURIComponent(waypointAddresses[i].value);
+
+            (function (index) {
+              $.ajax({
+                url: "https://dapi.kakao.com/v2/local/search/address.json?query=" + waypointQuery,
+                headers: headers,
+                success: function (waypointResult) {
+                  var waypointLat = waypointResult.documents[0].x;
+                  var waypointLon = waypointResult.documents[0].y;
+
+                  waypoints += waypointLat + ',' + waypointLon + '|';
+
+                  if (index === waypointAddresses.length - 1) {
+                    var distanceUrl = "https://apis-navi.kakaomobility.com/v1/directions?origin=" + startLat + "," + startLon +
+                      "&destination=" + endLat + "," + endLon +
+                      "&waypoints=" + waypoints +
+                      "&priority=DISTANCE&car_fuel=GASOLINE&car_hipass=false&alternatives=false&road_details=false";
+
+                    $.ajax({
+                      url: distanceUrl,
+                      headers: headers,
+                      success: function (distanceResult) {
+                        var distance = parseInt(distanceResult.routes[0].summary.distance, 10);
+                        var distancekg = parseInt(distance * 130.736 / 1000 / 1000, 10);
+                        var resultDiv = document.getElementById("result");
+
+                        var carbonEmissionText = "※ 탄소배출량(승용차/휘발유 기준) : " + distancekg + 'kg';
+                        resultDiv.innerHTML = carbonEmissionText;
+                      },
+                      error: function (error) {
+                        console.log('에러 발생:', error);
+                      }
+                    });
+                  }
+                },
+                error: function (error) {
+                  console.log('에러 발생:', error);
+                }
+              });
+            })(i);
+          }
+        },
+        error: function (error) {
+          console.log('에러 발생:', error);
+        }
+      });
+    },
+    error: function (error) {
+      console.log('에러 발생:', error);
+    }
+  });
+}
+
+
+
+
+
 
 
 
@@ -113,6 +206,7 @@ function readJs() {
 
 
 function searchAndCalculateDistance2() {
+
   var address = document.getElementById('place2').value;					
   var query = encodeURIComponent(address);
 
