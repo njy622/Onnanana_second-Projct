@@ -33,4 +33,8 @@ public interface UserService {
 	
 	int login(String uid, String pwd);
 	
+	String idsearch(String uname, String email);
+	
+	String userinfosame(String uname, String uid, String email);
+	
 }

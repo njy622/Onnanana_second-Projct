@@ -235,7 +235,7 @@ public class AsideUtil {
 	// ★★★ OpenWeather API ★★
 	public String getWeather(String lon, String lat) {
 		String apiUrl = "https://api.openweathermap.org/data/2.5/weather";
-		apiUrl += "?lat=37.5207569&lon=126.9003409&appid=7bf73c254c8083bf83a5f9b40a7146bf&units=metric";
+		apiUrl += "?lat=37.5207569&lon=126.9003409&appid="+openWeatherApiKey+"&units=metric";
 	
 		String weatherStr = null;
 		try {

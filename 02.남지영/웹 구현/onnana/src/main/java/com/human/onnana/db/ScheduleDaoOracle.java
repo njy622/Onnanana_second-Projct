@@ -51,14 +51,18 @@ public interface ScheduleDaoOracle {
 	@Select("SELECT COUNT(*)FROM schedule WHERE \"uid\" = #{uid}")
 	int userCount(String uid);
 	
-	// 유저 전체 캘린더 작성 카운트
+	// 유저 전체 탄소 감소량 합계
 	@Select("SELECT  SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))) AS total_sum FROM schedule")
 	Double carbonCount();
 	
-	// 한 유저의 캘린더 작성 카운트
+	// 한 유저 탄소감소량 합계
 	@Select("SELECT  SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))) AS total_sum FROM schedule where \"uid\"= #{uid}")
 	Double carbonUserCount(String uid);
 	
+	
+	// 한 유저의 탄소감소량 
+	@Select("SELECT uid, SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))) AS total_sum FROM schedule WHERE \"uid\" = #{uid} AND sdate = #{sdate} GROUP BY uid")
+	List<Schedule> getuserdateCarvon(String uid, String sdate);
 	
 	
 	
