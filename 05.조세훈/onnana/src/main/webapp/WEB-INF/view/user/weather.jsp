@@ -7,6 +7,8 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <%@ include file="../common/head.jspf" %>
      <style>
+       
+        
          #map-container {
             position: relative;
             display: inline-block;
@@ -95,121 +97,159 @@
        .Express {
        z-index: 999; /* 이미지 위에 텍스트*/
        }
+       
+       
+  /* 생활지수 스타일 ㅋ코드*/     
+      .row {
+      		display: flex;
+      	}
       
-       div {
+      .col {
+	      	flex: 1; /* 동일한 너비를 갖도록 설정 */
+	        padding: 10px; /* 선택 사항: 셀 간 간격을 조절할 수 있습니다. */
+	        border: 1px solid #ccc; /* 선택 사항: 테두리를 추가할 수 있습니다. */
+      	}
+      	
+      	
+      	
+     /* div {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            justify-content: center;
-        }
+            justify-content: center; /* 중앙 정렬을 유지하면서 좌우 정렬 */
+        }*/
+        
+       canvas {
+		    margin-top: 20px; /* 각 차트의 상단 간격을 조절 */
+		    position: relative; /* Canvas에 상대 위치 지정 */
+		    width: 25%; /* 각 차트의 너비를 25%로 설정하여 4개씩 가로로 나열 */
+		    max-width: 300px; /* 최대 너비 설정 */
+		}
+		
+		.chart-container {
+		    position: relative;
+		    width: 100px
+		}
+		
+		.chart-image {
+		    position: absolute;
+		    left: 50%;
+		    transform: translate(-50%, -50%);
+		    max-width: 50%; /* 이미지 최대 너비 지정 */
+		    max-height: 50%; /* 이미지 최대 높이 지정 */
+		    z-index: 1000;
+		}
+		
+		.chart-text {
+		    position: absolute;
+		    bottom: 0; /* 텍스트를 아래에 위치시킴 */
+		    left: 50%;
+		    transform: translate(-50%, 50%);
+		    font-size: 18px;
+		}
 
-        canvas {
-            margin-top: 100px;
-            position: relative;
-        }
-
-        .chart-container {
-         display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
-          justify-content: center;
-          flex-direction: row; /* 기존에는 column이었으므로 row로 변경 */
-}
-        }
-
-        .chart-image {
-            max-width: 100%;
-          max-height: 100%;
-        }
-
-        .chart-text {
-            position: absolute;
-            top: 80%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 12px;
-        }
       
     </style>
     <!-- 새로 추가한 차트 관련 코드 -->
    	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-     document.addEventListener('DOMContentLoaded', function() {
-         const buttons = document.querySelectorAll('.weather-button');
-         const displayId = document.getElementById('clickedButtonId');
+    document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('.weather-button');
+        const displayId = document.getElementById('clickedButtonId');
 
-         buttons.forEach(button => {
-             button.addEventListener('click', function(event) {
-                 const clickedButtonId = this.id;
-            document.querySelector("span").innerHTML = "(" + clickedButtonId + ")";
-                 // HTML 화면에 출력
-             });
-         });
-     });
-     window.onload = function() {
-         let jsonDataString = '${data}';
-         let jsonData = JSON.parse(jsonDataString);
-         console.log(jsonData);
-     
-         // 이미지 클릭 시의 동작을 처리하는 함수
-         function handleImageClick(index) {
-             var clickedData = jsonData[index];
-             var description = clickedData["안내멘트"];
-             alert(description);
-         }
-     
-         for (var i = 0; i < jsonData.length; i++) {
-             var labels = [jsonData[i]["생활지수"], ""];
-     
-             var dataset = {
-                 data: [jsonData[i]["그래프 값"], jsonData[i]["그래프 최댓값"] - jsonData[i]["그래프 값"]],
-                 backgroundColor: ['#87CEEB', '#808080'],
-             };
-     
-             var chartId = 'myChart' + i;
-             var ctx = document.getElementById(chartId).getContext('2d');
-     
-             // 차트 생성
-             var myChart = new Chart(ctx, {
-                 type: 'doughnut',
-                 data: {
-                     labels: labels,
-                     datasets: [dataset],
-                 },
-                 options: {
-                     responsive: false,
-                     plugins: {
-                         tooltip: {
-                             enabled: false,
-                         },
-                     },
-                 },
-             });
-     
-             // 이미지 URL 가져오기
-             var imageUrl = jsonData[i]["이미지"];
-     
-             // 이미지 요소 생성
-             var imgElement = new Image();
-             imgElement.src = imageUrl;
-             imgElement.classList.add('chart-image');
-     
-             // 이미지를 Canvas 부모에 추가
-             var chartContainer = document.getElementsByClassName('chart-container')[i];
-             chartContainer.appendChild(imgElement);
-     
-             // 이미지 클릭 이벤트 처리
-             imgElement.addEventListener('click', (function (index) {
-                 return function () {
-                     handleImageClick(index);
-                 };
-             })(i));
-     
-             // 생활지수 텍스트 추가
-             var textElement = document.getElementById('text' + i);
-             textElement.textContent = jsonData[i]["생활지수"] + jsonData[i]["그래프 값"];
-         }
-     };
+        buttons.forEach(button => {
+            button.addEventListener('click', function(event) {
+                const clickedButtonId = this.id;
+                document.querySelector("span").innerHTML = "(" + clickedButtonId + ")";
+                // HTML 화면에 출력
+            });
+        });
+    });
+
+    window.onload = function() {
+        // Assuming 'data' is a JSON string passed from the server
+        let jsonDataString = '${data}';
+        let jsonData = JSON.parse(jsonDataString);
+        console.log(jsonData);
+
+        // 이미지 클릭 시의 동작을 처리하는 함수
+        function handleImageClick(index) {
+            var clickedData = jsonData[index];
+            var description = clickedData["안내멘트"];
+            alert(description);
+        }
+
+        for (var i = 0; i < jsonData.length; i++) {
+            var labels = ["", ""];
+
+            var dataset = {
+                data: [jsonData[i]["그래프 값"], jsonData[i]["그래프 최댓값"] - jsonData[i]["그래프 값"]],
+                backgroundColor: ['#87CEEB', '#808080'],
+                borderWidth: 0, // Remove the border around the doughnut chart
+            };
+
+            var chartId = 'myChart' + i;
+            var ctx = document.getElementById(chartId).getContext('2d');
+
+            // 차트 생성
+            var myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [dataset],
+                },
+                options: {
+                    responsive: false,
+                    plugins: {
+                        tooltip: {
+                            enabled: false,
+                        },
+                    },
+                    legend: {
+                        display: false, // Hide the legend (bar graph icon)
+                    },
+                },
+            });
+
+            // 이미지 URL 가져오기
+            var imageUrl = jsonData[i]["이미지"];
+
+            // 이미지 요소 생성
+            var imgElement = new Image();
+            imgElement.src = imageUrl;
+            imgElement.classList.add('chart-image');
+
+            // 이미지를 Canvas 부모에 추가
+            var chartContainer = document.getElementsByClassName('chart-container')[i];
+            chartContainer.appendChild(imgElement);
+
+            // 이미지 클릭 이벤트 처리
+            imgElement.addEventListener('click', (function (index) {
+                return function () {
+                    handleImageClick(index);
+                };
+            })(i));
+
+            // 생활지수 텍스트 추가
+            var textElement = document.getElementById('text' + i);
+            textElement.textContent = jsonData[i]["생활지수"] + jsonData[i]["그래프 값"];
+
+            // 추가: 이미지와 텍스트를 차트 위에 표기
+            var chartCanvas = document.getElementById(chartId);
+            chartCanvas.parentNode.style.position = 'relative';
+
+            imgElement.style.position = 'absolute';
+            imgElement.style.top = '50%';
+            imgElement.style.left = '50%';
+            imgElement.style.transform = 'translate(-50%, -50%)';
+
+            textElement.style.position = 'absolute';
+            textElement.style.top = '50%';
+            textElement.style.left = '50%';
+            textElement.style.transform = 'translate(-50%, -50%)';
+        }
+    };
+
 
     
     </script>
@@ -590,38 +630,47 @@
 		              </div>
 	          </div>
           </div>
-          <div class="chart-container">
-               <canvas id="myChart0" width="100" height="100"></canvas>
-               <div class="chart-text" id="text0"></div>
-           </div>
-           <div class="chart-container">
-               <canvas id="myChart1" width="100" height="100"></canvas>
-               <div class="chart-text" id="text1"></div>
-           </div>
-           <div class="chart-container">
-               <canvas id="myChart2" width="100" height="100"></canvas>
-               <div class="chart-text" id="text2"></div>
-           </div>
-           <div class="chart-container">
-               <canvas id="myChart3" width="100" height="100"></canvas>
-               <div class="chart-text" id="text3"></div>
-           </div>
-           <div class="chart-container">
-               <canvas id="myChart4" width="100" height="100"></canvas>
-               <div class="chart-text" id="text4"></div>
-           </div>
-           <div class="chart-container">
-               <canvas id="myChart5" width="100" height="100"></canvas>
-               <div class="chart-text" id="text5"></div>
-           </div>
-           <div class="chart-container">
-               <canvas id="myChart6" width="100" height="100"></canvas>
-               <div class="chart-text" id="text6"></div>
-           </div>
-           <div class="chart-container">
-               <canvas id="myChart7" width="100" height="100"></canvas>
-               <div class="chart-text" id="text7"></div>
-           </div>
+         
+          <div class="container">
+          	 <div class="row">
+          	 	<div colspan="4">
+		          <div class="chart-container" width="100">
+		               <canvas id="myChart0" width="150" height="150"></canvas>
+		               <div class="chart-text" id="text0"></div>
+		           </div>
+		           <div class="chart-container">
+		               <canvas id="myChart1" width="100" height="100"></canvas>
+		               <div class="chart-text" id="text1"></div>
+		           </div>
+		           <div class="chart-container">
+		               <canvas id="myChart2" width="100" height="100"></canvas>
+		               <div class="chart-text" id="text2"></div>
+		           </div>
+		           <div class="chart-container">
+		               <canvas id="myChart3" width="100" height="100"></canvas>
+		               <div class="chart-text" id="text3"></div>
+		           </div>
+          	 	</div>
+          	 	<div colspan="4">
+		           <div class="chart-container">
+		               <canvas id="myChart4" width="100" height="100"></canvas>
+		               <div class="chart-text" id="text4"></div>
+		           </div>
+		           <div class="chart-container">
+		               <canvas id="myChart5" width="100" height="100"></canvas>
+		               <div class="chart-text" id="text5"></div>
+		           </div>
+		           <div class="chart-container">
+		               <canvas id="myChart6" width="100" height="100"></canvas>
+		               <div class="chart-text" id="text6"></div>
+		           </div>
+		           <div class="chart-container">
+		               <canvas id="myChart7" width="100" height="100"></canvas>
+		               <div class="chart-text" id="text7"></div>
+		           </div>
+	           </div>
+          	</div>
+          </div>
           
           <div class="row"><div class="container"></div></div>
           <div class="row">
