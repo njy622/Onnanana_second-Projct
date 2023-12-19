@@ -77,6 +77,30 @@
 	    </dependency>
 	    
 	    
+	     <dependency>
+        <groupId>org.springframework.boot</groupId>
+	        <artifactId>spring-boot-starter-data-jpa</artifactId>
+	    </dependency>
+	    
+	    <dependency>
+	        <groupId>org.json</groupId>
+	        <artifactId>json</artifactId>
+	        <version>20210307</version>
+	    </dependency>
+	    
+	    <dependency>
+		    <groupId>com.oracle.database.jdbc</groupId>
+		    <artifactId>ojdbc10</artifactId> <!-- ojdbc8 for Oracle 12c, ojdbc10 for Oracle 19c -->
+		    <version>19.3.0.0</version>
+		</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>3.141.59</version>
+        </dependency>
+	    
 	</dependencies>
 
 	<build>

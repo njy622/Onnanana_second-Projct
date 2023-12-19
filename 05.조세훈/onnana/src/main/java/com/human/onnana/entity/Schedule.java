@@ -11,6 +11,7 @@ public class Schedule {
 	private String place;
 	private String smoke;
 	
+	
 	public Schedule() { }
 
 	public Schedule(int sid, String uid, String sdate, LocalDateTime startTime, String title, String place,

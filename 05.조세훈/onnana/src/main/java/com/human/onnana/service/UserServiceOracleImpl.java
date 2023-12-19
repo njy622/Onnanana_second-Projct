@@ -63,4 +63,14 @@ public class UserServiceOracleImpl implements UserService{
 			return WRONG_PASSWORD; 
 	}
 
+	@Override
+	public String idsearch(String uname, String email) {
+		return userDao.idsearch(uname,email);
+	}
+
+	@Override
+	public String userinfosame(String uname, String uid, String email) {
+		return userDao.userinfosame(uname,uid, email);
+	}
+
 }

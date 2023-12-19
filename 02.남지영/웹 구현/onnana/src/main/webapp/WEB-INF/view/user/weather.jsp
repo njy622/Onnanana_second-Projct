@@ -61,7 +61,7 @@
            position: relative; /* 포지션 설정 */
            width: 100px; /* 원하는 셀 너비로 설정 */
            height: 100px; /* 원하는 셀 높이로 설정 */
-           z-index: 1;
+           z-index: 999;
        }
    
        .table-cell::before {
@@ -80,7 +80,7 @@
    
        .text {
            position: relative; /* 포지션 설정 */
-           z-index: 1; /* 텍스트를 이미지 위로 올림 */
+           z-index: 999; /* 텍스트를 이미지 위로 올림 */
        }
        /* 부모 요소인 h4에 display: inline-block 설정 */
        h4 {
@@ -93,7 +93,7 @@
        }   
        
        .Express {
-       z-index: 1; /* 이미지 위에 텍스트*/
+       z-index: 999; /* 이미지 위에 텍스트*/
        }
       
     </style>
@@ -378,34 +378,33 @@
             <!-- 나머지 버튼들도 동일한 방식으로 클래스와 데이터 속성을 설정합니다. -->
             <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
             <script>
-               $(document).ready(function() {
-                   
-                    var initialButton = $("#서울영등포");
-                     var nx = initialButton.data("nx");
-                     var ny = initialButton.data("ny");
-   
-                     sendRequestWeather(nx, ny);
-                     sendRequestAirQuality(initialButton.data("name"));
-                     
-                  // "서울은평" 버튼의 ID를 출력
-                   $("#clickedButtonId").text("(" + initialButton.attr("id") + ")");
-                   
-                    $(".weather-button").click(function() {
-                        // 클릭된 버튼의 nx, ny, name 값을 가져옵니다.
-                        var nx = $(this).data("nx");
-                        var ny = $(this).data("ny");
-                        var name = $(this).data("name");
-            
-                        sendRequestWeather(nx, ny);
-                        sendRequestAirQuality(name);
-                    });
+            $(document).ready(function() {
+                var defaultButton = $("#서울영등포"); // 변경하고 싶은 디폴트 버튼 지정
+                var nx = defaultButton.data("nx");
+                var ny = defaultButton.data("ny");
+
+                // 초기 로딩 시 디폴트 버튼의 정보로 기상정보와 대기질 정보 요청
+                sendRequestWeather(nx, ny);
+                sendRequestAirQuality(defaultButton.data("name"));
+
+                // 초기 로딩 시 디폴트 버튼의 ID를 출력
+                $("#clickedButtonId").text("(" + defaultButton.attr("id") + ")");
+
+                $(".weather-button").click(function() {
+                    var nx = $(this).data("nx");
+                    var ny = $(this).data("ny");
+                    var name = $(this).data("name");
+
+                    sendRequestWeather(nx, ny);
+                    sendRequestAirQuality(name);
+
+                    // 클릭한 버튼의 ID를 #clickedButtonId에 출력
+                    $("#clickedButtonId").text("(" + $(this).attr("id") + ")");
                 });
+            });
+
             
                 function sendRequestWeather(nx, ny) {
-                	
-                	// Before making the AJAX call, show the placeholder image
-                    $('#placeholderImage').show();
-                	
                     $.ajax({
                         type: "GET",
                         url: "http://localhost:5000/get_weather",  // 플라스크 서버 주소로 업데이트하세요
@@ -421,9 +420,7 @@
                             tableContent += '<tr><td>' + response['습도']  + '</td><td>' + response['1시간 강수량'] + '</td><td>' + response['풍향'] + ' , ' + response['풍속'] + '</td></tr>';
                             tableContent += '</table>';
 
-                         // Replace the placeholder image with the actual content
                             $("#result").html(tableContent);
-                            $('#placeholderImage').hide(); // Hide the placeholder once content is loaded
                         },
                         error: function(error) {
                             console.error("에러:", error);
@@ -474,24 +471,22 @@
 
         </div>
        <div class="col-6 mt-3">
-	       <div class="row">
-	          <div style="text-align:center;">
-	              <h4 style="color:DodgerBlue;"><i class="fa-solid fa-cloud-sun"></i>&nbsp;오늘의 기상정보&nbsp;&nbsp;&nbsp;</h4>
-	              <!-- 클릭한 버튼의 ID를 출력하는 부분 -->
-	            <span id="clickedButtonId"></span>
-	              <hr style="margin-bottom:-10px;">
-	          </div>
-	          <div class="d-flex justify-content-start" style="border: none;">
-				    <div id="result" class="weather-info">
-				        <!-- Placeholder image -->
-				        <img id="placeholderImage" src="/onnana/img/loading.gif" alt="Placeholder Image" width="50%">
-				        <!-- Content loaded via API will replace this image -->
-				    </div>
-				</div>
-	          <div class="d-flex justify-content-start" style="border: none;">
-	              <div id="result1" class="weather-info2">
-	                  <!-- sendRequestWeather 함수가 호출되면 자동으로 결과가 표시됩니다. -->
-	              </div>
+       		 <div class="row">
+		          <div style="text-align:center;">
+		              <h4 class="text-center" style="color:DodgerBlue;"><i class="fa-solid fa-cloud-sun"></i>&nbsp;오늘의 기상정보&nbsp;&nbsp;&nbsp;</h4>
+		              <!-- 클릭한 버튼의 ID를 출력하는 부분 -->
+		            <span id="clickedButtonId"></span>
+		              <hr style="margin-bottom:-10px;">
+		          </div>
+		          <div class="d-flex justify-content-start" style="border: none;">
+		              <div id="result" class="weather-info">
+		                  <!-- sendRequestWeather 함수가 호출되면 자동으로 결과가 표시됩니다. -->
+		              </div>
+		          </div>
+		          <div class="d-flex justify-content-start" style="border: none;">
+		              <div id="result1" class="weather-info2">
+		                  <!-- sendRequestWeather 함수가 호출되면 자동으로 결과가 표시됩니다. -->
+		              </div>
 	          </div>
           </div>
           <div class="row"><div class="container"></div></div>
@@ -503,8 +498,7 @@
           </div>
       </div>
 
-   </div>
-
+	</div>
 </div>
 
 
