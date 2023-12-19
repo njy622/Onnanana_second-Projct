@@ -51,7 +51,7 @@
            
            <div class="button-container">
                <button onclick="changeImage('body.jpg', '')" class="btn btn-outline-info">초기화면</button>
-               <button onclick="changeImage('미세먼지질환.jpg', '미세먼지(PM-10)란?')" class="btn btn-outline-info">미세먼지</button>
+               <button onclick="changeImage('미세먼지질환.jpg', '미세먼지(PM-10)란?' )" class="btn btn-outline-info">미세먼지</button>               
                <button onclick="changeImage('초미세먼지 질환.jpg', '초미세먼지(PM-2.5)란?')" class="btn btn-outline-info">초미세먼지</button>
                <button onclick="changeImage('일산화탄소.jpg', '일산화탄소(CO)란?')" class="btn btn-outline-info">일산화탄소</button>
                <button onclick="changeImage('이산화질소.jpg', '이산화질소(NO2)란?')" class="btn btn-outline-info">이산화질소</button>
@@ -76,7 +76,7 @@
         	 <img src="/onnana/img/안내2.png" style="width:130%; margin-left:-200px;">
          `,
          '미세먼지질환.jpg': `<hr>
-      		 미세먼지는 초미세먼지(PM-2.5)와 미세먼지(PM-10)으로 구분된다.
+         	 <p>미세먼지는 초미세먼지(PM-2.5)와 미세먼지(PM-10)으로 구분된다.
       		 초미세먼지(PM-2.5)는 직경이 2.5㎛이하인 먼지이며, 미세먼지(PM-10)은 직경이 10㎛이하인 먼지이다.
       		 
       		 일반적으로 사람 머리카락 두께와 비교할 때 초미세먼지(PM-2.5)는 1/20∼1/30, 미세먼지(PM-10)는 1/6∼1/7일 정도로 매우 작다.
@@ -84,7 +84,8 @@
       		 (초)미세먼지는 주로 산업시설, 자동차, 난방 및 에너지 사용 등으로 인해 직접적으로 1차 배출되기도 하고, 황산염, 질산염과 같이 대기 중 반응에 의해 2차 생성되기도 한다. 주요 구성성분은 이온성분(SO42+, NO32-, NH4+), 탄소성분(유기탄소, 원소탄소), 금속화합물 등이다.
       		 
       		 (초)미세먼지를 흡입했을 때 기도에서 걸러지지 못하고 대부분 폐포까지 침투하여 심장질환과 호흡기질환을 유발하여 조기 사망률을 증가시킨다.
-      		 또한, 시정을 악화시키고, 식물의 잎 표면에 침적되어 신진대사를 방해하며, 건축물에 퇴적되어 부식을 일으킨다.`,
+      		 또한, 시정을 악화시키고, 식물의 잎 표면에 침적되어 신진대사를 방해하며, 건축물에 퇴적되어 부식을 일으킨다.</p>
+      	    `,
       		 
          '초미세먼지 질환.jpg': `<hr> 
         	 미세먼지는 초미세먼지(PM-2.5)와 미세먼지(PM-10)으로 구분된다.
@@ -143,6 +144,7 @@
         document.querySelector('.btn.btn-outline-info.active').classList.remove('active'); // 기존에 선택된 버튼 클래스 제거
         document.querySelector("button[data-image='" + imageName + "']").classList.add('active'); // 현재 이미지에 해당하는 버튼에 선택 클래스 추가
       }
+
    </script>
 
    <%@ include file="../common/bottom.jspf" %>

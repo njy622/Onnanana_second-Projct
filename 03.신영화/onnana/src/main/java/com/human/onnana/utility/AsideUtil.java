@@ -235,8 +235,9 @@ public class AsideUtil {
 	// ★★★ OpenWeather API ★★
 	public String getWeather(String lon, String lat) {
 		String apiUrl = "https://api.openweathermap.org/data/2.5/weather";
-		apiUrl += "?lat=37.5207569&lon=126.9003409&appid="+openWeatherApiKey+"&units=metric";
-	
+		apiUrl += "?lat=" + lon + "&lon=" + lat + "&appid=" + openWeatherApiKey + "&units=metric";
+
+
 		String weatherStr = null;
 		try {
 			URL url = new URL(apiUrl);
@@ -259,11 +260,14 @@ public class AsideUtil {
 			String iconUrl = "http://api.openweathermap.org/img/w/" + iconCode + ".png";
 			weatherStr = "<img src=\"" + iconUrl + "\" height=\"28\">" + desc + ","
 					+ " 온도: " + tempStr + "&#8451";
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return weatherStr;
+		} catch (IOException e) {
+	        e.printStackTrace();
+	    } catch (ParseException e) {
+	        e.printStackTrace();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return weatherStr;
 	}
-	
 }
 
