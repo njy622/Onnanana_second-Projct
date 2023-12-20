@@ -33,6 +33,19 @@
            padding: 10px;
            margin-top: 20px; /* 이미지 아래로 이동시키기 위한 값으로 조절하세요 */
        }
+       /* 추가된 CSS 스타일 */
+       .additional-image-container {
+           position: relative;
+           top: 0;
+           left: 0;
+           z-index: 2;
+           margin-left: 200px; /* 오른쪽 여백 조절 가능 */
+       }
+       
+       /* 추가된 스타일 */
+        #openModalBtn {
+            display: none; /* 초기에는 모달 열기 버튼을 숨김 */
+        } 
 
    </style>
 </head>
@@ -49,15 +62,22 @@
                <img id="myImage" src="/onnana/img/body.jpg" class="img-fluid" alt="Image" style="width:100%;">
            </div>
            
-           <div class="button-container">
-               <button onclick="changeImage('body.jpg', '', '')" class="btn btn-outline-info">초기화면</button>
-               <button onclick="changeImage('미세먼지질환.jpg', '미세먼지(PM-10)란?', '미세먼지그래프.png')" class="btn btn-outline-info">미세먼지</button>
-               <button onclick="changeImage('초미세먼지 질환.jpg', '초미세먼지(PM-2.5)란?', '초미세먼지그래프.png')" class="btn btn-outline-info">초미세먼지</button>
-               <button onclick="changeImage('일산화탄소.jpg', '일산화탄소(CO)란?','일산화탄소그래프.png')" class="btn btn-outline-info">일산화탄소</button>
-               <button onclick="changeImage('이산화질소.jpg', '이산화질소(NO2)란?', '이산화질소그래프.png')" class="btn btn-outline-info">이산화질소</button>
-               <button onclick="changeImage('아황산가스.jpg', '아황산가스(SO2)란?','아황산가스그래프.png')" class="btn btn-outline-info">아황산가스</button>
-               <button onclick="changeImage('대기오염물질(중금속).jpg', '중금속이란?','중금속그래프.png')" class="btn btn-outline-info">중금속</button>
+             <div class="button-container">
+                <button onclick="changeImage('body.jpg', '')" class="btn btn-outline-info" data-image="body.jpg">초기화면</button>
+                <button onclick="changeImage('미세먼지질환.jpg', '미세먼지(PM-10)란?', '미세먼지그래프.png')" class="btn btn-outline-info" data-image="미세먼지질환.jpg">미세먼지</button>
+                <button onclick="changeImage('초미세먼지 질환.jpg', '초미세먼지(PM-2.5)란?', '초미세먼지그래프.png')" class="btn btn-outline-info" data-image="초미세먼지 질환.jpg">초미세먼지</button>
+                <button onclick="changeImage('일산화탄소.jpg', '일산화탄소(CO)란?','일산화탄소그래프.png')" class="btn btn-outline-info" data-image="일산화탄소.jpg">일산화탄소</button>
+                <button onclick="changeImage('이산화질소.jpg', '이산화질소(NO2)란?', '이산화질소그래프.png')" class="btn btn-outline-info" data-image="이산화질소.jpg">이산화질소</button>
+                <button onclick="changeImage('아황산가스.jpg', '아황산가스(SO2)란?','아황산가스그래프.png')" class="btn btn-outline-info" data-image="아황산가스.jpg">아황산가스</button>
+                <button onclick="changeImage('대기오염물질(중금속).jpg', '중금속이란?','중금속그래프.png')" class="btn btn-outline-info" data-image="대기오염물질(중금속).jpg">중금속</button>
+           	</div>
+			
+			<!-- 추가 이미지가 표시될 공간 -->
+           <div id="additionalImageContainer" class="additional-image-container">
+             
            </div>
+			
+			
          </div>
          
 
@@ -66,15 +86,37 @@
           <div class="image-description" id="image-description">
               <h5 id="description-title" class="text-info"></h5>
               <p id="description-content"></p>
-             <!-- 추가 이미지와 설명 -->
-           		<div id="additionalImage"></div>
+              <button id="openModalBtn" type="button" class="btn btn-outline-info" onclick="openModal()">
+                  그래프 보기
+              </button>
           </div>
       </div>
       </div>
-      <div class="col-1"></div>
-      
+   </div>
+
+<!-- 부트스트랩 모달 -->
+<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-m" role="document">
+      <div class="modal-content">
+         <div class="modal-body">
+            <img id="modalImage" src="" class="img-fluid" alt="추가 이미지" style="width: 100%;">
+            <p style="font-size:12px; float:right;">출처:KOSIS/국내통계포털(https://kosis.kr/)</p>
+            <hr>
+            <!-- 닫기 버튼을 추가합니다 -->
+         </div>
+      </div>
    </div>
 </div>
+
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<!-- Popper.js, Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
    <script>
       const imageDescriptions = {
          'body.jpg': `
@@ -129,62 +171,73 @@
 
             현재 서울시에서 매월 측정하고 있는 중금속은 납(Pb), 카드뮴(Cd), 크롬(Cr), 구리(Cu), 망간(Mn), 철(Fe), 니켈(Ni), 비소(As), 베릴늄(Be), 알루미늄(Al), 칼슘(Ca), 마그네슘(Mg) 12개 항목이다. 현재 납에 대하여만 환경기준을 갖고 있다.`
       };
-		
-      const imageDescriptions2 = {
-    	         'body.jpg': `
-    	         `,
-    	         '미세먼지질환.jpg': `
-    	            <img src="/onnana/img/미세먼지그래프.png" style="width:130%; margin-left:-200px;">
-    	             `,
-    	             
-    	         '초미세먼지 질환.jpg': ` 
-    	            <img src="/onnana/img/초미세먼지그래프.png" style="width:130%; margin-left:-200px;">
-    	            `,
-    	         '일산화탄소.jpg':  ` 
-     	            <img src="/onnana/img/일산화탄소그래프.png" style="width:130%; margin-left:-200px;">
-     	            `,
-    	         '이산화질소.jpg':  ` 
-     	            <img src="/onnana/img/이산화질소그래프.png" style="width:130%; margin-left:-200px;">
-     	            `,
-    	         '아황산가스.jpg':  ` 
-     	            <img src="/onnana/img/아황산가스그래프.png" style="width:130%; margin-left:-200px;">
-     	            `,
-    	         '대기오염물질(중금속).jpg': ` 
-     	            <img src="/onnana/img/중금속그래프.png" style="width:130%; margin-left:-200px;">
-     	            `
-     	            };
+
    // 페이지 로드 시 초기 이미지와 설명을 표시하는 함수
       window.onload = function () {
-        // 기본 이미지와 설명 설정
-        changeImage('body.jpg', '', '', '');
-        // 초기 버튼을 선택된 상태로 변경
-        var initialButton = document.querySelector("button[data-image='body.jpg']");
-        if (initialButton) {
-            initialButton.classList.add('active');
-        }
-    };
+          // 기본 이미지와 설명 설정
+          changeImage('body.jpg', '');
+          // 초기 버튼을 선택된 상태로 변경
+          var initialButton = document.querySelector("button[data-image='body.jpg']");
+          if (initialButton) {
+              initialButton.classList.add('active');
+          }
+      };
 
-    function changeImage(imageName, descriptionTitle, descriptionContent, additionalImage) {
-        document.getElementById('myImage').src = '/onnana/img/' + imageName;
-        document.getElementById('description-title').innerHTML = '<strong>' + descriptionTitle + '</strong>';
-        document.getElementById('description-content').innerHTML = imageDescriptions[imageName];
-        document.getElementById('additionalImage').innerHTML = imageDescriptions2[imageName];
+      function changeImage(imageName, descriptionTitle, additionalImageName) {
+          document.getElementById('myImage').src = '/onnana/img/' + imageName;
+          document.getElementById('description-title').innerHTML = '<strong>' + descriptionTitle + '</strong>';
+          document.getElementById('description-content').innerHTML = imageDescriptions[imageName];
+
+          // 선택된 버튼 변경
+          var activeButton = document.querySelector('.btn.btn-outline-info.active');
+          if (activeButton) {
+              activeButton.classList.remove('active');
+          }
+
+          var currentButton = document.querySelector("button[data-image='" + imageName + "']");
+          if (currentButton) {
+              currentButton.classList.add('active');
+          }
+
+          // 모달 열기 버튼 표시 및 모달 이미지 업데이트
+          var openModalBtn = document.getElementById('openModalBtn');
+          var modalImage = document.getElementById('modalImage');
+          if (additionalImageName) {
+              modalImage.src = '/onnana/img/' + additionalImageName;
+              openModalBtn.style.display = 'block';
+          } else {
+              openModalBtn.style.display = 'none';
+          }
+      }
+
+      // 모달 열기 버튼 클릭 시 모달 열기
+      function openModal() {
+          $('#imageModal').modal('show');
+      }
+      
+   // 모달 창 닫기 이벤트 핸들링
+      function closeModal() {
+          console.log('closeModal function called'); // 디버깅을 위한 출력
+          $('#imageModal').modal('hide');
+      }
+
+      // 문서 로드 후 초기 설정
+      $(document).ready(function () {
+          // 여기에 초기 설정 코드 추가
+
+          // 닫기 버튼 클릭 시 closeModal 함수 호출
+          $('#imageModal .close, #imageModal button[data-dismiss="modal"]').on('click', function () {
+              closeModal();
+          });
+
+      });
 
 
-        // 선택된 버튼 변경
-        var activeButton = document.querySelector('.btn.btn-outline-info.active');
-        if (activeButton) {
-            activeButton.classList.remove('active');
-        }
-
-        var currentButton = document.querySelector("button[data-image='" + imageName + "']");
-        var currentButton = document.querySelector("button[data-image='" + additionalImage + "']");
-        if (currentButton) {
-            currentButton.classList.add('active');
-        }
-    }
+   
+   
 
    </script>
+
 
    <%@ include file="../common/bottom.jspf" %>
 
