@@ -7,6 +7,8 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <%@ include file="../common/head.jspf" %>
      <style>
+       
+        
          #map-container {
             position: relative;
             display: inline-block;
@@ -15,7 +17,8 @@
         #cartogram {
           width: 100%; /* 이미지의 가로 크기를 부모 컨테이너에 맞추기 */
           height: auto; /* 세로 크기는 자동으로 조절 */
-          z-index: -1;
+          z-index: -999;
+          margin-left:-150px;
       }
       
         .weather-button {
@@ -28,6 +31,7 @@
             color: #fff;
             border: none;
             cursor: pointer;
+            margin-left:-150px;
         }
         
         .weather-info {
@@ -95,34 +99,164 @@
        .Express {
        z-index: 999; /* 이미지 위에 텍스트*/
        }
+       
+       
+  /* 생활지수 스타일 코드*/     
+      .row {
+      		display: flex;
+      	}
+      
+      .col {
+	      	flex: 1; /* 동일한 너비를 갖도록 설정 */
+	        padding: 10px; /* 선택 사항: 셀 간 간격을 조절할 수 있습니다. */
+	        border: 1px solid #ccc; /* 선택 사항: 테두리를 추가할 수 있습니다. */
+      	}
+      	
+      	
+      	
+     /* div {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center; /* 중앙 정렬을 유지하면서 좌우 정렬 */
+        }*/
+        
+       canvas {
+		    position: relative; /* Canvas에 상대 위치 지정 */
+		    width: 25%; /* 각 차트의 너비를 25%로 설정하여 4개씩 가로로 나열 */
+		    max-width: 300px; /* 최대 너비 설정 */
+		}
+		
+		.chart-container {
+		    position: relative;
+		    width: 100px
+		}
+		
+		.chart-image {
+		    position: absolute;
+		    margin-top: 15px;
+		    margin-left: 28px;
+		    max-width: 40%; /* 이미지 최대 너비 지정 */
+		    max-height: 40%; /* 이미지 최대 높이 지정 */
+		    z-index: 1000;
+		}
+		
+		.chart-text {
+		    position: absolute;
+		    text-align:center;
+		    width: 150px;
+		    margin-top: -50px;
+		    margin-left: 23px;
+		    font-size: 13px;
+		    z-index: 1001;
+		    background-color:white;
+		}
+
       
     </style>
-     <script>
-     document.addEventListener('DOMContentLoaded', function() {
-         const buttons = document.querySelectorAll('.weather-button');
-         const displayId = document.getElementById('clickedButtonId');
+    <!-- 새로 추가한 차트 관련 코드 -->
+   	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    window.onload = function() {
+        // Assuming 'data' is a JSON string passed from the server
+        let jsonDataString = '${data}';
+        let jsonData = JSON.parse(jsonDataString);
+        console.log(jsonData);
 
-         buttons.forEach(button => {
-             button.addEventListener('click', function(event) {
-                 const clickedButtonId = this.id;
-            document.querySelector("span").innerHTML = "(" + clickedButtonId + ")";
-                 // HTML 화면에 출력
-             });
-         });
-     });
-    
-     </script>
+        // 이미지 클릭 시의 동작을 처리하는 함수
+        function handleImageClick(index) {
+            var clickedData = jsonData[index];
+            var description = clickedData["안내멘트"];
+            alert(description);
+        }
+
+        for (var i = 0; i < jsonData.length; i++) {
+            var labels = ["", ""];
+
+            var dataset = {
+                data: [jsonData[i]["그래프 값"], jsonData[i]["그래프 최댓값"] - jsonData[i]["그래프 값"]],
+                backgroundColor: ['#87CEEB', '#808080'],
+                borderWidth: 0, // Remove the border around the doughnut chart
+            };
+
+            var chartId = 'myChart' + i;
+            var ctx = document.getElementById(chartId).getContext('2d');
+
+            // 차트 생성
+            var myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [dataset],
+                },
+                options: {
+                    responsive: false,
+                    plugins: {
+                        tooltip: {
+                            enabled: false,
+                        },
+                    },
+                    legend: {
+                        display: false, // Hide the legend (bar graph icon)
+                    },
+                },
+            });
+
+            // 이미지 URL 가져오기
+            var imageUrl = jsonData[i]["이미지"];
+
+            // 이미지 요소 생성
+            var imgElement = new Image();
+            imgElement.src = imageUrl;
+            imgElement.classList.add('chart-image');
+
+            // 이미지를 Canvas 부모에 추가
+            var chartContainer = document.getElementsByClassName('chart-container')[i];
+            chartContainer.appendChild(imgElement);
+
+            // 이미지 클릭 이벤트 처리
+            imgElement.addEventListener('click', (function (index) {
+                return function () {
+                    handleImageClick(index);
+                };
+            })(i));
+
+            // 생활지수 텍스트 추가
+            var textElement = document.getElementById('text' + i);
+            textElement.textContent = jsonData[i]["생활지수"] + jsonData[i]["그래프 값"];
+
+            // 추가: 이미지와 텍스트를 차트 위에 표기
+            var chartCanvas = document.getElementById(chartId);
+            chartCanvas.parentNode.style.position = 'relative';
+
+            imgElement.style.position = 'absolute';
+            imgElement.style.top = '50%';
+            imgElement.style.left = '50%';
+            imgElement.style.transform = 'translate(-50%, -50%)';
+
+            textElement.style.position = 'absolute';
+            textElement.style.top = '50%';
+            textElement.style.left = '50%';
+            textElement.style.transform = 'translate(-50%, -50%)';
+
+            // 하늘색과 회색 막대기 제거
+            var dataset = myChart.data.datasets[0];
+            dataset.backgroundColor = ['#87CEEB'];
+            dataset.borderWidth = 0;
+        }
+    };
+</script>
 </head>
 <body>
 <%@ include file="../common/top.jspf" %>
-<div class="container" style="margin-top:80px">
+<div class="container" style="margin-top:80px;">
     <div class="row">
       <%@ include file="../common/aside.jspf" %>
         <!-- ================ 내가 작성할 부분 =================== -->
-        <div class="col-md-6">
+        <div class="col-md-5">
             <div class="container" id="map-container">
                <!-- 이미지 표시 -->
-             <img id="cartogram" src="/onnana/img/카토그램.png" alt="Example Image">
+             <img id="cartogram" src="/onnana/img/카토그램.png"alt="Example Image">
              <!-- 각 버튼에는 고유한 id와 공통된 클래스를 할당합니다. -->
             <button id="인천옹진" class="weather-button" data-nx="54" data-ny="124" data-name="영흥" style="top: 398px;left: 126px;"> </button>
             <button id="태안" class="weather-button" data-nx="48" data-ny="109" data-name="원북면" style="top: 425px;left: 126px;"> </button>
@@ -470,9 +604,9 @@
             </div>
 
         </div>
-       <div class="col-6 mt-3">
+       <div class="col-7 mt-3">
        		 <div class="row">
-		          <div style="text-align:center;">
+		          <div style="text-align:center;z-index: -999;">
 		              <h4 class="text-center" style="color:DodgerBlue;"><i class="fa-solid fa-cloud-sun"></i>&nbsp;오늘의 기상정보&nbsp;&nbsp;&nbsp;</h4>
 		              <!-- 클릭한 버튼의 ID를 출력하는 부분 -->
 		            <span id="clickedButtonId"></span>
@@ -489,10 +623,51 @@
 		              </div>
 	          </div>
           </div>
+         
+          <div class="container" style="margin-top:400px">
+          	 <div class="row">
+		          <div class="chart-container ms-5">
+		               <canvas id="myChart0" width="130" height="130"></canvas>
+		               <div class="chart-text" id="text0"></div>
+		           </div>
+		           <div class="chart-container ms-5">
+		               <canvas id="myChart1" width="130" height="130"></canvas>
+		               <div class="chart-text" id="text1"></div>
+		           </div>
+		           <div class="chart-container ms-5">
+		               <canvas id="myChart2" width="130" height="130"></canvas>
+		               <div class="chart-text" id="text2"></div>
+		           </div>
+		           <div class="chart-container ms-5">
+		               <canvas id="myChart3" width="130" height="130"></canvas>
+		               <div class="chart-text" id="text3"></div>
+		           </div>
+           </div>
+       	 	<div class="row">
+	           <div class="chart-container ms-5">
+	               <canvas id="myChart4" width="130" height="130"></canvas>
+	               <div class="chart-text" id="text4"></div>
+	           </div>
+	           <div class="chart-container ms-5">
+	               <canvas id="myChart5" width="130" height="130"></canvas>
+	               <div class="chart-text" id="text5"></div>
+	           </div>
+	           <div class="chart-container ms-5">
+	               <canvas id="myChart6" width="130" height="130"></canvas>
+	               <div class="chart-text" id="text6"></div>
+	           </div>
+	           <div class="chart-container ms-5">
+	               <canvas id="myChart7" width="130" height="130"></canvas>
+	               <div class="chart-text" id="text7"></div>
+	           </div>
+           </div>
+       	</div>
+         
           <div class="row"><div class="container"></div></div>
           <div class="row">
-          	<div class="Express" style="margin-top:500px; font-size:12px; text-align:right; margin-right:-80px;">
-	          	<p>데이터는 실시간 관측된 자료이며, 측정소 현지 사정이나 데이터의 수신 상태에 따라 미수신될 수 있음</p>
+          	<div class="Express" style="margin-top:20px; font-size:12px; text-align:right; margin-right:-80px;">
+	          	<p>생활지수 데이터 출처: 웨더뉴스(https://www.kr-weathernews.com)</p>
+	          	<p style="margin-top:-10px">데이터는 실시간 관측된 자료이며, 측정소 현지 사정이나 데이터의 수신 상태에 따라 미수신될 수 있음</p>
 				
           	</div>
           </div>

@@ -94,17 +94,17 @@
 							<td><label class="col-form-label"> PW</label></td>
 							<td><input type="password" name="pwd" class="form-control"></td>
 						</tr>
-						<tr class="float-left;">
+						<tr>
 							<td colspan="3">
 								<input type="submit" class="btn btn-success ms-5" value="로그인">
 							<!-- 	<input type="reset" class="btn btn-secondary" value="취소"> -->
 								<!-- 아이디 찾기 버튼 -->
 								<a href="/onnana/user/Idsearch">
-							        <button type="button" class="btn btn-light" ">ID 찾기</button>
+							        <button type="button" class="btn btn-light" ">ID찾기</button>
 								</a>
 						        <!-- 비밀번호 변경 버튼 -->
 								<a href="/onnana/user/Pwdchange">
-						        	<button type="button" class="btn btn-light">PW 변경 </button>
+						        	<button type="button" class="btn btn-light">PW변경</button>
 								</a>
 							</td>
 						</tr>
