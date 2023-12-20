@@ -249,7 +249,7 @@
              </table>
              <hr>
              
-             
+             <p style="font-size:10px; float:left; margin-top:-10px;">거리에 따른 탄소배출량 산출식 출처:한국기후.환경네트워크 탄소발자국(https://www.kcen.kr/tanso/intro.green)</p>
              <img style="margin-left:50px" src="/onnana/img/greencam.png" width="300px">
              
 		</div>
@@ -387,6 +387,7 @@
 							            <button class="btn btn-primary" style="width: 80px;" onclick="stopoverCalculateDistance()">계산</button>
 							        </div>
 							        <p id="stopoverResult"></p> <!-- 결과를 표시할 요소 -->
+							        
 							    </td>
 							</tr>
 <!-- ========================================================= 탄소계산기 end ======================================================== -->
@@ -412,9 +413,9 @@
 	                            </td>
 	                        </tr>   
 	                        
-	                        
 	                        <tr>
-	                            <td colspan="2" style="text-align: right;">
+	                            <td colspan="3" style="text-align: right;">
+									<p style="font-size:10px; float:left; margin-top:10px;">거리에 따른 탄소배출량 산출식 출처:한국기후.환경네트워크 탄소발자국(https://www.kcen.kr/tanso/intro.green)</p>
 	                                <button class="btn btn-success me-2" onclick="insert()">제출</button>
 	                               <!-- <button class="btn btn-secondary" type="reset">초기화</button> --> 
 	                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">종료</button>
