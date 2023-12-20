@@ -110,9 +110,7 @@
         	<%@ include file="../common/aside.jspf" %>
         
         	<!-- ======================== main ======================== -->
-			<div class="col-8 mt-3 ms-1">
-            	<h3 style="color:green;"><strong>그린캠페인 캘린더</strong></h3>
-            	<hr>
+			<div class="col-8 mt-5 ms-1">
                 <div class="d-flex justify-content-between">
                     <div>${today}</div>
                     <div style="margin-left:-100px">
@@ -310,7 +308,7 @@
 	                         <tr>
 	                            <td>
 	                                <label for="place">출발지 입력</label>
-	                            	<button type="button" class="btn btn-outline-success" onclick="addWaypoint()">+ 경유지 추가</button>
+	                            	<button type="button" class="btn btn-outline-success" onclick="addWaypoint()" id="addWaypoint">+ 경유지 추가</button>
 	                                <div class="input-group outer-container" style="width: 100%;">
 									    <input type="text" style="height: auto;" class="form-control" id="startPlace" name="startPlace" placeholder=" 출발지 주소를 입력하면 현재위치부터 계산합니다">
 									</div>
@@ -319,46 +317,67 @@
 	                        <tr>
 	                            <td>
 	                                <div id="waypointFields">
-									    <!-- 기본적인 경유지 입력 필드 하나 -->
-										<div id="waypointFields"></div>
 									</div>
 	                            </td>
 	                        </tr>
 	                        
 	                        <script>
-		                        let waypointCount = 0;
-	
-		                        function addWaypoint() {
-		                            if (waypointCount < 30) {
-		                                waypointCount++;
-	
-		                                const waypointFields = document.getElementById('waypointFields');
-	
-		                                // 새로운 경유지 입력 필드를 생성합니다.
-		                                const newWaypointField = document.createElement('div');
-		                                newWaypointField.className = 'waypointField';
-	
-		                                // 아이디 값으로 동적으로 숫자를 부여합니다.
-		                                newWaypointField.innerHTML = `
-		                                    <label for="waypoint${waypointCount}">경유지 입력</label>
-		                                    <div class="input-group outer-container" style="width: 100%;">
-		                                        <input type="text" style="height: auto;" class="form-control" id="waypoint${waypointCount}" name="waypoint" placeholder="경유지 주소를 입력하세요">
-		                                        <button class="btn btn-danger" style="width: 80px;" onclick="removeWaypoint(this)">삭제</button>
-		                                    </div>
-		                                `;
-	
-		                                waypointFields.appendChild(newWaypointField);
-		                            } else {
-		                                alert('최대 30개까지 추가할 수 있습니다.');
-		                            }
-		                        }
-	
-		                        function removeWaypoint(button) {
-		                            const waypointFields = document.getElementById('waypointFields');
-		                            const fieldToRemove = button.closest('.waypointField');
-		                            waypointFields.removeChild(fieldToRemove);
-		                            waypointCount--;
-		                        }
+	                        var waypointCount = 0;
+
+	                        function addWaypoint() {
+	                            if (waypointCount < 30) {
+	                                
+
+                                	const waypointFields = document.getElementById('waypointFields');
+
+	                                // 새로운 경유지 입력 필드를 생성합니다.
+                                	const newWaypointField = document.createElement('div');
+                                	newWaypointField.className = 'waypointField';
+
+                                	// jQuery 코드
+                                	$(newWaypointField).append(
+                                	    $('<label></label>')
+                                	        .attr({'for': 'waypoint'+waypointCount})
+                                	        .text('경유지 입력')
+                                	);
+
+                                	$(newWaypointField).append(
+                                	    $('<div></div>')
+                                	        .attr({'class': 'input-group outer-container', 'style':'width: 100%;', id: 'divwaypoint'+waypointCount})
+                                	);
+
+                                	$(newWaypointField).find('#divwaypoint'+waypointCount).append(
+                                	    $('<input></input>')
+                                	        .attr({'style': 'height: auto;', 'class': 'form-control waypointField', 'id': 'waypoint'+ waypointCount, 'name': 'waypoint', 'type':'text', 'placeholder': '경유지 주소를 입력하세요'})
+                                	);
+
+                                	$(newWaypointField).find('#divwaypoint'+waypointCount).append(
+                                	    $('<button></button>')
+                                	        .attr({'class': 'btn btn-danger', 'style':'width: 80px;', 'onclick': 'removeWaypoint(this)'})
+                                	        .text('삭제')
+                                	);
+
+                                	// 생성된 요소를 waypointFields에 추가
+                                	$('#waypointFields').append(newWaypointField);
+
+                                	waypointCount++;
+	                                
+	                            } else {
+	                                alert('최대 30개까지 추가할 수 있습니다.');
+	                            }
+	                        }
+
+	                        function removeWaypoint(button) {
+	                            const fieldToRemove = $(button).closest('.waypointField');
+	                            fieldToRemove.remove();
+	                            waypointCount--;
+
+	                            // 남은 입력 필드들의 ID를 재조정합니다.
+	                            $('.waypointField').each(function(index) {
+	                                $(this).find('.waypointField').attr('id', 'waypoint' + index);
+	                            });
+	                        }
+
 							</script>    
 	                        <tr>
 							    <td colspan="2">
@@ -367,8 +386,9 @@
 							            <input type="text" style="height: auto;" class="form-control" id="endPlace" name="endPlace" placeholder="도착지 주소를 입력하세요">
 							            <button class="btn btn-primary" style="width: 80px;" onclick="stopoverCalculateDistance()">계산</button>
 							        </div>
+							        <p id="stopoverResult"></p> <!-- 결과를 표시할 요소 -->
 							    </td>
-							</tr>   
+							</tr>
 <!-- ========================================================= 탄소계산기 end ======================================================== -->
 	                        <tr>
 	                            <td colspan="2">

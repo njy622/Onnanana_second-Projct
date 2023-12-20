@@ -296,7 +296,7 @@ public class UserController {
 	}
 	
 
-	@GetMapping("/weather")
+	@PostMapping("/weather")
 	public String weatherForm(Model model) {
 		model.addAttribute("menu", "weather"); // 아이콘 불들어옴
 
@@ -305,32 +305,17 @@ public class UserController {
 	
 	
 	
-	@PostMapping("/weather")
+	@GetMapping("/weather")
 	public String weatherProc(Model model) throws Exception {
 		URI uri = new URI("http://localhost:5000/test");
 		RestTemplate rest = new RestTemplate();
 		ResponseEntity<String> response = rest.getForEntity(uri, String.class);
-		JSONParser json = new JSONParser();
-		JSONArray arr = (JSONArray) json.parse(response.getBody());
-		List<List<String>> data = new ArrayList<>();
-		for (int i = 0; i < arr.size(); i++) {
-			JSONObject line = (JSONObject) arr.get(i);
-			List<String> buffer = new ArrayList<>();
-			buffer.add((String) line.get("이미지"));
-			buffer.add((String) line.get("생활지수"));
-			buffer.add(String.valueOf(line.get("지수")));
-			buffer.add((String) line.get("안내멘트"));
-			data.add(buffer);
-		}
-		model.addAttribute("data", data);
-		for (List<String> l: data) {
-			System.out.println(l.get(0) + ", " + l.get(1) + ", " + l.get(2) + ", " + l.get(3));
-		}
-		
-		return "user/weatherRes";
-	}
+	      System.out.println(response.getBody());
+		model.addAttribute("data", response.getBody());
+
 	
-	
+		return "user/weather";
+   }
 	
 	
 	

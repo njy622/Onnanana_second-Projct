@@ -46,8 +46,8 @@
 		<div class="row">
 			<%@ include file="../common/aside.jspf" %> 
 			<!-- ================ Main =================== -->
-			<div class=" mt-3">
-				<h3><strong>사용자 목록</strong></h3>
+			<div class="col-1"></div>
+			<div class="col-11 mt-5">
 				<hr>
 				<table class="table table-hover">
 					<tr>

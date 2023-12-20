@@ -3,14 +3,62 @@ from datetime import datetime, timedelta
 import requests
 import pandas as pd
 from flask_cors import CORS
-from bp.graph import graph_bp
+# from bp.graph import graph_bp
 import csv
-from draw_map import  BORDER_LINES, drawKorea, drawKoreaMinus
+# from draw_map import  BORDER_LINES, drawKorea, drawKoreaMinus
+import json
+import time
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from datetime import datetime, timedelta
+from selenium.webdriver.common.by import By
+import util.crawl_util as cu
+from bp.graph import graph_bp
+
 
 app = Flask(__name__)
 CORS(app)
 
 app.register_blueprint(graph_bp, url_prefix='/graph')
+
+
+#@app.before_first_request
+#def before_first_request():         # 최초 1회 실행 
+cu.get_crawl()
+
+# 웹 브라우저에서 '/test' 경로로 접속했을 때 실행되는 함수를 정의합니다.
+@app.route('/test')
+
+def display_data():
+    # CSV 파일에서 데이터프레임을 읽어옵니다.
+    file_path = 'data/kweather.csv'
+    df = pd.read_csv(file_path)
+
+    # 이미지의 상대 경로에 절대 URL을 추가하여 이미지 경로를 완성합니다.
+    base_url = 'https://www.kr-weathernews.com/mv3'
+    df['이미지'] = df['이미지'].apply(lambda x: f"{base_url}/{x.lstrip('../')}")
+
+    # 간단한 HTML 코드를 생성합니다.
+    html_table = "<table class='table table-striped'><thead><tr>"
+    # 각 열의 이름을 테이블의 헤더로 추가합니다.
+    html_table += "".join(f"<th>{col}</th>" for col in df.columns) + "</tr></thead><tbody>"
+
+    # 데이터프레임을 순회하며 행 단위로 HTML 코드를 생성하여 추가합니다.
+    for _, row in df.iterrows():
+        html_table += "<tr>" + "".join(f"<td>{row[col]}</td>" for col in df.columns) + "</tr>"
+
+    # HTML 코드 생성이 완료되었습니다.
+    html_table += "</tbody></table>"
+
+    # 데이터프레임을 JSON 형식으로 변환하여 data.json 파일에 저장합니다.
+    json_data = df.to_dict(orient='records')
+    # with open('static/js/kweather.json', 'w') as json_file:
+    #     json.dump(json_data, json_file, indent=2)
+
+    # # HTML 템플릿을 렌더링하고, 생성된 HTML 코드를 클라이언트에게 반환합니다.
+    # return render_template('index.html', html_table=html_table)
+    return json.dumps(json_data)
+
 
 # # 서버 시작 전에 실행될 함수
 # @app.before_first_request
@@ -255,7 +303,7 @@ def get_air_quality(station_Name):
     return results
 
 
-@app.route('/get_weather', methods=['GET'])
+@app.route('/get_weather')
 def get_weather_route():
     # 클라이언트로부터 받은 요청 파라미터에서 nx와 ny를 추출
     nx = request.args.get('nx')
@@ -270,7 +318,7 @@ def get_weather_route():
     else:
         return jsonify({'error': 'Invalid request parameters'})
 
-@app.route('/get_air_quality' , methods=['GET'])
+@app.route('/get_air_quality')
 def get_air_quality_route():
     
     name = request.args.get('name')
