@@ -55,6 +55,8 @@
 		    <p class="ms-4"> 그린캠페인 참여인원 : <span id="asideSessAllId">${sessAllId}</span> 명</p>
 		    <p class="ms-4"> 캠페인 배출 감소량 : <span id="asidesessAllCarbonId">${sessAllCarbonId}</span> kg</p>
 		    
+		    <!-- 출석 횟수 표시 -->
+   			<p class="ms-4">출석 횟수: ${attendanceCount}</p>
 			 
 	            <strong style="color:green;"><i class="fa-regular fa-lightbulb"></i> TIP</strong>
 	            <%-- quotes.txt 파일이 static/data 디렉터리에 있다고 가정합니다 --%>
