@@ -19,15 +19,16 @@ public interface ScheduleDaoOracle {
 			+ "  ORDER BY startTime")
 	List<Schedule> getSchedList(String uid, String startDate, String endDate);
 	
-	@Insert("INSERT INTO schedule VALUES"
-			+ " (DEFAULT, #{uid}, #{sdate}, #{startTime}, #{title}, #{place}, #{smoke})")
+	@Insert("INSERT INTO schedule VALUES (DEFAULT, #{uid}, #{sdate}, #{startTime}, #{title}, #{title2}, #{place},"
+			+ " #{startplace}, #{endplace}, #{smoke}, #{smoke2}, #{waypoint1},#{waypoint2},#{waypoint3})")
 	void insert(Schedule schedule);
 	
 	@Select("select * from schedule where sid=#{sid}")
 	Schedule getSchedule(int sid);
 	
-	@Update("update schedule set \"uid\"=#{uid}, sdate=#{sdate}, startTime=#{startTime}, title=#{title},"
-			+ " place=#{place}, smoke=#{smoke} where sid=#{sid}")
+	@Update("update schedule set \"uid\"=#{uid}, sdate=#{sdate}, startTime=#{startTime}, title=#{title}, title2=#{title2},"
+			+ " place=#{place}, startplace=#{startplace}, endplace=#{endplace}, smoke=#{smoke}, smoke2=#{smoke2},"
+			+ " waypoint1=#{waypoint1}, waypoint2=#{waypoint2}, waypoint3=#{waypoint3}  where sid=#{sid}")
 	void update(Schedule schedule);
 	
 	@Delete("delete from schedule where sid=#{sid}")
