@@ -3,7 +3,7 @@
  * 		calendar.jsp 에서 사용하는 자바스크립트 코드
  */
 
- var schedClicked = false;
+var schedClicked = false;
  
 function cellClick(date) {
 	if (schedClicked)
@@ -20,31 +20,42 @@ function cellClick(date) {
 			minute = 0; hour = (hour + 1) % 24;
 		}
 		const startStr = ((hour >= 10) ? ''+hour : '0'+hour) + ':' + ((minute == 0) ? '00' : '30');
+		const endStr = ((hour >= 9) ? ''+(hour+1) : '0'+(hour+1)) + ':' + ((minute == 0) ? '00' : '30');
 		$('#startDate').val(dateForm);
 		$('#startTime').val(startStr);
+		$('#endDate').val(dateForm);
+		$('#endTime').val(endStr);
 		$('#addModal').modal('show');
 	}
-	
 }
 
 function schedClick(sid) {
-	schedClicked = true;
-	$.ajax({
-		type: 'GET',
-		url: '/onnana/schedule/detail/' + sid,
-		success: function(jsonSched) {
-			let sched = JSON.parse(jsonSched);
-			$('#sid2').val(sched.sid);
-			$('#title2').val(sched.title);
-			$('#startDate2').val(sched.startTime.substring(0,10));
-			$('#startTime2').val(sched.startTime.substring(11,16));
-			$('#place2').val(sched.place);
-			$('#smoke2').val(sched.smoke);
-			$('#updateModal').modal('show');
-		}
-	});
-	
+    schedClicked = true;
+    $.ajax({
+        type: 'GET',
+        url: '/onnana/schedule/detail/' + sid,
+        success: function(jsonSched) {
+            let sched = JSON.parse(jsonSched);
+			console.log(jsonSched);
+            $('#sid2').val(sched.sid);
+            $('#title3').val(sched.title);
+            $('#title4').val(sched.title2);
+            $('#startDate2').val(sched.startTime.substring(0, 10));
+            $('#startTime2').val(sched.startTime.substring(11, 16));
+            $('#place3').val(sched.place);
+            $('#startplace2').val(sched.startplace);
+            $('#endplace2').val(sched.endplace);
+            $('#smoke3').val(sched.smoke);
+            $('#smoke4').val(sched.smoke2);
+            $('#waypoint20').val(sched.waypoint1); // Updated to 'waypoint1'
+            $('#waypoint21').val(sched.waypoint2);
+            $('#waypoint22').val(sched.waypoint3);
+
+            $('#updateModal').modal('show');
+        }
+    });
 }
+
 
 function deleteSchedule() {
 	let sid = $('#sid2').val();
@@ -80,11 +91,3 @@ function deleteSchedule() {
 
 
 
-
-function addAnniversary() {
-	$('#addAnnivModal').modal('show');
-}
-
-function addAnnivList() {
-	$('#addAnnivListModal').modal('show');
-}

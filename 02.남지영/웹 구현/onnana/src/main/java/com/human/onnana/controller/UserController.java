@@ -3,15 +3,20 @@ package com.human.onnana.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
+import org.springframework.web.client.RestTemplate;
 
 import com.human.onnana.entity.Button;
 import com.human.onnana.entity.User;
@@ -48,17 +53,30 @@ public class UserController {
 	
 	@PostMapping("/update")
 	public String updateProc(String pwd, String pwd2, String uname, 
-			 String email, HttpSession session, Model model) {
+							String email, HttpSession session, Model model) {
 		String uid = (String) session.getAttribute("sessUid");
 		User user = userService.getUser(uid); 
 		// 패스워드 미입력시 어떻게 표현되는지 확인하기 위해 출력해봄(출력값: pwd=,pwd2=)
 		// System.out.println("pwd="+ pwd + ",pwd2="+pwd2); 
 		
-		// 올바른 패스워드 규칙을 맞췄을 경우, 패스워드 변경
-		if (pwd.length() >=  4 && pwd.equals(pwd2)) {
-			String hashedPwd = BCrypt.hashpw(pwd, BCrypt.gensalt());
-			user.setPwd(hashedPwd);
-		
+		// 비밀번호 변경 로직
+	    if (pwd.length() >= 4 && pwd.equals(pwd2)) {
+	        String hashedPwd = BCrypt.hashpw(pwd, BCrypt.gensalt());
+	        user.setPwd(hashedPwd);
+        	
+	        
+	     // 세션 로그아웃 처리
+	        session.removeAttribute("sessUid");
+	        session.removeAttribute("sessUname");
+	        session.removeAttribute("sessEmail");
+	        
+	        // 비밀번호 변경 성공 메시지 전달
+	        model.addAttribute("msg", "비밀번호가 변경되었습니다. 다시 로그인해주세요.");
+	        model.addAttribute("url", "/onnana/home"); // 로그아웃 URL로 변경
+
+	        userService.updateUser(user);
+	        return "common/alertMsg";
+	        
 		// 아무런 데이터를 입력하지 않은 경우, 패스워드 변경하지 않음
 		} else if (pwd.equals("") && pwd2.equals("")) {
 			;				//아무일도 하지 않는다.
@@ -68,12 +86,11 @@ public class UserController {
 			model.addAttribute("url", "/onnana/user/list/" + session.getAttribute("currentUserPage"));
 			return "common/alertMsg";
 		}
-		user.setUname(uname);
-		user.setEmail(email);
-		userService.updateUser(user);
-		
-		
-		return "redirect:/user/list/" + session.getAttribute("currentUserPage");
+	    user.setUname(uname);
+	    user.setEmail(email);
+	    userService.updateUser(user);
+
+	    return "redirect:/user/list/" + session.getAttribute("currentUserPage");
 	}
 	
 	@GetMapping("/delete/{uid}")
@@ -174,7 +191,101 @@ public class UserController {
 		return "common/alertMsg";
 	}
 	
+	//아이디 찾기 창
+	@GetMapping("/Idsearch")
+	public String IdsearchForm() {
+		return "user/Idsearch";
+	}
 	
+	
+	// 아이디 찾기 기능
+	@PostMapping("/Idsearch")
+	public String IdsearchProc(String uname, String email, HttpSession session, Model model, HttpServletRequest req) {
+		String searchUname = req.getParameter("idUname");
+		String searchEmail = req.getParameter("idEmail");
+		String searchID = userService.idsearch(searchUname, searchEmail);
+		System.out.println(searchUname);
+		System.out.println(searchEmail);
+		System.out.println(searchID);
+		
+		if (userService.idsearch(searchUname, searchEmail) == null ) {
+			model.addAttribute("msg", "입력하신 정보와 일치하는 정보가 없습니다 다시 확인바랍니다.");
+			model.addAttribute("url", "/onnana/user/Idsearch");
+		}else {
+			model.addAttribute("msg", "요청하는 ID는 "+searchID+"입니다 홈페이지로 이동합니다.");
+			model.addAttribute("url", "/onnana/home");
+		}
+			
+
+		return  "common/alertMsg";
+	}
+	
+	//비밀번호 찾기 창
+	@GetMapping("/Pwdchange")
+	public String PwdchangeForm() {
+		return "user/Pwdchange";
+	}
+	
+	
+	//비밀번호 찾기기능
+	@PostMapping("/Pwdchange")
+	public String PwdchangeProc(String pwd, String pwd2, String uname, 
+			String email, HttpSession session, Model model, HttpServletRequest req) {
+		
+		String uid = req.getParameter("pwdUid");
+		User user = userService.getUser(uid); 
+		
+		String searchUname = req.getParameter("pwdUname");
+		String searchEmail = req.getParameter("pwdEmail");
+		String checkUserInfo = userService.userinfosame(searchUname,uid, searchEmail).toString();
+		
+		
+		if (checkUserInfo.equals("true")) {
+			
+			
+			// 비밀번호 변경 로직
+			if (pwd.length() >= 4 && pwd.equals(pwd2)) {
+				String hashedPwd = BCrypt.hashpw(pwd, BCrypt.gensalt());
+				user.setPwd(hashedPwd);
+				
+				// 비밀번호 변경 성공 메시지 전달
+				model.addAttribute("msg", "비밀번호가 변경되었습니다. 다시 로그인해주세요.");
+				model.addAttribute("url", "/onnana/home"); // 로그아웃 URL로 변경
+				
+				userService.updateUser(user);
+				return "common/alertMsg";
+				
+				// 아무런 데이터를 입력하지 않은 경우, 패스워드 변경하지 않음
+			} else if (pwd.equals("") && pwd2.equals("")) {
+				;				//아무일도 하지 않는다.
+				//그외에 경고 메세지를 보내준다.
+			} else {
+				model.addAttribute("msg", "패스워드가 일치하지 않습니다.");
+				model.addAttribute("url", "/onnana/user/Pwdchange");
+				return "common/alertMsg";
+			}
+			user.setUname(uname);
+			user.setEmail(email);
+			userService.updateUser(user);
+			
+			return "redirect:home";
+		}else {
+			
+			model.addAttribute("msg", "입력하신 정보는 조회되지 않습니다. 다시 확인바랍니다.");
+			model.addAttribute("url", "/onnana/user/Pwdchange");
+			
+		
+			
+		}
+		
+		System.out.println(uid);
+		System.out.println(searchUname);
+		System.out.println(searchEmail);
+		System.out.println(checkUserInfo);
+		System.out.println(checkUserInfo.getClass().getName());
+		
+		return "common/alertMsg";
+	}
 	
 	
 	
@@ -185,11 +296,30 @@ public class UserController {
 	}
 	
 
-	@GetMapping("/weather")
-	public String weatherForm() {
-		
+	@PostMapping("/weather")
+	public String weatherForm(Model model) {
+		model.addAttribute("menu", "weather"); // 아이콘 불들어옴
+
 		return "user/weather";
 	}
+	
+	
+	
+	@GetMapping("/weather")
+	public String weatherProc(Model model) throws Exception {
+		URI uri = new URI("http://localhost:5000/test");
+		RestTemplate rest = new RestTemplate();
+		ResponseEntity<String> response = rest.getForEntity(uri, String.class);
+	      System.out.println(response.getBody());
+		model.addAttribute("data", response.getBody());
+
+	
+		return "user/weather";
+   }
+	
+	
+	
+	
 	
 	@PostMapping("/getAirQuality")
     public String getAirQuality(@RequestBody String stationName) {
@@ -233,8 +363,16 @@ public class UserController {
 	        buttons.add(new Button("50,60,70,80", "modal2")); // 다른 버튼 추가
 
 	        model.addAttribute("buttons", buttons);
+			model.addAttribute("menu", "dust"); // 아이콘 불들어옴
+
 
 	      return "user/dust";
 	   }
+	   
+	   
+	   
+	   
+	   
+	   
 
 }

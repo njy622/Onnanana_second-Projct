@@ -1,6 +1,10 @@
 package com.human.onnana.service;
 
 import java.util.List;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.sql.Timestamp;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.human.onnana.entity.User;
 
@@ -16,21 +20,22 @@ public interface UserService {
 	public static final int UID_NOT_EXIST = 2;		// uid가 중복 입력한 경우
 	public static final int RECORDS_PER_PAGE = 5;	// 한페이지 당 10개 레코드를 보여줌
 	
-	
-	
-	int getUserCount();			// pagination을 위해서 사용됨
-	
-	User getUser(String uid);
-	
-	List<User> getUserList(int page);	
-	
-	void insertUser(User user);
-	
-	void updateUser(User user);
+	// 사용자의 last_login_date를 현재 시간으로 갱신
+	void updateLastLoginDate(String uid, Timestamp currentTimestamp);
 
-	
-	void deleteUser(String uid);
-	
-	int login(String uid, String pwd);
-	
+	int getUserCount();
+
+    User getUser(String uid);
+
+    List<User> getUserList(int page);
+
+    void insertUser(User user);
+
+    void updateUser(String uid, Timestamp currentTimestamp);
+
+    void deleteUser(String uid);
+
+    int login(String uid, String pwd);
+
+    int getAttendanceCount(String uid);
 }

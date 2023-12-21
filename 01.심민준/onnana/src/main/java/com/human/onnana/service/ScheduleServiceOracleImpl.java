@@ -90,14 +90,14 @@ public class ScheduleServiceOracleImpl implements ScheduleService {
 	
 	
 	@Override
-	public double getCarbonCount() {
-		double allCarbon = schedDao.carbonCount();
+	public Double getCarbonCount() {
+		Double allCarbon = schedDao.carbonCount();
 		return allCarbon;
 	}
 	
 	@Override
-	public double getCarbonUserCount(String uid) {
-		double userCarbon = schedDao.carbonUserCount(uid);
+	public Double getCarbonUserCount(String uid) {
+		Double userCarbon = schedDao.carbonUserCount(uid);
 		return userCarbon;
 	}
 

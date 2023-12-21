@@ -14,7 +14,7 @@
 			console.log('updateFunc()');
 			$.ajax({
 				type: 'GET',
-				url: '/sample/user/update/' + uid,
+				url: '/onnana/user/update/' + uid,
 				success: function(result) {
 					let user = JSON.parse(result);
 					$('#uid').val(user.uid);
@@ -36,7 +36,7 @@
 		<div class="row">
 			<%@ include file="../common/aside.jspf" %> 
 			<!-- ================ Main =================== -->
-			<div class="col-9 mt-3">
+			<div class=" mt-3">
 				<h3><strong>사용자 목록</strong></h3>
 				<hr>
 				<table class="table table-hover">

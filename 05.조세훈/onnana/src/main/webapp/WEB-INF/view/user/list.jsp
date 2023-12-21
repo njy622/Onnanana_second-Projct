@@ -14,7 +14,7 @@
 			console.log('updateFunc()');
 			$.ajax({
 				type: 'GET',
-				url: '/sample/user/update/' + uid,
+				url: '/onnana/user/update/' + uid,
 				success: function(result) {
 					let user = JSON.parse(result);
 					$('#uid').val(user.uid);
@@ -28,6 +28,16 @@
 			$('#delUid').val(uid);
 			$('#deleteModal').modal('show');
 		}
+		
+		
+		// 관리자가 아닐때
+		function openUserInfoModal() {
+		    // 회원 정보 수정 모달을 여는 코드 작성
+		    $('#updateModal').modal('show'); // 모달 창을 열기 위한 ID 설정
+		}
+		
+		
+		
 	</script>
 </head>
 <body>
@@ -36,7 +46,7 @@
 		<div class="row">
 			<%@ include file="../common/aside.jspf" %> 
 			<!-- ================ Main =================== -->
-			<div class="col-9 mt-3">
+			<div class=" mt-3">
 				<h3><strong>사용자 목록</strong></h3>
 				<hr>
 				<table class="table table-hover">
@@ -77,7 +87,7 @@
 				<ul class="pagination mt-3 justify-content-center">
 				<c:forEach var="page" items="${pageList}">
 					<li class="page-item ${(currentUserPage eq page) ? 'active' : ''}">
-						<a class="page-link" href="/sample/user/list/${page}">${page}</a>
+						<a class="page-link" href="/onnana/user/list/${page}">${page}</a>
 					</li>
 				</c:forEach>
 				</ul>				
@@ -95,11 +105,11 @@
 					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="/sample/user/update" method="post">
+                    <form action="/onnana/user/update" method="post">
                         <table class="table table-borderless">
                             <tr>
                                 <td style="width:35%"><label class="col-form-label">사용자 ID</label></td>
-                                <td style="width:65%"><input type="text" id="uid" class="form-control" disabled></td>
+                                <td style="width:65%"><input type="text" id="uid" class="form-control" value="${sessUid}"   disabled></td>
                             </tr>
                             <tr>
                                 <td><label class="col-form-label">패스워드</label></td>
@@ -111,11 +121,11 @@
                             </tr>
                             <tr>
                                 <td><label class="col-form-label">이름</label></td>
-                                <td><input type="text" name="uname" id="uname" class="form-control"></td>
+                                <td><input type="text" name="uname" id="uname" class="form-control" value="${sessUname}"   disabled ></td>
                             </tr>
                             <tr>
                                 <td><label class="col-form-label">이메일</label></td>
-                                <td><input type="text" name="email" id="email" class="form-control"></td>
+                                <td><input type="text" name="email" id="email" class="form-control" value="${sessEmail}"  ></td>
                             </tr>
                             <tr>
                                 <td colspan="2" style="text-align: center;">
@@ -139,7 +149,7 @@
                 <div class="modal-body">
                     <strong>삭제하시겠습니까?</strong>
                     <div class="text-center mt-5">
-                        <button class="btn btn-danger" onclick="location.href='/sample/user/delete/'+$('#delUid').val()">삭제</button>
+                        <button class="btn btn-danger" onclick="location.href='/onnana/user/delete/'+$('#delUid').val()">삭제</button>
                         <button class="btn btn-secondary ms-1" data-bs-dismiss="modal">취소</button>
                     </div>
                 </div>

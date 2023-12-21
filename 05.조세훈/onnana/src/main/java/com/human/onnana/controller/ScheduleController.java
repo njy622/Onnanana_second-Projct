@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import com.human.onnana.entity.Anniversary;
 import com.human.onnana.entity.SchDay;
 import com.human.onnana.entity.Schedule;
+import com.human.onnana.entity.User;
 import com.human.onnana.service.AnniversaryService;
 import com.human.onnana.service.ScheduleService;
 import com.human.onnana.utility.SchedUtil;
@@ -132,8 +133,24 @@ public class ScheduleController {
 		model.addAttribute("month", String.format("%02d", month));
 		model.addAttribute("numberOfWeeks", calendar.size());
 		model.addAttribute("timeList", schedUtil.genTime());
+		model.addAttribute("menu", "calendar");
 		return "schedule/calendar";
 	}
+	
+	
+	
+	
+	@PostMapping("/calendar")
+	public String list(@PathVariable int page, HttpSession session, Model model, String uid, String sdate) {
+	    String sessUid = (String) session.getAttribute("sessUid");
+	    List<Schedule> userList = schedService.getuserdateCarvon(sessUid, sdate);
+	    model.addAttribute("userList", userList);
+	    model.addAttribute("sdate", sdate); // 해당 날짜도 함께 전달합니다.
+	    return "schedule/calendar";
+	}
+	
+	
+	
 	
 	
 	@ResponseBody
@@ -208,6 +225,8 @@ public class ScheduleController {
 		return jSched.toString();
 	}
 	
+	
+	@ResponseBody
 	@PostMapping("/update")
 	public String update(HttpServletRequest req, HttpSession session) {
 		String startDate = req.getParameter("startDate");
@@ -216,14 +235,17 @@ public class ScheduleController {
 		String title = req.getParameter("title");
 		String place = req.getParameter("place");
 		String smoke = req.getParameter("smoke");
+		int sid = Integer.parseInt(req.getParameter("sid"));
 		String sdate = startDate.replace("-", "");
 		
 		String sessUid = (String) session.getAttribute("sessUid");
-		Schedule schedule = new Schedule(sessUid, sdate, startDateTime, title, place, smoke);
-		schedService.insert(schedule);
+		Schedule schedule = new Schedule(sid, sessUid, sdate, startDateTime, title, place, smoke);
+		System.out.println(schedule);
+		schedService.update(schedule);
 		
 ///////////////// 캘린더 생성 되었을때 , DB베이스와 웹서버 연동 실시간으로 되도록 설정///////////////////////////
-
+		
+		
 		
 		// 전체 유저의 참여인원을 카운트 값 불러오는것
 		int count = schedService.getCount();
@@ -258,7 +280,6 @@ public class ScheduleController {
 
 		return jsonResponse;
 		
-///////////////////////////////////////////////////////////////////////////////////////////////////////		
 	}
 	@GetMapping("/delete/{sid}")
 	public String delete(@PathVariable int sid) {

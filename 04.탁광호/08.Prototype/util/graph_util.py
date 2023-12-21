@@ -116,7 +116,7 @@ def get_disease_graph(column1, column2, agg_func, agg_func_name_korean):
     plt.title(title)
 
      # 집계 함수 확인
-    print("사용된 집계 함수:", agg_func.__name__)
+    print("사용된 집계 함수:", agg_func)
 
     img = io.BytesIO()
     plt.savefig(img, format='png', bbox_inches='tight')

@@ -13,15 +13,17 @@
         .disabled-link	{ pointer-events: none; }
     </style>
     <script src="/onnana/js/calendar.js?v=2"></script>
-    <script src="/onnana/js/calcu.js"></script>
+    <script src="/onnana/js/calcu.js" defer></script>
     
-    <!-- =================== 탄소계산기 스크립트 start =================== -->
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery 라이브러리 -->    
+	
+	
+	
 	<script>
 
-   <!-- =================== 탄소계산기 end =================== -->
+
    
-// <!-- =================== insert 함수 form태그없이 함수로 제출버튼 구현 =================== -->
+// <!-- ========================= insert 함수 form태그없이 함수로 제출버튼 구현 ======================== -->
 	function insert(){
 		
 		var startDate = $('#startDate').val();
@@ -30,65 +32,67 @@
 		var place = $('#place').val();
 		var smoke = $('#smoke').val();
 		
+		
 	    $.ajax({
 	        type: "POST",
 	        url: "/onnana/schedule/insert", // 스케줄 컨트롤러안의 함수 불러오는 경로
 	        data: {startDate, startTime, title, place, smoke},
-	        success: function(){
-	            $('#addModal').modal('hide');  // 모달창 숨기고
-	            location.href = '/onnana/schedule/calendar';   // 제출버튼 이후 calendar 창으로 감  
-	         // 세션값 불러와서 카운트 글작성이후 바로 리로딩되게 하는 함수
+	        success: function(response){
+	            // JSON 응답을 파싱
+	        	var data = JSON.parse(response); 
+				
+	            //각 변수에 접근하여, 변경된 세션 다시 불러오기
 	            
-	         	$(document).ready(function() {
-	                $.ajax({
-	                    type: "POST",
-	                    url: "/onnana/schedule/count", // 세션 값을 가져오는 컨트롤러 URL로 변경해야 합니다.
-	                    success: function(data) {
-	                        // 가져온 세션 값들을 화면에 표시합니다.
-	                        $("#sessAllId").text(data.sessAllId);
-	                        $("#sessId").text(data.sessId);
-	                        $("#sessAllCarbonId").text(data.sessAllCarbonId);
-	                        $("#sessCarbonId").text(data.sessCarbonId);
-	                    }
-	                });
-	            });
+	            $('#asideSessId').text(data.countUser); //한 유저의 참여일수 합계
+	            $('#asideSessCarbonId').text(data.countUserCarbon);//한 유저의 감소량 합계
+	            
+	            $('#asideSessAllId').text(data.count);//전체유저 인원수
+	            $('#asidesessAllCarbonId').text(data.countCarbon); //전체유저의 감소량 합계
+
+	            $('#addModal').modal('hide');
+	            location.href = '/onnana/schedule/calendar';
 	        }
-	    });
+	        });
 	}
 	
 
-//거리환산 값을 제목에 넣는 함수
-function readJs() {
-   let val = document.getElementById('result').innerText;
-   let carbonEmission = parseFloat(val.match(/\d+/)[0]);
+	// <!-- =================== update 함수 form태그없이 함수로 제출버튼 구현 =================== -->
+	function update(){
+		var startDate = $('#startDate2').val();
+		var startTime = $('#startTime2').val();
+		var title = $('#title2').val();				// update에 들어가는 데이터 id로 불러와서 변수에 넣음
+		var place = $('#place2').val();
+		var smoke = $('#smoke2').val();
+		let sid = $('#sid2').val();
 
-   let smokeVal = parseInt(document.getElementById('smoke').value);
-   let smokeCarbon = smokeVal * 14 / 1000;
+		console.log(place);
+	    $.ajax({
+	        type: "POST",
+	        url: "/onnana/schedule/update", // 스케줄 컨트롤러안의 함수 불러오는 경로
+	        data: {startDate, startTime, title, place, smoke, sid},
+	        success: function(response){
+	            // JSON 응답을 파싱
+	        	var data = JSON.parse(response); 
+				
+	            //각 변수에 접근하여, 변경된 세션 다시 불러오기
+	            
+	            $('#asideSessId').text(data.countUser); //한 유저의 참여일수 합계
+	            $('#asideSessCarbonId').text(data.countUserCarbon);//한 유저의 감소량 합계
+	            
+	            $('#asideSessAllId').text(data.count);//전체유저 인원수
+	            $('#asidesessAllCarbonId').text(data.countCarbon); //전체유저의 감소량 합계
 
-   let totalCarbon = carbonEmission + smokeCarbon;
-   document.getElementById('showResult').innerText = totalCarbon.toFixed(2);
+	            $('#addModal').modal('hide');
+	            location.href = '/onnana/schedule/calendar';
+	        }
+	        });
+	}
+	
 
-   // 제목에 결과값 추가
-   let titleElement = document.getElementById('title');
-   let currentTitle = titleElement.value;
-   titleElement.value = currentTitle + ' - 오늘의 감소량: ' + totalCarbon.toFixed(2) + 'kg';
-}
-
-
-//담배 갯수 선택한 값에 * 14g 연산 후  kg으로 출력하는 함수
-function calculateAndShow() {
-   let selectedValue = document.getElementById('smoke').value;
-   let result = selectedValue * 14 / 1000;
-   document.getElementById('showResult').innerText = result;
-}
-
-//페이지 로딩 시 바로 함수 호출
-calculateAndShow();
-  
-  
-  
+	
 
 	</script>                       
+	             
 	                        
     
 </head>
@@ -100,19 +104,21 @@ calculateAndShow();
         	<%@ include file="../common/aside.jspf" %>
         
         	<!-- ======================== main ======================== -->
-			<div class="col-sm-9 mt-3 ms-1">
-            	<h3><strong>일정표</strong></h3>
+			<div class="mt-3 ms-1">
+            	<h3 style="color:green;"><strong>그린캠페인 캘린더</strong></h3>
             	<hr>
                 <div class="d-flex justify-content-between">
                     <div>${today}</div>
                     <div>
                         <a href="/onnana/schedule/calendar/left2"><i class="fa-solid fa-angles-left"></i></a>
                         <a href="/onnana/schedule/calendar/left"><i class="fa-solid fa-angle-left ms-2"></i></a>
-                        <span class="badge bg-primary mx-2">${year}.${month}</span>
+                        <span class="badge bg-success mx-2">${year}.${month}</span>
                         <a href="/onnana/schedule/calendar/right"><i class="fa-solid fa-angle-right me-2"></i></a>
                         <a href="/onnana/schedule/calendar/right2"><i class="fa-solid fa-angles-right"></i></a>
                     </div>
-                    <div>
+                  
+                  	 <div>
+                  	 <!--  기념일 및 공휴일 추가 버튼 (사용안함으로 비활성화)
                     	<a href="#" onclick="addAnniversary()"><i class="fa-solid fa-pen me-2"></i></a>
                     	<%-- 관리자만이 공휴일/24절기 추가권한이 있음 --%>
         				<c:if test="${sessUid eq 'admin'}">
@@ -120,7 +126,7 @@ calculateAndShow();
                     	</c:if>
                     	<c:if test="${sessUid ne 'admin'}">
        						<a href="#" class="disabled-link"><i class="fa-solid fa-calendar-plus"></i></a>
-       					</c:if>
+       					</c:if> -->
                     </div>
                 </div>
                 <table class="table table-bordered mt-2 mb-5">
@@ -174,33 +180,30 @@ calculateAndShow();
 
     <%@ include file="../common/bottom.jspf" %>
     
+<!---------------------------------------- Insert 프론트엔드  ------------------------------------------>
 	<div class="modal" id="addModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<!-- Modal Header -->
 				<div class="modal-header">
-					<h4 class="modal-title">일정 추가</h4>
+					<h5 class="modal-title"><i class="fa-solid fa-leaf"></i> 오늘의 탄소감소량</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 				</div>
 			
 				<!-- Modal body -->
 				<div class="modal-body">
+				
 					<!-- <form action="/onnana/schedule/insert" method="post"> -->
 						<table class="table table-borderless">
-	                        <tr>
-	                            <td colspan="2">
-	                                <label for="title">제목</label>
-	                                <input class="form-control" type="text" id="title" name="title">
-	                                <button onclick="readJs()">Move Content</button>
-	                            </td>
-	                        </tr>
+	                       
+	                        
 	                        <tr>
 	                            <td>
-	                                <label for="startDate">시작일</label>
+	                                <label for="startDate">일 자</label>
 	                                <input class="form-control" type="date" id="startDate" name="startDate">
 	                            </td>
-	                            <td>
-	                                <label for="startTime">시작시간</label>
+	                            <td style="display: none;">
+	                                <label for="startTime" >시작 시간</label>
 	                                <select class="form-control" name="startTime" id="startTime">
 	                                <c:forEach var="tl" items="${timeList}">
 	                                    <option value="${tl}">${tl}</option>
@@ -211,11 +214,11 @@ calculateAndShow();
 <!-- ========================================================= 탄소계산기 start ========================================================= -->
 	                         <tr>
 	                            <td colspan="2">
-	                            	<p id="demo"></p> <!-- 현재 위치를 표시할 요소 -->
-	                                <label for="place">대중교통 배출량 계산하기 </label>
+	                            	<p id="demo" style="display: none;"></p> <!-- 현재 위치를 표시할 요소 -->
+	                                <label for="place">거리에 따른 배출 감소량 계산하기</label>
 	                                <div class="input-group outer-container" style="width: 100%;">
-									    <input type="text" style="height: auto;" class="form-control" id="place" name="place" placeholder=" 도착지 주소를 입력하세요">
-									    <button class="btn btn-success" style="width: 80px;" type="submit" onclick="searchAndCalculateDistance()">계산</button>
+									    <input type="text" style="height: auto;" class="form-control" id="place" name="place" placeholder=" 도착지 주소를 입력하면 현재위치부터 계산합니다">
+									    <button id="calculateDistanceBtn"  class="btn btn-success" style="width: 80px;" onclick="searchAndCalculateDistance()">계산</button>
 									</div>
 		                              <p id="result"></p>  <!-- 검색된 위치의 좌표와 거리를 표시할 요소 -->
 	                            </td>
@@ -223,24 +226,37 @@ calculateAndShow();
 <!-- ========================================================= 탄소계산기 end ======================================================== -->
 	                        <tr>
 	                            <td colspan="2">
-                                <label for="smoke">금연(개비)</label>
-                                  <form action="/action_page.php">
-									    <select class="form-select form-control"  type="text" id="smoke" name="smoke" onchange="calculateAndShow()">
+                                <label for="smoke">흡연(개비) 배출량</label>
+                                  <!--  <form action="/action_page.php">  -->
+									    <select class="form-select form-control"  type="text" id="smoke" name="smoke">
 										     <c:forEach var="i" begin="1" end="20">
 										      <option value="${i}" >${i}</option>
 									      		</c:forEach>
 									    </select>
-									    <p id="showResult"></p>
-									  </form>
+									     <p id="showResult"  style="display: none;"></p>
+									    <p>※ 산출방식: 14g/개 (※감소량에서 차감됩니다.)</p>
+									 <!--   </form> -->
 	                            </td>
 	                        </tr>
+	                         <tr>
+	                            <td colspan="2">
+	                                <label for="title">합 산</label>
+	                                <div class="input-group outer-container" style="width: 100%;">
+									    <input class="form-control" type="text" id="title" name="title" disabled>
+									    <button class="btn btn-success" style="width: 80px;" onclick="readJs()"><i class="fa-solid fa-calculator"></i></button>
+									</div>
+	                            </td>
+	                        </tr>   
+	                        
+	                        
 	                        <tr>
 	                            <td colspan="2" style="text-align: right;">
-	                                <button class="btn btn-primary me-2" type="submit" onclick="insert()">제출</button>
+	                                <button class="btn btn-primary me-2" onclick="insert()">제출</button>
 	                                <!-- <button class="btn btn-secondary" type="reset">취소</button> -->
 	                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">종료</button>
 	                            </td>
 	                        </tr>
+	                        
 	                    </table>
 					<!-- </form> -->
 				</div>
@@ -251,29 +267,25 @@ calculateAndShow();
 	<div class="modal" id="updateModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
+<!---------------------------------------- update 프론트엔드  ------------------------------------------>
 				<!-- Modal Header -->
 				<div class="modal-header">
-					<h4 class="modal-title">일정 조회/수정/삭제</h4>
+					<h5 class="modal-title"><i class="fa-solid fa-leaf"></i> 오늘의 탄소감소량 수정</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 				</div>
 			
 				<!-- Modal body -->
 				<div class="modal-body">
-					<form action="/onnana/schedule/update" method="post">
+				
+					<!--<form action="/onnana/schedule/update" method="post"> -->
 						<input type="hidden" name="sid" id="sid2">
 						<table class="table table-borderless">
-	                        <tr>
-	                            <td colspan="2">
-	                                <label for="title2">제목</label>
-	                                <input class="form-control" type="text" id="title2" name="title">
-	                            </td>
-	                        </tr>
-	                        <tr>
+	                       
 	                            <td>
-	                                <label for="startDate2">시작일</label>
+	                                <label for="startDate2">일 자</label>
 	                                <input class="form-control" type="date" id="startDate2" name="startDate">
 	                            </td>
-	                            <td>
+	                            <td style="display: none;">
 	                                <label for="startTime2">시작시간</label>
 	                                <select class="form-control" name="startTime" id="startTime2">
 	                                <c:forEach var="tl" items="${timeList}">
@@ -285,38 +297,50 @@ calculateAndShow();
 <!-- ========================================================= 탄소계산기 start ========================================================= -->
 	                         <tr>
 	                            <td colspan="2">
-	                            	<p id="demo"></p> <!-- 현재 위치를 표시할 요소 -->
-	                                <label for="place">대중교통 배출량 계산하기 </label>
+	                            	<p id="demo" style="display: none;"></p> <!-- 현재 위치를 표시할 요소 -->
+	                                <label for="place">거리에 따른 배출 감소량 계산하기</label>
 	                                <div class="input-group outer-container" style="width: 100%;">
-									    <input type="text" style="height: auto;" class="form-control" id="place2" name="place" placeholder=" 도착지 주소를 입력하세요">
-									    <button class="btn btn-success" style="width: 80px;" type="submit" onclick="searchAndCalculateDistance()">계산</button>
+									    <input type="text" style="height: auto;" class="form-control" id="place2" name="place" placeholder=" 도착지 주소를 입력하면 현재위치부터 계산합니다">
+									    <button class="btn btn-success"  id="calculateDistanceBtn2"  style="width: 80px;" onclick="searchAndCalculateDistance2()">계산</button>
 									</div>
-		                                 <p id="result"></p>  <!-- 검색된 위치의 좌표와 거리를 표시할 요소 -->
+		                              <p id="result2"></p>  <!-- 검색된 위치의 좌표와 거리를 표시할 요소 -->
 	                            </td>
-	                        </tr>    
+	                        </tr>  
 	                        
 <!-- ========================================================= 탄소계산기 end ======================================================== -->
 	                         <tr>
 	                            <td colspan="2">
-                                <label for="smoke">금연(개비)</label>
-                                 <form action="/action_page.php">
-								    <select class="form-select form-control"  type="text" id="smoke2" name="smoke">
-									     <c:forEach var="i" begin="1" end="20">
-									      <option value="${i}" >${i}</option>
-								      		</c:forEach>
-								    </select>
-						  		</form>
+                                <label for="smoke">금연(개비) 배출 감소량</label>
+                                 <!--  <form action="/action_page.php">  -->
+									    <select class="form-select form-control"  type="text" id="smoke2" name="smoke"">
+										     <c:forEach var="i" begin="1" end="20">
+										      <option value="${i}" >${i}</option>
+									      		</c:forEach>
+									    </select>
+									     <p id="showResult2"  style="display: none;"></p>
+									    <p>※ 산출방식: 14g/개</p>
+									 <!--   </form> -->
 	                            </td>
 	                        </tr>
+	                         <tr>
+	                            <td colspan="2">
+	                                <label for="title">합 산</label>
+	                                <div class="input-group outer-container" style="width: 100%;">
+									    <input class="form-control" type="text" id="title2" name="title" disabled>
+									    <button  class="btn btn-success" style="width: 80px;"  onclick="readJs2()"><i class="fa-solid fa-calculator"></i></button>
+									</div>
+	                            </td>
+	                        </tr>   
+	                        <tr>
 	                        <tr>
 	                            <td colspan="2" style="text-align: right;">
-	                                <button class="btn btn-primary me-2" type="submit">수정</button>
-	                                <button class="btn btn-danger me-2" type="button" data-bs-dismiss="modal" onclick="deleteSchedule()">삭제</button>
+	                                <button class="btn btn-success me-2" onclick="update()">수정</button>
+	                                <button class="btn btn-danger me-2"  data-bs-dismiss="modal" onclick="deleteSchedule()">삭제</button>
 									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">종료</button>
 	                            </td>
 	                        </tr>
 	                    </table>
-					</form>
+					<!-- </form> -->
 				</div>
 			</div>
 		</div>
@@ -333,7 +357,7 @@ calculateAndShow();
 			
 				<!-- Modal body -->
 				<div class="modal-body">
-					<form action="/onnana/schedule/insertAnniv" method="post">
+					<!-- <form action="/onnana/schedule/insertAnniv" method="post"> -->
 						<table class="table table-borderless">
 	                        <tr>
 	                            <td>
@@ -355,7 +379,7 @@ calculateAndShow();
 	                            </td>
 	                        </tr>
 	                    </table>
-					</form>
+					<!-- </form> -->
 				</div>
 			</div>
 		</div>

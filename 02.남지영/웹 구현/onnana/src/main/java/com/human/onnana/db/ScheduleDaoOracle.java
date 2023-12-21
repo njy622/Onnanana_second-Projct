@@ -19,15 +19,16 @@ public interface ScheduleDaoOracle {
 			+ "  ORDER BY startTime")
 	List<Schedule> getSchedList(String uid, String startDate, String endDate);
 	
-	@Insert("INSERT INTO schedule VALUES"
-			+ " (DEFAULT, #{uid}, #{sdate}, #{startTime}, #{title}, #{place}, #{smoke})")
+	@Insert("INSERT INTO schedule VALUES (DEFAULT, #{uid}, #{sdate}, #{startTime}, #{title}, #{title2}, #{place},"
+			+ " #{startplace}, #{endplace}, #{smoke}, #{smoke2}, #{waypoint1},#{waypoint2},#{waypoint3})")
 	void insert(Schedule schedule);
 	
 	@Select("select * from schedule where sid=#{sid}")
 	Schedule getSchedule(int sid);
 	
-	@Update("update schedule set \"uid\"=#{uid}, sdate=#{sdate}, startTime=#{startTime}, title=#{title},"
-			+ " place=#{place}, smoke=#{smoke} where sid=#{sid}")
+	@Update("update schedule set \"uid\"=#{uid}, sdate=#{sdate}, startTime=#{startTime}, title=#{title}, title2=#{title2},"
+			+ " place=#{place}, startplace=#{startplace}, endplace=#{endplace}, smoke=#{smoke}, smoke2=#{smoke2},"
+			+ " waypoint1=#{waypoint1}, waypoint2=#{waypoint2}, waypoint3=#{waypoint3}  where sid=#{sid}")
 	void update(Schedule schedule);
 	
 	@Delete("delete from schedule where sid=#{sid}")
@@ -51,14 +52,18 @@ public interface ScheduleDaoOracle {
 	@Select("SELECT COUNT(*)FROM schedule WHERE \"uid\" = #{uid}")
 	int userCount(String uid);
 	
-	// 유저 전체 캘린더 작성 카운트
+	// 유저 전체 탄소 감소량 합계
 	@Select("SELECT  SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))) AS total_sum FROM schedule")
 	Double carbonCount();
 	
-	// 한 유저의 캘린더 작성 카운트
+	// 한 유저 탄소감소량 합계
 	@Select("SELECT  SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))) AS total_sum FROM schedule where \"uid\"= #{uid}")
 	Double carbonUserCount(String uid);
 	
+	
+	// 한 유저의 탄소감소량 
+	@Select("SELECT uid, SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))) AS total_sum FROM schedule WHERE \"uid\" = #{uid} AND sdate = #{sdate} GROUP BY uid")
+	List<Schedule> getuserdateCarvon(String uid, String sdate);
 	
 	
 	
