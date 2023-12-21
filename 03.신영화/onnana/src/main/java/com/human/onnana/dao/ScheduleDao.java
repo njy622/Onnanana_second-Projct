@@ -44,4 +44,7 @@ public interface ScheduleDao {
 			+ "  ORDER BY startTime")
 	int getSchedCount(String uid, String startDate);
 	
+	@Select("SELECT COUNT(*) FROM schedule WHERE uid=#{uid}")
+    int getUserSchedCount(String uid);
+	
 }

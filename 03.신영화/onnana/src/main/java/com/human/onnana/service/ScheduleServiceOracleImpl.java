@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.human.onnana.db.AnniversaryDaoOracle;
 import com.human.onnana.db.ScheduleDaoOracle;
@@ -100,5 +101,12 @@ public class ScheduleServiceOracleImpl implements ScheduleService {
 		Double userCarbon = schedDao.carbonUserCount(uid);
 		return userCarbon;
 	}
+	
+	@Override
+    public int getAttendanceCount(String uid) {
+        // 여기에서 출석 횟수를 어떻게 계산할지 구현해야 합니다.
+        // 예시로는 해당 유저의 스케줄 개수를 리턴하도록 구현하겠습니다.
+        return schedDao.getUserSchedCount(uid);
+    }
 
 }

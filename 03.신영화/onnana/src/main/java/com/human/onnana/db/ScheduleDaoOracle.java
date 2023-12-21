@@ -14,11 +14,11 @@ import com.human.onnana.entity.Schedule;
 @Mapper
 public interface ScheduleDaoOracle {
 
-	@Select("SELECT * FROM schedule"
-			+ "  WHERE \"uid\"=#{uid} and sdate >= #{startDate} and sdate <= #{endDate}"
-			+ "  ORDER BY startTime")
-	List<Schedule> getSchedList(String uid, String startDate, String endDate);
-	
+	 @Select("SELECT * FROM schedule"
+	            + " WHERE \"uid\"=#{uid, jdbcType=VARCHAR} and sdate >= #{startDate, jdbcType=VARCHAR} and sdate <= #{endDate, jdbcType=VARCHAR}"
+	            + " ORDER BY startTime")
+	    List<Schedule> getSchedList(String uid, String startDate, String endDate);
+
 	@Insert("INSERT INTO schedule VALUES"
 			+ " (DEFAULT, #{uid}, #{sdate}, #{startTime}, #{title}, #{place}, #{smoke})")
 	void insert(Schedule schedule);
@@ -59,10 +59,21 @@ public interface ScheduleDaoOracle {
 	@Select("SELECT  SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))) AS total_sum FROM schedule where \"uid\"= #{uid}")
 	Double carbonUserCount(String uid);
 	
+	private int convertToNumber(String uid) {
+	    try {
+	        return Integer.parseInt(uid);
+	    } catch (NumberFormatException e) {
+	        // 숫자로 변환할 수 없는 경우 0을 반환하거나 예외 처리
+	        return 0;
+	    }
+	}
 	
-	
-	
-	
+	@Select("SELECT COUNT(*) FROM schedule WHERE \"uid\"=#{uid}")
+	int getUserSchedCount(String uid);
+
 	
 	
 }
+
+	
+
