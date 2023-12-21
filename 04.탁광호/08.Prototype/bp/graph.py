@@ -121,3 +121,18 @@ def corona_graph():
         graph_url = None
 
     return render_template('/graph/corona_graph.html', sidos=sidos, variables=variables, selected_sido=selected_sido, selected_variable=selected_variable, graph=graph_url, similar_impact=similar_impact_message, menu=menu)
+
+
+
+@graph_bp.route('/future-prediction', methods=['GET', 'POST'])
+def predict_pm():
+    variables = ['미세먼지', '초미세먼지']
+    selected_variable = '미세먼지'
+
+    prediction = None
+    if request.method == 'POST':
+        selected_variable = request.form.get('variable')
+        prediction = gu.predict_pm10_pm25(selected_variable)
+
+
+    return render_template('/graph/future_prediction.html', variables=variables, selected_variable=selected_variable, prediction=prediction, menu=menu)
