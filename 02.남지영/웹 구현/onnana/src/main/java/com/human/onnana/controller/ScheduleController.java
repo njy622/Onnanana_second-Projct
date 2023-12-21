@@ -276,8 +276,20 @@ public class ScheduleController {
 		String sdate = startDate.replace("-", "");
 		
 		String sessUid = (String) session.getAttribute("sessUid");
-		Schedule schedule = new Schedule(sid, sessUid, sdate, startDateTime, title, title2, place,
-										startplace, endplace, smoke,smoke2,waypoint1, waypoint2, waypoint3);
+	    Schedule schedule = new Schedule(sid, sessUid, sdate, startDateTime);
+
+	    schedule.setTitle(title != null && !title.isEmpty() ? title : "");
+	    schedule.setTitle2(title2 != null && !title2.isEmpty() ? title2 : "");
+	    schedule.setPlace(place != null && !place.isEmpty() ? place : "");
+	    schedule.setStartplace(startplace != null && !startplace.isEmpty() ? startplace : "");
+	    schedule.setEndplace(endplace != null && !endplace.isEmpty() ? endplace : "");
+	    schedule.setSmoke(smoke != null && !smoke.isEmpty() ? smoke : "");
+	    schedule.setSmoke2(smoke2 != null && !smoke2.isEmpty() ? smoke2 : "");
+	    schedule.setWaypoint1(waypoint1 != null && !waypoint1.isEmpty() ? waypoint1 : "");
+	    schedule.setWaypoint2(waypoint2 != null && !waypoint2.isEmpty() ? waypoint2 : "");
+	    schedule.setWaypoint3(waypoint3 != null && !waypoint3.isEmpty() ? waypoint3 : "");
+
+	    
 		System.out.println(schedule);
 		schedService.update(schedule);
 		

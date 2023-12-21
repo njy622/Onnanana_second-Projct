@@ -23,6 +23,13 @@ public class Schedule {
 	public Schedule() {}
 
 	public Schedule(String uid, String sdate, LocalDateTime startTime) {
+		this.uid = uid;
+		this.sdate = sdate;
+		this.startTime = startTime;
+	}
+	
+	public Schedule(int sid, String uid, String sdate, LocalDateTime startTime) {
+		this.sid = sid;
         this.uid = uid;
         this.sdate = sdate;
         this.startTime = startTime;

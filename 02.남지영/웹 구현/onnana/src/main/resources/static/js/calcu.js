@@ -291,7 +291,7 @@ function stopoverreadJs() {
 
 function searchAndCalculateDistance2() {
 
-  var address = document.getElementById('place2').value;					
+  var address = document.getElementById('place3').value;					
   var query = encodeURIComponent(address);
 
   var baseUrl = "https://dapi.kakao.com/v2/local/search/address.json";
@@ -542,6 +542,7 @@ function stopoverreadJs2() {
     let currentTitle = titleElement.value;
     titleElement.value = currentTitle.split('-')[0].trim() + '- ' + totalCarbon.toFixed(2) + 'kg 감소';
 }
+
 
 
 

@@ -53,11 +53,11 @@ public interface ScheduleDaoOracle {
 	int userCount(String uid);
 	
 	// 유저 전체 탄소 감소량 합계
-	@Select("SELECT  SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))) AS total_sum FROM schedule")
+	@Select("SELECT COALESCE(SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))), 0) + COALESCE(SUM(TO_NUMBER(REGEXP_SUBSTR(title2, '\\d+(\\.\\d+)?'))), 0) AS total_sum FROM schedule")
 	Double carbonCount();
 	
 	// 한 유저 탄소감소량 합계
-	@Select("SELECT  SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))) AS total_sum FROM schedule where \"uid\"= #{uid}")
+	@Select("SELECT  COALESCE(SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))), 0) + COALESCE(SUM(TO_NUMBER(REGEXP_SUBSTR(title2, '\\d+(\\.\\d+)?'))), 0) AS total_sum FROM schedule where \"uid\"= #{uid}")
 	Double carbonUserCount(String uid);
 	
 	
