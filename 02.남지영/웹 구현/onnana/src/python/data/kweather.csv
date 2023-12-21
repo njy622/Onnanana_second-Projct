@@ -1,9 +1,9 @@
 이미지,생활지수,지수,안내멘트,그래프 값,그래프 최댓값
 ../img/icon_idx_carwash.png?ver=20231214,세차지수,100,세차하기에 가장 적합한 날이에요,100,100
-../img/icon_idx_running.png?ver=20231214,달리기지수,0,오늘 야외 운동은 피하세요!,0,100
-../img/icon_idx_washing.png?ver=20231214,빨래지수,38,빨래! 왠만하면 다음으로!,38,100
-../img/icon_idx_sleep.png?ver=20231214,수면지수,10,카페인은 피하고 따뜻한 목욕을 권해요,10,100
-../img/icon_idx_umb.png?ver=20231214,우산지수,20,비나 눈이 살짝 올 수 있어요,20,100
-../img/icon_life_uv.png?ver=20231214,자외선지수,2,자외선 걱정 없는 날이에요.,25,100
-../img/icon_life_cold.png?ver=20231214,감기지수,4,외부 활동은 되도록 삼가요,100,100
+../img/icon_idx_running.png?ver=20231214,달리기지수,0,오늘 바깥 운동은 NO!,0,100
+../img/icon_idx_washing.png?ver=20231214,빨래지수,50,빨래는 실내에서 말려주세요,50,100
+../img/icon_idx_sleep.png?ver=20231214,수면지수,10,수면지수가 매우 낮은 날이에요,10,100
+../img/icon_idx_umb.png?ver=20231214,우산지수,20,휴대하기 편한 우산 하나 챙기세요,20,100
+../img/icon_life_uv.png?ver=20231214,자외선지수,0,야외활동 안심하고 마음껏 하세요,25,100
+../img/icon_life_cold.png?ver=20231214,감기지수,4,노약자는 감기에 각별히 주의 필요,100,100
 ../img/icon_life_freez.png?ver=20231214,동파지수,25,큰 추위 없어 동파 걱정 없어요,25,100
