@@ -1,7 +1,9 @@
 package com.human.onnana.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -11,6 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -26,9 +29,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
+import com.google.gson.Gson;
 import com.human.onnana.entity.Button;
 import com.human.onnana.entity.User;
 import com.human.onnana.service.ScheduleService;
@@ -112,20 +117,92 @@ public class UserController {
 	
 	@GetMapping("/list/{page}")
 	public String list(@PathVariable int page, HttpSession session, Model model) {
-		List<User> list = userService.getUserList(page);
-		model.addAttribute("userList", list);
-		
-		int totalUsers = userService.getUserCount();
-		int totalPages = (int) Math.ceil((double)totalUsers / userService.RECORDS_PER_PAGE);
-		List<String> pageList = new ArrayList<>();
-		for (int i=1; i<=totalPages; i++)
-			pageList.add(String.valueOf(i));
-		model.addAttribute("pageList", pageList);
-		session.setAttribute("currentUserPage", page);
-		model.addAttribute("menu", "user"); // 유저아이콘 불들어옴
-		
-		return "user/list";
+	    // 유저 리스트를 가져오는 코드
+	    List<User> list = userService.getUserList(page);
+	    model.addAttribute("userList", list);
+
+	    // 페이징 처리 코드
+	    int totalUsers = userService.getUserCount();
+	    int totalPages = (int) Math.ceil((double) totalUsers / userService.RECORDS_PER_PAGE);
+	    List<String> pageList = new ArrayList<>();
+	    for (int i = 1; i <= totalPages; i++)
+	        pageList.add(String.valueOf(i));
+	    model.addAttribute("pageList", pageList);
+
+	    session.setAttribute("currentUserPage", page);
+	    model.addAttribute("menu", "user");
+
+	    return "user/list";
 	}
+
+	@GetMapping("/list2/{page}")
+	public String list2(@PathVariable int page, HttpSession session, Model model) {
+	    // 유저 리스트를 가져오는 코드
+	    List<User> list = userService.getUserList(page);
+	    model.addAttribute("userList", list);
+
+	    // 페이징 처리 코드
+	    int totalUsers = userService.getUserCount();
+	    int totalPages = (int) Math.ceil((double) totalUsers / userService.RECORDS_PER_PAGE);
+	    List<String> pageList = new ArrayList<>();
+	    for (int i = 1; i <= totalPages; i++)
+	        pageList.add(String.valueOf(i));
+	    model.addAttribute("pageList", pageList);
+
+	    session.setAttribute("currentUserPage", page);
+	    model.addAttribute("menu", "user");
+
+	    return "user/list2";
+	}
+
+	
+	
+	@PostMapping("/processUid")
+	@ResponseBody // AJAX를 통해 JSON 데이터를 반환하기 위해 사용합니다.
+	public String processUid(@RequestParam("userUID") String userUID) {
+		
+		// DecimalFormat 객체를 생성하여 소수점 자릿수를 지정합니다. 
+		DecimalFormat decimalFormat = new DecimalFormat("#.###");
+		
+	    // 한유저의 캠페인 참여일수와 감소량을 jsp에서 사용자리스트 클릭시, 해당되는 사용자의 uid값을 가져와서 DB와 연동시킴
+	    int listUidCount = schedService.getUserCount(userUID);
+	    Double listUidcarbon = schedService.getCarbonUserCount(userUID);
+	    // 한유저의 하루 평균 감소량(소숫점 3자리까지 나타냄)
+	    double UserDateAve = Math.round(listUidcarbon /listUidCount * 1000.0) / 1000.0;
+	    
+	    
+	    
+	    // 모든 유저의 캠페인 참여일수와 감소량을DB와 연동시킴
+	    int listUidCountAll = schedService.getCount();
+	    Double listUidcarbonAll = schedService.getCarbonCount();
+	    // 모든 유저의 하루 평균 감소량(소숫점 3자리까지 나타냄)
+	    double UserDateAveAll = Math.round(listUidcarbonAll /listUidCountAll * 1000.0) / 1000.0;
+	    
+	    
+	    // 모든 유저의 평균 하루 평균 대비 나의 평균 감소량 기여도
+	    double AveDifference = (int)(listUidcarbon / listUidcarbonAll *100);
+	    
+	    
+	    Map<String, Object> response = new HashMap<>();
+		response.put("userlistCount", listUidCount);
+		response.put("userlistCarbon", listUidcarbon);
+		response.put("UserDateAve", UserDateAve);
+		
+		response.put("userlistCountAll", listUidCountAll);
+		response.put("userlistCarbonAll", listUidcarbonAll);
+		response.put("UserDateAveAll", UserDateAveAll);
+		
+		response.put("AveDifference", AveDifference);
+
+		// Map을 JSON 문자열로 변환합니다.
+		String jsonResponse = new Gson().toJson(response);
+
+		// JSON 형태로 결과를 반환합니다.
+		return jsonResponse;
+	}
+	
+	
+	
 	
 	
 	@GetMapping("/login")
@@ -183,7 +260,9 @@ public class UserController {
 			// 탄소배출감소량 한 유저 카운트
 			session.setAttribute("sessCarbonId", schedService.getCarbonUserCount(uid));
 			
-
+			
+			
+			
 			// 환영 메세지
 			// 로그인 입력 잘못해도, home으로 바로 이동
 			model.addAttribute("msg", user.getUname() + "님 환영합니다.");
