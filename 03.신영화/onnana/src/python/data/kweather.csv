@@ -1,0 +1,9 @@
+이미지,생활지수,지수,안내멘트,그래프 값,그래프 최댓값
+../img/icon_idx_carwash.png?ver=20231214,세차지수,40,그럭저럭 세차할 만한 날씨예요,40,100
+../img/icon_idx_running.png?ver=20231214,달리기지수,0,오늘 바깥 운동은 NO!,0,100
+../img/icon_idx_washing.png?ver=20231214,빨래지수,50,문을 닫고 실내에서 말리는 것을 추천,50,100
+../img/icon_idx_sleep.png?ver=20231214,수면지수,20,수면지수가 낮은 날이에요,20,100
+../img/icon_idx_umb.png?ver=20231214,우산지수,10,우산 없이 가볍게 외출하세요!,10,100
+../img/icon_life_uv.png?ver=20231214,자외선지수,1,자외선 걱정없는 날씨에요,25,100
+../img/icon_life_cold.png?ver=20231214,감기지수,3,실내 적정 온습도를 체크해 주세요,75,100
+../img/icon_life_freez.png?ver=20231214,동파지수,25,큰 추위 없어 동파 걱정 NO!,25,100

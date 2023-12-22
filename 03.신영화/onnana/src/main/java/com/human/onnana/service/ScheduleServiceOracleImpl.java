@@ -1,11 +1,13 @@
 package com.human.onnana.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.human.onnana.db.AnniversaryDaoOracle;
 import com.human.onnana.db.ScheduleDaoOracle;
@@ -18,6 +20,7 @@ public class ScheduleServiceOracleImpl implements ScheduleService {
 	
 	@Autowired private ScheduleDaoOracle schedDao;
 	@Autowired private AnniversaryDaoOracle annivDao;
+
 
 	@Override
 	public List<Schedule> getDaySchedList(String uid, String sdate) {
@@ -78,35 +81,34 @@ public class ScheduleServiceOracleImpl implements ScheduleService {
 	
 	@Override
 	public int getCount() {
-		int allCount = schedDao.count();
-		return allCount;
+		return schedDao.count();
 	}
 
 	@Override
 	public int getUserCount(String uid) {
-		int userCount = schedDao.userCount(uid);
-		return userCount;
+		return schedDao.userCount(uid);
 	}
 	
 	
 	
 	@Override
 	public Double getCarbonCount() {
-		Double allCarbon = schedDao.carbonCount();
-		return allCarbon;
+		return schedDao.carbonCount();
 	}
 	
 	@Override
 	public Double getCarbonUserCount(String uid) {
-		Double userCarbon = schedDao.carbonUserCount(uid);
-		return userCarbon;
+		return schedDao.carbonUserCount(uid);
+	}
+
+	@Override
+	public int getAttendanceCount(String uid) {
+	    return schedDao.getAttendanceCount(uid);
+	}
+	@Override
+	public double getUserCarbonReductionTotal(int sid) {
+		return schedDao.getUserCarbonReductionTotal(sid);
 	}
 	
-	@Override
-    public int getAttendanceCount(String uid) {
-        // 여기에서 출석 횟수를 어떻게 계산할지 구현해야 합니다.
-        // 예시로는 해당 유저의 스케줄 개수를 리턴하도록 구현하겠습니다.
-        return schedDao.getUserSchedCount(uid);
-    }
-
+	
 }
