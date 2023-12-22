@@ -1,7 +1,6 @@
 package com.human.onnana.entity;
 
 import java.time.LocalDate;
-import java.sql.Timestamp;
 
 public class User {
 	
@@ -11,7 +10,7 @@ public class User {
 	private String email;
 	private LocalDate regDate;
 	private int isDeleted;
-    private Timestamp lastLoginDate; // 추가된 필드
+    private int attendanceCount; // 새로 추가한 필드
 
 	
 	public User() {	}
@@ -65,18 +64,18 @@ public class User {
 	public void setIsDeleted(int isDeleted) {
 		this.isDeleted = isDeleted;
 	}
-	public Timestamp getLastLoginDate() {
-        return lastLoginDate;
+
+	public int getAttendanceCount() {
+        return attendanceCount;
     }
 
-    public void setLastLoginDate(Timestamp lastLoginDate) {
-        this.lastLoginDate = lastLoginDate;
+    public void setAttendanceCount(int attendanceCount) {
+        this.attendanceCount = attendanceCount;
     }
 	
     @Override
     public String toString() {
         return "User [uid=" + uid + ", pwd=" + pwd + ", uname=" + uname + ", email=" + email + ", regDate=" + regDate
-                + ", isDeleted=" + isDeleted + ", lastLoginDate=" + lastLoginDate + "]";
+                + ", isDeleted=" + isDeleted + ", attendanceCount=" + attendanceCount + "]";
     }
-	
 }

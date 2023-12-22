@@ -14,20 +14,21 @@ import com.human.onnana.entity.Schedule;
 @Mapper
 public interface ScheduleDaoOracle {
 
-	 @Select("SELECT * FROM schedule"
-	            + " WHERE \"uid\"=#{uid, jdbcType=VARCHAR} and sdate >= #{startDate, jdbcType=VARCHAR} and sdate <= #{endDate, jdbcType=VARCHAR}"
-	            + " ORDER BY startTime")
-	    List<Schedule> getSchedList(String uid, String startDate, String endDate);
-
-	@Insert("INSERT INTO schedule VALUES"
-			+ " (DEFAULT, #{uid}, #{sdate}, #{startTime}, #{title}, #{place}, #{smoke})")
+	@Select("SELECT * FROM schedule"
+			+ "  WHERE \"uid\"=#{uid} and sdate >= #{startDate} and sdate <= #{endDate}"
+			+ "  ORDER BY startTime")
+	List<Schedule> getSchedList(String uid, String startDate, String endDate);
+	
+	@Insert("INSERT INTO schedule VALUES (DEFAULT, #{uid}, #{sdate}, #{startTime}, #{title}, #{title2}, #{place},"
+			+ " #{startplace}, #{endplace}, #{smoke}, #{smoke2}, #{waypoint1},#{waypoint2},#{waypoint3})")
 	void insert(Schedule schedule);
 	
 	@Select("select * from schedule where sid=#{sid}")
 	Schedule getSchedule(int sid);
 	
-	@Update("update schedule set \"uid\"=#{uid}, sdate=#{sdate}, startTime=#{startTime}, title=#{title},"
-			+ " place=#{place}, smoke=#{smoke} where sid=#{sid}")
+	@Update("update schedule set \"uid\"=#{uid}, sdate=#{sdate}, startTime=#{startTime}, title=#{title}, title2=#{title2},"
+			+ " place=#{place}, startplace=#{startplace}, endplace=#{endplace}, smoke=#{smoke}, smoke2=#{smoke2},"
+			+ " waypoint1=#{waypoint1}, waypoint2=#{waypoint2}, waypoint3=#{waypoint3}  where sid=#{sid}")
 	void update(Schedule schedule);
 	
 	@Delete("delete from schedule where sid=#{sid}")
@@ -51,13 +52,18 @@ public interface ScheduleDaoOracle {
 	@Select("SELECT COUNT(*)FROM schedule WHERE \"uid\" = #{uid}")
 	int userCount(String uid);
 	
-	// 유저 전체 캘린더 작성 카운트
-	@Select("SELECT  SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))) AS total_sum FROM schedule")
+	// 유저 전체 탄소 감소량 합계
+	@Select("SELECT COALESCE(SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))), 0) + COALESCE(SUM(TO_NUMBER(REGEXP_SUBSTR(title2, '\\d+(\\.\\d+)?'))), 0) AS total_sum FROM schedule")
 	Double carbonCount();
 	
-	// 한 유저의 캘린더 작성 카운트
-	@Select("SELECT  SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))) AS total_sum FROM schedule where \"uid\"= #{uid}")
+	// 한 유저 탄소감소량 합계
+	@Select("SELECT  COALESCE(SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))), 0) + COALESCE(SUM(TO_NUMBER(REGEXP_SUBSTR(title2, '\\d+(\\.\\d+)?'))), 0) AS total_sum FROM schedule where \"uid\"= #{uid}")
 	Double carbonUserCount(String uid);
+	
+	
+	@Select("SELECT COALESCE(SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))), 0) + COALESCE(SUM(TO_NUMBER(REGEXP_SUBSTR(title2, '\\d+(\\.\\d+)?'))), 0) AS total_sum FROM schedule WHERE sid = #{sid}")
+	double getUserCarbonReductionTotal(int sid);
+	
 	
 	private int convertToNumber(String uid) {
 	    try {
@@ -68,12 +74,12 @@ public interface ScheduleDaoOracle {
 	    }
 	}
 	
+
 	@Select("SELECT COUNT(*) FROM schedule WHERE \"uid\"=#{uid}")
 	int getUserSchedCount(String uid);
 
-	
-	
+	@Select("SELECT COUNT(*) FROM schedule where \"uid\"=#{uid}")
+	int getAttendanceCount(String uid);
+
+
 }
-
-	
-
