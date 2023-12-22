@@ -162,14 +162,35 @@ public class ScheduleController {
 		String startTime = req.getParameter("startTime");
 		LocalDateTime startDateTime = LocalDateTime.parse(startDate + "T" + startTime + ":00");
 		String title = req.getParameter("title");
+		String title2 = req.getParameter("title2");
 		String place = req.getParameter("place");
+		String startplace = req.getParameter("startplace");
+		String endplace = req.getParameter("endplace");
 		String smoke = req.getParameter("smoke");
+		String smoke2 = req.getParameter("smoke2");
+		String waypoint1 = req.getParameter("waypoint1");
+		String waypoint2 = req.getParameter("waypoint2");
+		String waypoint3 = req.getParameter("waypoint3");
 		String sdate = startDate.replace("-", "");
 		
 		String sessUid = (String) session.getAttribute("sessUid");
-		Schedule schedule = new Schedule(sessUid, sdate, startDateTime, title, place, smoke);
-		schedService.insert(schedule);
-		
+	    Schedule schedule = new Schedule(sessUid, sdate, startDateTime);
+
+	    schedule.setTitle(title != null && !title.isEmpty() ? title : "");
+	    schedule.setTitle2(title2 != null && !title2.isEmpty() ? title2 : "");
+	    schedule.setPlace(place != null && !place.isEmpty() ? place : "");
+	    schedule.setStartplace(startplace != null && !startplace.isEmpty() ? startplace : "");
+	    schedule.setEndplace(endplace != null && !endplace.isEmpty() ? endplace : "");
+	    schedule.setSmoke(smoke != null && !smoke.isEmpty() ? smoke : "");
+	    schedule.setSmoke2(smoke2 != null && !smoke2.isEmpty() ? smoke2 : "");
+	    schedule.setWaypoint1(waypoint1 != null && !waypoint1.isEmpty() ? waypoint1 : "");
+	    schedule.setWaypoint2(waypoint2 != null && !waypoint2.isEmpty() ? waypoint2 : "");
+	    schedule.setWaypoint3(waypoint3 != null && !waypoint3.isEmpty() ? waypoint3 : "");
+
+	    
+	    schedService.insert(schedule);
+
+		System.out.println(schedule);
 ///////////////// 캘린더 생성 되었을때 , DB베이스와 웹서버 연동 실시간으로 되도록 설정///////////////////////////
 
 		
@@ -211,19 +232,28 @@ public class ScheduleController {
 	
 	
 
-	// Ajax로 detail data를 전달함
 	@ResponseBody
 	@GetMapping("/detail/{sid}")
 	public String detail(@PathVariable int sid) {
-		Schedule sched = schedService.getSchedule(sid);
-		JSONObject jSched = new JSONObject();
-		jSched.put("sid", sid);
-		jSched.put("startTime", sched.getStartTime().toString());
-		jSched.put("title", sched.getTitle());
-		jSched.put("place", sched.getPlace());
-		jSched.put("smoke", sched.getSmoke().toString());
-		return jSched.toString();
+	    Schedule sched = schedService.getSchedule(sid);
+	    JSONObject jSched = new JSONObject();
+	    jSched.put("sid", sid);
+	    jSched.put("startTime", sched.getStartTime().toString());
+	    jSched.put("title", sched.getTitle());
+	    jSched.put("title2", sched.getTitle2());
+	    jSched.put("place", sched.getPlace());
+	    jSched.put("startplace", sched.getStartplace());
+	    jSched.put("endplace", sched.getEndplace()); // Corrected 'endplace' typo
+	    jSched.put("smoke", sched.getSmoke().toString());
+	    jSched.put("smoke2", sched.getSmoke2().toString()); // Changed to 'getSmoke2()'
+	    jSched.put("waypoint1", sched.getWaypoint1());
+	    jSched.put("waypoint2", sched.getWaypoint2());
+	    jSched.put("waypoint3", sched.getWaypoint3());
+	    
+	    System.out.println(jSched);
+	    return jSched.toString();
 	}
+
 	
 	
 	@ResponseBody
@@ -233,13 +263,33 @@ public class ScheduleController {
 		String startTime = req.getParameter("startTime");
 		LocalDateTime startDateTime = LocalDateTime.parse(startDate + "T" + startTime + ":00");
 		String title = req.getParameter("title");
+		String title2 = req.getParameter("title2");
 		String place = req.getParameter("place");
+		String startplace = req.getParameter("startplace");
+		String endplace = req.getParameter("endplace");
 		String smoke = req.getParameter("smoke");
+		String smoke2 = req.getParameter("smoke2");
+		String waypoint1 = req.getParameter("waypoint1");
+		String waypoint2 = req.getParameter("waypoint2");
+		String waypoint3 = req.getParameter("waypoint3");
 		int sid = Integer.parseInt(req.getParameter("sid"));
 		String sdate = startDate.replace("-", "");
 		
 		String sessUid = (String) session.getAttribute("sessUid");
-		Schedule schedule = new Schedule(sid, sessUid, sdate, startDateTime, title, place, smoke);
+	    Schedule schedule = new Schedule(sid, sessUid, sdate, startDateTime);
+
+	    schedule.setTitle(title != null && !title.isEmpty() ? title : "");
+	    schedule.setTitle2(title2 != null && !title2.isEmpty() ? title2 : "");
+	    schedule.setPlace(place != null && !place.isEmpty() ? place : "");
+	    schedule.setStartplace(startplace != null && !startplace.isEmpty() ? startplace : "");
+	    schedule.setEndplace(endplace != null && !endplace.isEmpty() ? endplace : "");
+	    schedule.setSmoke(smoke != null && !smoke.isEmpty() ? smoke : "");
+	    schedule.setSmoke2(smoke2 != null && !smoke2.isEmpty() ? smoke2 : "");
+	    schedule.setWaypoint1(waypoint1 != null && !waypoint1.isEmpty() ? waypoint1 : "");
+	    schedule.setWaypoint2(waypoint2 != null && !waypoint2.isEmpty() ? waypoint2 : "");
+	    schedule.setWaypoint3(waypoint3 != null && !waypoint3.isEmpty() ? waypoint3 : "");
+
+	    
 		System.out.println(schedule);
 		schedService.update(schedule);
 		

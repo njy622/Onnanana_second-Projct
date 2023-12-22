@@ -86,6 +86,8 @@
           <div class="image-description" id="image-description">
               <h5 id="description-title" class="text-info"></h5>
               <p id="description-content"></p>
+              <p style="font-size:12px;">출처:서울특별시 대기환경정보(https://cleanair.seoul.go.kr/information/info151)</p>
+              
               <button id="openModalBtn" type="button" class="btn btn-outline-info" onclick="openModal()">
                   그래프 보기
               </button>

@@ -113,8 +113,8 @@ function stopoverCalculateDistance() {
         'Authorization': 'KakaoAK db8c17d6893ffe5d073cd03b8bfe32b5'
     };
 
-    var startQuery = encodeURIComponent(document.getElementById('startPlace').value);
-    var endQuery = encodeURIComponent(document.getElementById('endPlace').value);
+    var startQuery = encodeURIComponent(document.getElementById('startplace').value);
+    var endQuery = encodeURIComponent(document.getElementById('endplace').value);
     
     var wayCount = 0;
     var startUrl = "https://dapi.kakao.com/v2/local/search/address.json?query=" + startQuery;
@@ -268,14 +268,14 @@ function stopoverreadJs() {
     let carbonEmission = parseFloat((document.getElementById('stopoverResult').innerText).match(/\d+/)[0]);
 
   //담배 갯수 선택한 값에 * 14g 연산 후  kg으로 출력
-    let smokeCarbon = parseInt($('#smoke3').val()) * 14 / 1000;
+    let smokeCarbon = parseInt($('#smoke2').val()) * 14 / 1000;
 	
   	
     let totalCarbon = carbonEmission - smokeCarbon;
-    document.getElementById('showResult3').innerText = totalCarbon.toFixed(2);
+    document.getElementById('showResult2').innerText = totalCarbon.toFixed(2);
 
     // 입력값이 변경될 때마다 제목에 결과값 추가
-    let titleElement = document.getElementById('title3');
+    let titleElement = document.getElementById('title2');
     let currentTitle = titleElement.value;
     titleElement.value = currentTitle.split('-')[0].trim() + '- ' + totalCarbon.toFixed(2) + 'kg 감소';
 }
@@ -291,7 +291,7 @@ function stopoverreadJs() {
 
 function searchAndCalculateDistance2() {
 
-  var address = document.getElementById('place2').value;					
+  var address = document.getElementById('place3').value;					
   var query = encodeURIComponent(address);
 
   var baseUrl = "https://dapi.kakao.com/v2/local/search/address.json";
@@ -357,14 +357,14 @@ function readJs2() {
     let carbonEmission = parseFloat((document.getElementById('result2').innerText).match(/\d+/)[0]);
 
   //담배 갯수 선택한 값에 * 14g 연산 후  kg으로 출력
-    let smokeCarbon = parseInt($('#smoke2').val()) * 14 / 1000;
+    let smokeCarbon = parseInt($('#smoke3').val()) * 14 / 1000;
 	
   	
     let totalCarbon = carbonEmission - smokeCarbon;
-    document.getElementById('showResult2').innerText = totalCarbon.toFixed(2);
+    document.getElementById('showResult3').innerText = totalCarbon.toFixed(2);
 
     // 입력값이 변경될 때마다 제목에 결과값 추가
-    let titleElement = document.getElementById('title2');
+    let titleElement = document.getElementById('title3');
     let currentTitle = titleElement.value;
     titleElement.value = currentTitle.split('-')[0].trim() + '- ' + totalCarbon.toFixed(2) + 'kg 감소';
 }
@@ -376,8 +376,8 @@ function stopoverCalculateDistance2() {
         'Authorization': 'KakaoAK db8c17d6893ffe5d073cd03b8bfe32b5'
     };
 
-    var startQuery2 = encodeURIComponent(document.getElementById('startPlace2').value);
-    var endQuery2 = encodeURIComponent(document.getElementById('endPlace2').value);
+    var startQuery2 = encodeURIComponent(document.getElementById('startplace2').value);
+    var endQuery2 = encodeURIComponent(document.getElementById('endplace2').value);
     
     var wayCount2 = 0;
     var startUrl2 = "https://dapi.kakao.com/v2/local/search/address.json?query=" + startQuery2;
@@ -542,6 +542,7 @@ function stopoverreadJs2() {
     let currentTitle = titleElement.value;
     titleElement.value = currentTitle.split('-')[0].trim() + '- ' + totalCarbon.toFixed(2) + 'kg 감소';
 }
+
 
 
 
