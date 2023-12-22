@@ -126,6 +126,7 @@ public class ScheduleController {
 			}
 			calendar.add(week);
 		}
+
 		
 		model.addAttribute("calendar", calendar);
 		model.addAttribute("today", today + "(" + date + ")");
@@ -141,10 +142,9 @@ public class ScheduleController {
 	
 	
 	@PostMapping("/calendar")
-	public String list(@PathVariable int page, HttpSession session, Model model, String uid, String sdate) {
+	public String list(@PathVariable int sid,@PathVariable int page, HttpSession session, Model model, String uid, String sdate) {
 	    String sessUid = (String) session.getAttribute("sessUid");
-	    List<Schedule> userList = schedService.getuserdateCarvon(sessUid, sdate);
-	    model.addAttribute("userList", userList);
+	    model.addAttribute("totalSum", schedService.getUserCarbonReductionTotal(sid));
 	    model.addAttribute("sdate", sdate); // 해당 날짜도 함께 전달합니다.
 	    return "schedule/calendar";
 	}
@@ -249,6 +249,7 @@ public class ScheduleController {
 	    jSched.put("waypoint1", sched.getWaypoint1());
 	    jSched.put("waypoint2", sched.getWaypoint2());
 	    jSched.put("waypoint3", sched.getWaypoint3());
+	    jSched.put("totalSum", schedService.getUserCarbonReductionTotal(sid));
 	    
 	    System.out.println(jSched);
 	    return jSched.toString();
@@ -274,6 +275,8 @@ public class ScheduleController {
 		String waypoint3 = req.getParameter("waypoint3");
 		int sid = Integer.parseInt(req.getParameter("sid"));
 		String sdate = startDate.replace("-", "");
+		
+
 		
 		String sessUid = (String) session.getAttribute("sessUid");
 	    Schedule schedule = new Schedule(sid, sessUid, sdate, startDateTime);
@@ -318,11 +321,13 @@ public class ScheduleController {
 		session.setAttribute("sessCarbonId", countUserCarbon);
 		
 		
+		
 		// count 외에도 여러 변수를 포함한 JSON 객체를 생성합니다.
 		Map<String, Object> response = new HashMap<>();
 		response.put("count", count);
 		response.put("countCarbon", countCarbon);
 		response.put("countUser", countUser);
+		response.put("countUserCarbon", countUserCarbon);
 		response.put("countUserCarbon", countUserCarbon);
 
 		// Map을 JSON 문자열로 변환합니다.

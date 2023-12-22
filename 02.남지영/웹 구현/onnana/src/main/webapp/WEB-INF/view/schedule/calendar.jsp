@@ -186,32 +186,8 @@
 						        <div style="display: inline-block; margin-top:-10px;">
 						            <!-- Stamp Image -->
 						            <img id="stampImage" height="60px" src="/onnana/img/stamp.png">
-						            <p style="margin-bottom:-10px; display: none;" id="titlesum1" data-title="${sched.title}">${sched.title}</p>
-						            <p style="margin-bottom:-10px; display: none;" id="titlesum2"  data-title="${sched.title2}">${sched.title2}</p>
-						            <!-- 아래와 같이 결과를 표시할 p 태그를 추가해주세요 -->
-									<div id="resultContainer"></div>
-									
-									<script>
-									    document.addEventListener('DOMContentLoaded', function() {
-									        showSum(); // 페이지 로드 시 자동으로 호출
-									    });
-									
-									    function showSum() {
-									        const titleValue = document.getElementById('titlesum1').getAttribute('data-title');
-									        const title2Value = document.getElementById('titlesum2').getAttribute('data-title');
-									
-									        const titleNumbers = titleValue.match(/\d+(\.\d+)?/g); // 정수와 소수를 모두 추출
-									        const title2Numbers = title2Value.match(/\d+(\.\d+)?/g); // 정수와 소수를 모두 추출
-									
-									        const sum = (titleNumbers ? titleNumbers.reduce((acc, curr) => acc + parseFloat(curr), 0) : 0) +
-									                    (title2Numbers ? title2Numbers.reduce((acc, curr) => acc + parseFloat(curr), 0) : 0); // 추출한 숫자들을 합산
-									
-									        document.getElementById('resultContainer').innerText = "-" + sum + "kg 감소";
-									
-									    }
-									</script>
-						        </div>
-						    </div>
+						            <p style="margin-bottom:-5px">${sched.title}</p>
+						            <p>${sched.title2}</p>
 						</c:forEach>
 
                         </td>
@@ -224,196 +200,196 @@
             
        
 <!-- =================================== 상세페이지 ============================================================= -->
-<div class="col-4 ms-5 container border bg-warning p-2 text-dark bg-opacity-10" id="table-borderless" style="border-radius:.80rem!important; margin-top:60px; height:700px; overflow-y: auto;">
-	<input type="hidden" name="sid" id="sid2">
-		<table class="table table-borderless">
-             <h4 style="color:green; margin-top:10px;"><i class="fa-solid fa-leaf"></i>&nbsp; 감소한 탄소배출량 상세보기</h4>
-             <tr>
-	             <td>
-	                 <label for="startDate2">일 자</label>
-	                 <input class="form-control" type="date" id="startDate2" name="startDate">
-	             </td>
-             </tr>
-             <tr>
-	             <td style="display: none;">
-	                 <label for="startTime2">시작시간</label>
-	                 <select class="form-control" name="startTime" id="startTime2">
-	                 <c:forEach var="tl" items="${timeList}">
-	                     <option value="${tl}" >${tl}</option>
-	                 </c:forEach>
-	                 </select>
-	             </td>
-             </tr>
+			<div class="col-4 ms-5 container border bg-warning p-2 text-dark bg-opacity-10" id="table-borderless" style="border-radius: .80rem!important; margin-top: 60px; height: 700px; overflow-y: auto; overflow-x: hidden;">
+				<input type="hidden" name="sid" id="sid2">
+					<table class="table table-borderless">
+			             <h4 style="color:green; margin-top:10px;"><i class="fa-solid fa-leaf"></i>&nbsp; 감소한 탄소배출량 상세보기</h4>
+			             <tr>
+				             <td>
+				                 <label for="startDate2">일 자</label>
+				                 <input class="form-control" type="date" id="startDate2" name="startDate">
+				             </td>
+			             </tr>
+			             <tr>
+				             <td style="display: none;">
+				                 <label for="startTime2">시작시간</label>
+				                 <select class="form-control" name="startTime" id="startTime2">
+				                 <c:forEach var="tl" items="${timeList}">
+				                     <option value="${tl}" >${tl}</option>
+				                 </c:forEach>
+				                 </select>
+				             </td>
+			             </tr>
 <!-- ========================================================= 탄소계산기 start ========================================================= -->
-          <tr>
-	                            <td colspan="2">
-										<div class="row">
-			                            	<p id="demo" style="display: none;"></p> <!-- 현재 위치를 표시할 요소 -->
-			                            	<h6 style="color:green;"><i class="fa-solid fa-location-dot"></i>&nbsp;현재 위치로부터 자동으로 계산하기</h6>
-			                                <label for="place3">도착지</label>
-			                                <div class="input-group outer-container" style="width: 100%;">
-											    <input type="text" style="height: auto;" class="form-control" id="place3" name="place" placeholder=" 도착지 주소를 입력하면 현재위치부터 계산합니다">
-											    <button id="calculateDistanceBtn2"  class="btn btn-success" style="width: 80px;" onclick="searchAndCalculateDistance2()">계산</button>
-											</div>
-											<p id="result2" style="font-size:10px"></p>  <!-- 검색된 위치의 좌표와 거리를 표시할 요소 -->
+         				 <tr>
+                            <td colspan="2">
+									<div class="row">
+		                            	<p id="demo" style="display: none;"></p> <!-- 현재 위치를 표시할 요소 -->
+		                            	<h6 style="color:green;"><i class="fa-solid fa-location-dot"></i>&nbsp;현재 위치로부터 자동으로 계산하기</h6>
+		                                <label for="place3">도착지</label>
+		                                <div class="input-group outer-container" style="width: 100%;">
+										    <input type="text" style="height: auto;" class="form-control" id="place3" name="place" placeholder=" 도착지 주소를 입력하면 현재위치부터 계산합니다">
+										    <button id="calculateDistanceBtn2"  class="btn btn-success" style="width: 80px;" onclick="searchAndCalculateDistance2()">계산</button>
 										</div>
-										<div class="row">
-											<label for="smoke3">흡연(개비) 배출량</label>
-										    <select class="form-select form-control ms-2"  type="text" id="smoke3" name="smoke" style="width:95%">
-											     <c:forEach var="i" begin="0" end="20">
-											      <option value="${i}" >${i}</option>
-										      		</c:forEach>
-										    </select>
-										     <p id="showResult3"  style="display: none;"></p>
-									     <p style="font-size:10px">※ 산출방식: 14g/개 (※감소량에서 차감됩니다)</p>
-										</div>
-										<div class="row">
-			                                <label for="title3">합 산</label>
-			                                <div class="input-group outer-container" style="width: 100%;">
-											    <input class="form-control" type="text" id="title3" name="title" disabled>
-											    <button class="btn btn-success" style="width: 80px;" onclick="readJs2()"><i class="fa-solid fa-calculator"></i></button>
-											</div>
-										</div>
-	                            </td>
-	                        </tr>
-	                         <tr>
-	                            <td>
-			                        <hr>
-			                        <h6 style="color:green;"><i class="fa-solid fa-location-dot"></i>&nbsp;직접 입력하여 거리 계산하기</h6>
-	                                <label for="startplace2" style="margin-top:10px">출발지 입력</label>
-	                            	<button type="button" class="btn btn-outline-success" onclick="addWaypoint2()" id="addWaypoint2">+ 경유지 추가</button>
-	                                <div class="input-group outer-container" style="width: 100%;">
-									    <input type="text" style="height: auto; margin-top:5px;" class="form-control" id="startplace2" name="startplace2" placeholder=" 출발지 주소를 입력하면 현재위치부터 계산합니다">
+										<p id="result2" style="font-size:10px"></p>  <!-- 검색된 위치의 좌표와 거리를 표시할 요소 -->
 									</div>
-								</td>	
-							</tr>	
-	                        <tr>
-	                            <td>
-	                                <div id="waypointFields2">
-									</div>
-	                            </td>
-	                        </tr>
-	                        
-	                        <script>
-		                        var waypointCount2 = 0;
-	
-		                        function addWaypoint2() {
-		                            if (waypointCount2 < 3) {
-		                                const waypointFields2 = document.getElementById('waypointFields2');
-	
-		                                // 새로운 경유지 입력 필드를 생성합니다.
-		                                const newWaypointField2 = document.createElement('div');
-		                                newWaypointField2.className = 'waypointField2';
-	
-		                                // jQuery 코드
-		                                $(newWaypointField2).append(
-		                                    $('<label></label>')
-		                                        .attr({'for': 'waypoint2' + waypointCount2}) // 수정된 부분
-		                                        .text('경유지 입력')
-		                                );
-	
-		                                $(newWaypointField2).append(
-		                                    $('<div></div>')
-		                                        .attr({'class': 'input-group outer-container', 'style': 'width: 100%;', id: 'divwaypoint2' + waypointCount2})
-		                                );
-	
-		                                $(newWaypointField2).find('#divwaypoint2' + waypointCount2).append(
-		                                    $('<input></input>')
-		                                        .attr({'style': 'height: auto;', 'class': 'form-control waypointField2', 'id': 'waypoint2' + waypointCount2, 'name': 'waypoint2' + waypointCount2, 'type': 'text', 'placeholder': '경유지 주소를 입력하세요'})
-		                                );
-	
-		                                $(newWaypointField2).find('#divwaypoint2' + waypointCount2).append(
-		                                    $('<button></button>')
-		                                        .attr({'class': 'btn btn-danger', 'style': 'width: 80px;', 'onclick': 'removeWaypoint2(this)'})
-		                                        .text('삭제')
-		                                );
-	
-		                                // 생성된 요소를 waypointFields에 추가
-		                                $('#waypointFields2').append(newWaypointField2);
-	
-		                                waypointCount2++;
-		                            } else {
-		                                alert('최대 3개까지 추가할 수 있습니다.');
-		                            }
-		                        }
-		                        
-	
-		                        function removeWaypoint2(button) {
-		                            const fieldToRemove2 = $(button).closest('.waypointField2');
-		                            fieldToRemove2.remove();
-		                            waypointCount2--;
-	
-		                            // 남은 입력 필드들의 ID를 재조정합니다.
-		                            $('.waypointField2').each(function (index2) {
-		                                $(this).find('.waypointField2').attr('id', 'waypoint2' + index2);
-		                            });
-		                        }
-		                        
-		                     // 초기 로드 시 3개의 경유지 입력 필드 생성
-		                        addWaypoint2();
-		                        addWaypoint2();
-		                        addWaypoint2();
-
-							</script>    
-	                        <tr>
-							    <td colspan="2">
-							        <label for="endplace2">도착지 입력</label>
-							        <div class="input-group outer-container" style="width: 100%;">
-							            <input type="text" style="height: auto;" class="form-control" id="endplace2" name="endplace" placeholder="도착지 주소를 입력하세요">
-							            <button class="btn btn-primary" style="width: 80px;" onclick="stopoverCalculateDistance2()">계산</button>
-							        </div>
-							        <p style="font-size:10px" id="stopoverResult2"></p> <!-- 결과를 표시할 요소 -->
-							        
-							    </td>
-							</tr>
-<!-- ========================================================= 탄소계산기 end ======================================================== -->
-	                     	<tr>
-	                            <td colspan="2">
-                                <label for="smoke4">흡연(개비) 배출량</label>
-									    <select class="form-select form-control"  type="text" id="smoke4" name="smoke2">
+									<div class="row">
+										<label for="smoke3">흡연(개비) 배출량</label>
+									    <select class="form-select form-control ms-2"  type="text" id="smoke3" name="smoke" style="width:95%">
 										     <c:forEach var="i" begin="0" end="20">
 										      <option value="${i}" >${i}</option>
 									      		</c:forEach>
 									    </select>
-									     <p id="showResult4"  style="display: none;"></p>
-									     <p style="font-size:10px">※ 산출방식: 14g/개 (※감소량에서 차감됩니다)</p>
-	                            </td>
-	                        </tr>
-	                        <tr>
-				             <td colspan="2">
-				                 <label for="title4">합 산</label>
-				                 <div class="input-group outer-container" style="width: 100%;">
-									<input class="form-control" type="text" id="title4" name="title2" disabled>
-									<button  class="btn btn-success" style="width: 80px;"  onclick="stopoverreadJs2()"><i class="fa-solid fa-calculator"></i></button>
+									     <p id="showResult3"  style="display: none;"></p>
+								     <p style="font-size:10px">※ 산출방식: 14g/개 (※감소량에서 차감됩니다)</p>
+									</div>
+									<div class="row">
+		                                <label for="title3">합 산</label>
+		                                <div class="input-group outer-container" style="width: 100%;">
+										    <input class="form-control" type="text" id="title3" name="title" disabled>
+										    <button class="btn btn-success" style="width: 80px;" onclick="readJs2()"><i class="fa-solid fa-calculator"></i></button>
+										</div>
+									</div>
+                            </td>
+                        </tr>
+                         <tr>
+                            <td>
+		                        <hr>
+		                        <h6 style="color:green;"><i class="fa-solid fa-location-dot"></i>&nbsp;직접 입력하여 거리 계산하기</h6>
+                                <label for="startplace2" style="margin-top:10px">출발지 입력</label>
+                            	<button type="button" class="btn btn-outline-success" onclick="addWaypoint2()" id="addWaypoint2">+ 경유지 추가</button>
+                                <div class="input-group outer-container" style="width: 100%;">
+								    <input type="text" style="height: auto; margin-top:5px;" class="form-control" id="startplace2" name="startplace2" placeholder=" 출발지 주소를 입력하면 현재위치부터 계산합니다">
 								</div>
-								<p id="stopoverResult2"></p>
-				              </td>
-				            </tr>    
-			                <tr>
-			                    <td colspan="2" style="text-align: right;">
-					                 <button class="btn btn-success me-2" onclick="update()">수정</button>
-					                 <button class="btn btn-danger me-2"  data-bs-dismiss="modal" onclick="deleteSchedule()">삭제</button>
-									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">종료</button>
-			                    </td>
-			                </tr>
-			             </table>
-			             <hr>
-			             
-			             <p style="font-size:10px; float:left; margin-top:-10px;">거리에 따른 탄소배출량 산출식 출처:한국기후.환경네트워크 탄소발자국(https://www.kcen.kr/tanso/intro.green)</p>
-			             <p style="font-size:10px; float:left; margin-top:-10px;">담배 탄소배출량 출처: 질병관리청-주간 건강과 질병•제15권 제22호(2022.6.2.)</p>
-			             <img style="margin-left:50px" src="/onnana/img/greencam.png" width="300px">
-			             
-					</div>
+							</td>	
+						</tr>	
+                        <tr>
+                            <td>
+                                <div id="waypointFields2">
+								</div>
+                            </td>
+                        </tr>
+                        
+                        <script>
+	                        var waypointCount2 = 0;
+
+	                        function addWaypoint2() {
+	                            if (waypointCount2 < 3) {
+	                                const waypointFields2 = document.getElementById('waypointFields2');
+
+	                                // 새로운 경유지 입력 필드를 생성합니다.
+	                                const newWaypointField2 = document.createElement('div');
+	                                newWaypointField2.className = 'waypointField2';
+
+	                                // jQuery 코드
+	                                $(newWaypointField2).append(
+	                                    $('<label></label>')
+	                                        .attr({'for': 'waypoint2' + waypointCount2}) // 수정된 부분
+	                                        .text('경유지 입력')
+	                                );
+
+	                                $(newWaypointField2).append(
+	                                    $('<div></div>')
+	                                        .attr({'class': 'input-group outer-container', 'style': 'width: 100%;', id: 'divwaypoint2' + waypointCount2})
+	                                );
+
+	                                $(newWaypointField2).find('#divwaypoint2' + waypointCount2).append(
+	                                    $('<input></input>')
+	                                        .attr({'style': 'height: auto;', 'class': 'form-control waypointField2', 'id': 'waypoint2' + waypointCount2, 'name': 'waypoint2' + waypointCount2, 'type': 'text', 'placeholder': '경유지 주소를 입력하세요'})
+	                                );
+
+	                                $(newWaypointField2).find('#divwaypoint2' + waypointCount2).append(
+	                                    $('<button></button>')
+	                                        .attr({'class': 'btn btn-danger', 'style': 'width: 80px;', 'onclick': 'removeWaypoint2(this)'})
+	                                        .text('삭제')
+	                                );
+
+	                                // 생성된 요소를 waypointFields에 추가
+	                                $('#waypointFields2').append(newWaypointField2);
+
+	                                waypointCount2++;
+	                            } else {
+	                                alert('최대 3개까지 추가할 수 있습니다.');
+	                            }
+	                        }
+	                        
+
+	                        function removeWaypoint2(button) {
+	                            const fieldToRemove2 = $(button).closest('.waypointField2');
+	                            fieldToRemove2.remove();
+	                            waypointCount2--;
+
+	                            // 남은 입력 필드들의 ID를 재조정합니다.
+	                            $('.waypointField2').each(function (index2) {
+	                                $(this).find('.waypointField2').attr('id', 'waypoint2' + index2);
+	                            });
+	                        }
+	                        
+	                     // 초기 로드 시 3개의 경유지 입력 필드 생성
+	                        addWaypoint2();
+	                        addWaypoint2();
+	                        addWaypoint2();
+
+						</script>    
+                        <tr>
+						    <td colspan="2">
+						        <label for="endplace2">도착지 입력</label>
+						        <div class="input-group outer-container" style="width: 100%;">
+						            <input type="text" style="height: auto;" class="form-control" id="endplace2" name="endplace" placeholder="도착지 주소를 입력하세요">
+						            <button class="btn btn-primary" style="width: 80px;" onclick="stopoverCalculateDistance2()">계산</button>
+						        </div>
+						        <p style="font-size:10px" id="stopoverResult2"></p> <!-- 결과를 표시할 요소 -->
+						        
+						    </td>
+						</tr>
+<!-- ========================================================= 탄소계산기 end ======================================================== -->
+                     	<tr>
+                            <td colspan="2">
+                               <label for="smoke4">흡연(개비) 배출량</label>
+								    <select class="form-select form-control"  type="text" id="smoke4" name="smoke2">
+									     <c:forEach var="i" begin="0" end="20">
+									      <option value="${i}" >${i}</option>
+								      		</c:forEach>
+								    </select>
+								     <p id="showResult4"  style="display: none;"></p>
+								     <p style="font-size:10px">※ 산출방식: 14g/개 (※감소량에서 차감됩니다)</p>
+                            </td>
+                        </tr>
+                        <tr>
+			             <td colspan="2">
+			                 <label for="title4">합 산</label>
+			                 <div class="input-group outer-container" style="width: 100%;">
+								<input class="form-control" type="text" id="title4" name="title2" disabled>
+								<button  class="btn btn-success" style="width: 80px;"  onclick="stopoverreadJs2()"><i class="fa-solid fa-calculator"></i></button>
+							</div>
+							<p id="stopoverResult2"></p>
+			              </td>
+			            </tr>    
+		                <tr>
+		                    <td colspan="2" style="text-align: right;">
+				                 <button class="btn btn-success me-2" onclick="update()">수정</button>
+				                 <button class="btn btn-danger me-2"  data-bs-dismiss="modal" onclick="deleteSchedule()">삭제</button>
+								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">종료</button>
+		                    </td>
+		                </tr>
+		             </table>
+		             <hr>
+		             
+		             <p style="font-size:10px; float:left; margin-top:-10px;">거리에 따른 탄소배출량 산출식 출처:한국기후.환경네트워크 탄소발자국(https://www.kcen.kr/tanso/intro.green)</p>
+		             <p style="font-size:10px; float:left; margin-top:-10px;">담배 탄소배출량 출처: 질병관리청-주간 건강과 질병•제15권 제22호(2022.6.2.)</p>
+		             <img style="margin-left:50px" src="/onnana/img/greencam.png" width="300px">
+		             
 				</div>
-			 </div>
-	
+			</div>
+		 </div>
+
     <%@ include file="../common/bottom.jspf" %>
     
     
     
 <!---------------------------------------- Insert 프론트엔드  ------------------------------------------>
-	<div class="modal" id="addModal">
-		<div class="modal-dialog">
+	<div class="modal" id="addModal" style="overflow-y: auto;">
+    	<div class="modal-dialog" style="max-height: 80vh;"> <!-- 80% 화면 높이까지만 모달 크기 조정 -->
 			<div class="modal-content">
 				<!-- Modal Header -->
 				<div class="modal-header">
@@ -422,7 +398,7 @@
 				</div>
 			
 				<!-- Modal body -->
-				<div class="modal-body">
+				<div class="modal-body" id="modalBody" style="max-height: 80vh; overflow-y: auto;">
 				
 						<table class="table table-borderless">
 	                       
@@ -454,7 +430,7 @@
 											    <input type="text" style="height: auto;" class="form-control" id="place" name="place" placeholder=" 도착지 주소를 입력하면 현재위치부터 계산합니다">
 											    <button id="calculateDistanceBtn"  class="btn btn-success" style="width: 80px;" onclick="searchAndCalculateDistance()">계산</button>
 											</div>
-											<p id="result"></p>  <!-- 검색된 위치의 좌표와 거리를 표시할 요소 -->
+											<p id="result" style="font-size:10px;"></p>  <!-- 검색된 위치의 좌표와 거리를 표시할 요소 -->
 										</div>
 										<div class="row">
 											<label for="smoke">흡연(개비) 배출량</label>
@@ -497,47 +473,48 @@
 
 	                        function addWaypoint() {
 	                            if (waypointCount < 3) {
-	                                
-
-                                	const waypointFields = document.getElementById('waypointFields');
+	                                const waypointFields = document.getElementById('waypointFields');
 
 	                                // 새로운 경유지 입력 필드를 생성합니다.
-                                	const newWaypointField = document.createElement('div');
-                                	newWaypointField.className = 'waypointField';
+	                                const newWaypointField = document.createElement('div');
+	                                newWaypointField.className = 'waypointField';
 
-                                	// jQuery 코드
-                                	$(newWaypointField).append(
-                                	    $('<label></label>')
-                                	        .attr({'for': 'waypoint'+waypointCount})
-                                	        .text('경유지 입력')
-                                	);
+	                                // jQuery 코드
+	                                $(newWaypointField).append(
+	                                    $('<label></label>')
+	                                        .attr({'for': 'waypoint' + waypointCount})
+	                                        .text('경유지 입력')
+	                                );
 
-                                	$(newWaypointField).append(
-                                	    $('<div></div>')
-                                	        .attr({'class': 'input-group outer-container', 'style':'width: 100%;', id: 'divwaypoint'+waypointCount})
-                                	);
+	                                $(newWaypointField).append(
+	                                    $('<div></div>')
+	                                        .attr({'class': 'input-group outer-container', 'style': 'width: 100%;', id: 'divwaypoint' + waypointCount})
+	                                );
 
-                                	$(newWaypointField).find('#divwaypoint'+waypointCount).append(
-                                	    $('<input></input>')
-                                	        .attr({'style': 'height: auto;', 'class': 'form-control waypointField', 'id': 'waypoint'+ waypointCount, 'name': 'waypoint'+ waypointCount, 'type':'text', 'placeholder': '경유지 주소를 입력하세요'})
-                                	);
+	                                $(newWaypointField).find('#divwaypoint' + waypointCount).append(
+	                                    $('<input></input>')
+	                                        .attr({'style': 'height: auto;', 'class': 'form-control waypointField', 'id': 'waypoint' + waypointCount, 'name': 'waypoint' + waypointCount, 'type': 'text', 'placeholder': '경유지 주소를 입력하세요'})
+	                                );
 
-                                	$(newWaypointField).find('#divwaypoint'+waypointCount).append(
-                                	    $('<button></button>')
-                                	        .attr({'class': 'btn btn-danger', 'style':'width: 80px;', 'onclick': 'removeWaypoint(this)'})
-                                	        .text('삭제')
-                                	);
+	                                $(newWaypointField).find('#divwaypoint' + waypointCount).append(
+	                                    $('<button></button>')
+	                                        .attr({'class': 'btn btn-danger', 'style': 'width: 80px;', 'onclick': 'removeWaypoint(this)'})
+	                                        .text('삭제')
+	                                );
 
-                                	// 생성된 요소를 waypointFields에 추가
-                                	$('#waypointFields').append(newWaypointField);
+	                                // 생성된 요소를 waypointFields에 추가
+	                                $('#waypointFields').append(newWaypointField);
 
-                                	waypointCount++;
-	                                
+	                                waypointCount++;
+
+	                                const modalBody = document.getElementById('modalBody');
+	                                modalBody.style.maxHeight = '80vh'; // 필요한 높이로 조정 (예시로 80% 뷰포트 높이 사용)
+	                                modalBody.style.overflowY = 'auto'; // 스크롤이 필요한 경우에만 스크롤 나타나도록 설정
 	                            } else {
 	                                alert('최대 3개까지 추가할 수 있습니다.');
 	                            }
 	                        }
-	                        
+
 
 	                        function removeWaypoint(button) {
 	                            const fieldToRemove = $(button).closest('.waypointField');
@@ -550,7 +527,7 @@
 	                            });
 	                        }
 
-							</script>    
+							</script> 
 	                        <tr>
 							    <td colspan="2">
 							        <label for="endplace">도착지 입력</label>

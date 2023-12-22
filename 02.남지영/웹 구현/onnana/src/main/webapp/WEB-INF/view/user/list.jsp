@@ -8,6 +8,13 @@
 	<style>
 		th, td	{ text-align: center; }
 		.disabled-link	{ pointer-events: none; }
+		
+		
+		.bg-primary-transparent {
+            background-color: rgba(255, 218, 149, 0.4); /* 알파 값은 0에서 1 사이의 숫자입니다 (0은 완전 투명, 1은 완전 불투명) */
+        }
+		
+		
 	</style>
 	<script>
 		function updateFunc(uid) {
@@ -46,20 +53,19 @@
 		<div class="row">
 			<%@ include file="../common/aside.jspf" %> 
 			<!-- ================ Main =================== -->
-			<div class="col-1"></div>
-			<div class="col-11 mt-5">
+			<div class="col-6 mt-5">
 				<hr>
 				<table class="table table-hover">
-					<tr>
-						<th style="width: 10%">번호</th>
+					<tr data-user-id="1" class="user-row">
+						<th style="width: 5%">No</th>
 						<th style="width: 14%">UID</th>
 						<th style="width: 16%">이름</th>
 						<th style="width: 20%">이메일</th>
-						<th style="width: 20%">가입일</th>
+						<th style="width: 25%">가입일</th>
 						<th style="width: 20%">액션</th>
 					</tr>
 				<c:forEach var="user" items="${userList}" varStatus="loop">
-					<tr>
+					<tr onclick="showUserName('${user.uname}')">
 						<td>${loop.count}</td>
 						<td>${user.uid}</td>
 						<td>${user.uname}</td>
@@ -92,6 +98,25 @@
 				</c:forEach>
 				</ul>				
 			</div>
+			<div class="col-6">
+			    <!-- Jumbotron -->
+			    <div class="container mt-3">
+			        <h5 id="userNameJumbotron" style="color:green;">&nbsp;&nbsp;&nbsp;</h5>
+			        <div class="mt-4 p-5 bg-primary-transparent text-dark rounded">
+						<img id="userImage" src="/onnana/img/리스트안내.png" style="width=auto; margin-left:-150px;">
+						<p id="userContent"></p>			            
+			        </div>
+			    </div>
+			</div>
+			
+			<script>
+			    // 유저 이름을 Jumbotron에 표시하는 함수
+			    function showUserName(userName) {
+			        document.getElementById('userNameJumbotron').innerHTML = '<i class="fa-solid fa-leaf"></i>&nbsp;' + userName + "님의 캠페인 활동 내역";
+			        document.getElementById('userImage').style.display = 'none'; // Hides the image
+			        document.getElementById('userContent').innerHTML = '안녕하세요 테스트입니다';
+			    }
+			</script>
 			<input type="hidden" id="delUid">
 			<!-- ================ Main =================== -->
 		</div>

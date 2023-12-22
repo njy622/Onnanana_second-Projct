@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.sql.Timestamp;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -18,6 +19,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -63,7 +65,12 @@ public class UserController {
 	    if (pwd.length() >= 4 && pwd.equals(pwd2)) {
 	        String hashedPwd = BCrypt.hashpw(pwd, BCrypt.gensalt());
 	        user.setPwd(hashedPwd);
-        	
+        
+	        
+
+			  // 아래 라인에서 currentTimestamp를 생성하여 updateUser 메서드에 전달
+          Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+          userService.updateUser(uid, currentTimestamp);
 	        
 	     // 세션 로그아웃 처리
 	        session.removeAttribute("sessUid");
@@ -126,10 +133,41 @@ public class UserController {
 		return "user/login";
 	}
 	
+	
+	// 새로운 메서드 추가: 사용자의 last_login_date를 현재 시간으로 갱신
+		@Transactional
+		public void updateLastLoginDate(String uid, HttpSession session) {
+		    Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+		    userService.updateLastLoginDate(uid, currentTimestamp);
+
+		    // 출석 횟수 계산 및 세션에 저장
+		    int attendanceCount = schedService.getAttendanceCount(uid);
+		    session.setAttribute("attendanceCount", attendanceCount);
+		}
+
+		
+		// 새로운 메서드 추가: 사용자의 출석 횟수 증가
+		@Transactional
+		public void incrementAttendanceCount(String uid, HttpSession session) {
+		    Integer attendanceCount = (Integer) session.getAttribute("attendanceCount");
+		    if (attendanceCount == null) {
+		        attendanceCount = 1;
+		    } else {
+		        attendanceCount++;
+		    }
+		    session.setAttribute("attendanceCount", attendanceCount);
+		}
+	
 	@PostMapping("/login")
 	public String loginProc(String uid, String pwd, HttpSession session, Model model) {
 		int result = userService.login(uid, pwd);
 		if (result == userService.CORRECT_LOGIN) {
+			// 사용자 로그인 시마다 last_login_date 갱신
+	        updateLastLoginDate(uid, session);
+            
+	        // 출석 횟수 증가
+	        incrementAttendanceCount(uid, session);
+			
 			session.setAttribute("sessUid", uid);
 			User user = userService.getUser(uid);
 			session.setAttribute("sessUname", user.getUname());

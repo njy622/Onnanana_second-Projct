@@ -8,6 +8,7 @@ var schedClicked = false;
 function cellClick(date) {
 	if (schedClicked)
 		schedClicked = false;
+				
 	else {
 		date = date + '';		// number type을 문자열로 변환
 		const dateForm = date.substring(0,4)+'-'+date.substring(4,6)+'-'+date.substring(6,8);
@@ -26,7 +27,8 @@ function cellClick(date) {
 		$('#endDate').val(dateForm);
 		$('#endTime').val(endStr);
 		$('#addModal').modal('show');
-	}
+		 
+		}
 }
 
 function schedClick(sid) {
@@ -50,7 +52,10 @@ function schedClick(sid) {
             $('#waypoint20').val(sched.waypoint1); // Updated to 'waypoint1'
             $('#waypoint21').val(sched.waypoint2);
             $('#waypoint22').val(sched.waypoint3);
+			$('#totalSum2222').text(sched.totalSum);
 
+			
+			console.log(sched.totalSum)
             $('#updateModal').modal('show');
         }
     });
