@@ -1,9 +1,17 @@
 package com.human.onnana.controller;
-
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+
+
+import java.awt.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -38,6 +46,7 @@ import com.human.onnana.entity.Button;
 import com.human.onnana.entity.User;
 import com.human.onnana.service.ScheduleService;
 import com.human.onnana.service.UserService;
+
 
 @Controller
 @RequestMapping("/user")
@@ -114,7 +123,7 @@ public class UserController {
 	
 	
 	
-	
+	// 관리자 모드의 유저의 사용자목록창
 	@GetMapping("/list/{page}")
 	public String list(@PathVariable int page, HttpSession session, Model model) {
 	    // 유저 리스트를 가져오는 코드
@@ -134,7 +143,10 @@ public class UserController {
 
 	    return "user/list";
 	}
-
+	
+	
+	
+	// 한 유저의 사용자 창
 	@GetMapping("/list2/{page}")
 	public String list2(@PathVariable int page, HttpSession session, Model model) {
 	    // 유저 리스트를 가져오는 코드
@@ -159,8 +171,8 @@ public class UserController {
 	
 	@PostMapping("/processUid")
 	@ResponseBody // AJAX를 통해 JSON 데이터를 반환하기 위해 사용합니다.
-	public String processUid(@RequestParam("userUID") String userUID) {
-		
+	public String processUid(HttpServletRequest req, HttpSession session, @RequestParam("userUID") String userUID) {
+	    System.out.println(userUID);
 		// DecimalFormat 객체를 생성하여 소수점 자릿수를 지정합니다. 
 		DecimalFormat decimalFormat = new DecimalFormat("#.###");
 		
@@ -169,7 +181,6 @@ public class UserController {
 	    Double listUidcarbon = schedService.getCarbonUserCount(userUID);
 	    // 한유저의 하루 평균 감소량(소숫점 3자리까지 나타냄)
 	    double UserDateAve = Math.round(listUidcarbon /listUidCount * 1000.0) / 1000.0;
-	    
 	    
 	    
 	    // 모든 유저의 캠페인 참여일수와 감소량을DB와 연동시킴
@@ -184,6 +195,7 @@ public class UserController {
 	    
 	    
 	    Map<String, Object> response = new HashMap<>();
+	    
 		response.put("userlistCount", listUidCount);
 		response.put("userlistCarbon", listUidcarbon);
 		response.put("UserDateAve", UserDateAve);
@@ -193,14 +205,66 @@ public class UserController {
 		response.put("UserDateAveAll", UserDateAveAll);
 		
 		response.put("AveDifference", AveDifference);
+		
 
-		// Map을 JSON 문자열로 변환합니다.
-		String jsonResponse = new Gson().toJson(response);
 
-		// JSON 형태로 결과를 반환합니다.
-		return jsonResponse;
+		System.out.println(response);
+		return new Gson().toJson(response) ;
 	}
 	
+	
+	@PostMapping("/processdaycarbon")
+	@ResponseBody // AJAX를 통해 JSON 데이터를 반환하기 위해 사용합니다.
+	public String processdaycarbon(HttpServletRequest req, HttpSession session, @RequestParam("userUID") String userUID,
+			 @RequestParam("month") String month) {
+	    
+	    
+	 
+
+	 // 예시로 2023년의 월별 마지막 날짜를 구합니다.
+        int year = 2023;
+        
+        // 각 월의 첫째 날
+        LocalDate startDate = LocalDate.of(year, Integer.parseInt(month), 1);
+        // 각 월의 마지막 날
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+
+	     // 날짜 수 계산
+        int daysInMonth = endDate.getDayOfMonth();
+
+        // 날짜 수에 따라 배열 크기 지정
+        double[] userDayCarbonSumArray = new double[daysInMonth];
+        double[] userAllDayCarbonSumArray = new double[daysInMonth];
+        
+        int index = 0;
+        // 해당 월의 시작일부터 마지막 일까지 반복하여 sdate를 생성
+        for (LocalDate date = startDate; date.isBefore(endDate.plusDays(1)); date = date.plusDays(1)) {
+            String formattedMonth = String.format("%02d", date.getMonthValue());
+            String formattedDay = String.format("%02d", date.getDayOfMonth());
+            String sdate = year + formattedMonth + formattedDay;
+
+            // sdate를 이용하여 필요한 작업 수행
+            double userDayCarbonSum = schedService.UserdaycarbonSum(userUID, sdate);
+            double userAllDayCarbonSum = schedService.UserAlldaycarbonSum(sdate);
+            
+            // 배열에 값을 추가
+            userDayCarbonSumArray[index] = userDayCarbonSum;
+            userAllDayCarbonSumArray[index] = userAllDayCarbonSum;
+            index++;
+            
+            System.out.print("유저데이터:"+userDayCarbonSum);
+            System.out.print("전체 데이터:"+userAllDayCarbonSum);
+
+            
+        }
+        
+        Map<String, Object> responsedata = new HashMap<>();
+        responsedata.put("userdaydata", userDayCarbonSumArray);
+        responsedata.put("userAlldaydata", userAllDayCarbonSumArray);
+        
+        System.out.println(responsedata);
+		return new Gson().toJson(responsedata) ;
+	}
 	
 	
 	

@@ -114,6 +114,17 @@ public class ScheduleServiceOracleImpl implements ScheduleService {
 	public double getUserCarbonReductionTotal(int sid) {
 		return schedDao.getUserCarbonReductionTotal(sid);
 	}
+
+	@Override
+	public double UserdaycarbonSum(String uid, String sdate) {
+		return schedDao.UserdaycarbonSum(uid, sdate);
+	}
+
+	@Override
+	public double UserAlldaycarbonSum(String sdate) {
+		// TODO Auto-generated method stub
+		return schedDao.UserAlldaycarbonSum(sdate);	
+		}
 	
 	
 }

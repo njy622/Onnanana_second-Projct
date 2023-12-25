@@ -1,9 +1,9 @@
 이미지,생활지수,지수,안내멘트,그래프 값,그래프 최댓값
-../img/icon_idx_carwash.png?ver=20231214,세차지수,40,그럭저럭 세차할 만한 날씨예요,40,100
-../img/icon_idx_running.png?ver=20231214,달리기지수,0,오늘은 꼭 실내에서 운동하세요,0,100
-../img/icon_idx_washing.png?ver=20231214,빨래지수,50,오늘은 빨래하기 보통의 날씨예요,50,100
-../img/icon_idx_sleep.png?ver=20231214,수면지수,10,카페인은 피하고 따뜻한 목욕을 권해요,10,100
-../img/icon_idx_umb.png?ver=20231214,우산지수,10,우산이 전혀 필요 없는 날!,10,100
-../img/icon_life_uv.png?ver=20231214,자외선지수,0,자외선 걱정없는 날씨에요,25,100
-../img/icon_life_cold.png?ver=20231214,감기지수,3,면역력에 좋은 야채를 많이 먹어요,75,100
-../img/icon_life_freez.png?ver=20231214,동파지수,25,동파지수가 매우 낮아요,25,100
+../img/icon_idx_carwash.png?ver=20231214,세차지수,0,오늘은 세차하기에 최악의 날씨,0,100
+../img/icon_idx_running.png?ver=20231214,달리기지수,0,오늘 바깥 운동은 NO!,0,100
+../img/icon_idx_washing.png?ver=20231214,빨래지수,30,야외에서 빨래 말리기는 절대 NO,30,100
+../img/icon_idx_sleep.png?ver=20231214,수면지수,10,실내 온도와 습도 꼭 체크하세요!,10,100
+../img/icon_idx_umb.png?ver=20231214,우산지수,70,우산 꼭 챙겨서 외출하세요,70,100
+../img/icon_life_uv.png?ver=20231214,자외선지수,0,야외활동 안심하고 마음껏 하세요,25,100
+../img/icon_life_cold.png?ver=20231214,감기지수,4,면역력 강화에 신경 써주세요,100,100
+../img/icon_life_freez.png?ver=20231214,동파지수,25,오늘은 동파 걱정 끝!,25,100

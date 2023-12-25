@@ -16,6 +16,22 @@
 		
 		
 	</style>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" 
+	integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" 
+	crossorigin="anonymous" referrerpolicy="no-referrer">
+	</script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+	<script src="path/to/chartjs/dist/chart.umd.js"></script>
+	<meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Charts - SB Admin</title>
+        <link href="/onnana/assets/css/stylesA.css" rel="stylesheet" />
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+		<script src="/onnana/js/calcu.js" ></script>
+		
 </head>
 <body>
 	<%@ include file="../common/top.jspf" %>
@@ -61,9 +77,9 @@
 				<!-- 이 부분에 새로운 ID 입력 필드를 추가합니다. -->
 				    <tr style="display: none;">
 				        <td colspan="5">
-				            <input type="hidden" id="uid_${user.uid}" value="${user.uid}">
-				            <input type="hidden" id="uname_${user.uid}" value="${user.uname}">
-				            <input type="hidden" id="email_${user.uid}" value="${user.email}">
+				            <input type="hidden" id="uid_${user.uid}" value="${user.uid}" onclick="updatedateList(${AveDifference}); updatedateListBarChart();">
+				            <input type="hidden" id="uname_${user.uid}" value="${user.uname}" onclick="updatedateList(${AveDifference}); updatedateListBarChart();">
+				            <input type="hidden" id="email_${user.uid}" value="${user.email}" onclick="updatedateList(${AveDifference}); updatedateListBarChart();">
 				        </td>
 				    </tr>
 				</c:forEach>	
@@ -95,15 +111,19 @@
 			    var email = $('#email_' + uid).val();
 			    var uname = $('#uname_' + uid).val();
 			    var userUID = $('#uid_' + uid).val();
+			    
+	            localStorage.removeItem('AveDifference');
 
 			    $.ajax({
 			        type: 'POST',
 			        url: '/onnana/user/processUid',
-			        data: { userUID: userUID }, // 사용자 UID를 전송합니다.
+			        data: { userUID: userUID}, // 사용자 UID를 전송합니다.
 			        success: function(result) {
+
 			            // 성공 시 처리
 			            var jsonData = JSON.parse(result);
 			            var userlistCount = jsonData.userlistCount;
+			            console.log(userlistCount);
 			            var userlistCarbon = jsonData.userlistCarbon;
 			            var UserDateAve = jsonData.UserDateAve;
 			            var userlistCountAll = jsonData.userlistCountAll;
@@ -117,7 +137,11 @@
 			            $('#userlistCarbonAll').text(userlistCarbonAll); // 모든 유저의 탄소감소량
 			            $('#UserDateAveAll').text(UserDateAveAll); // 모든 평균 하루 탄소감소량
 			            $('#AveDifference').text(AveDifference); // 모든 유저의 평균 하루 탄소감소량과 나의 차이
-			            console.log(result);
+			            console.log(jsonData);
+			            
+			            
+			            localStorage.setItem('AveDifference', JSON.stringify(AveDifference));
+
 			        },
 			        error: function(error) {
 			            // 에러 처리
@@ -147,6 +171,9 @@
 
 			function showUserName(userName, userUID) {
 			    document.getElementById('userNameJumbotron').innerHTML = '<i class="fa-solid fa-tree"></i>&nbsp;&nbsp;' + userName + "님의 캠페인 활동 내역";
+			    document.getElementById('userNameChart').innerHTML = '<i class="fa-solid fa-tree"></i>&nbsp;&nbsp;' + userName + "님의 캠페인 활동 Chart";
+			    document.getElementById('userNamebarChart').innerHTML = userName + "님의 캠페인 참여도";
+			    document.getElementById('userNamedoughnutChart').innerHTML = userName + "님의 캠페인 기여도";
 			    document.getElementById('userImage').style.display = 'none'; // 이미지 숨기기
 			    console.log(`uname: ${userName}, uid: ${userUID}`);
 			    document.getElementById('userContent').innerHTML = `
@@ -163,14 +190,96 @@
 
 			    `;
 
-
+				
 			    sendUIDToController(userUID);
+			    updateLabelsForMonthController(userUID);
+			    updatedateList(AveDifference);
+			    updateBarchartForMonthController(userUID);
+			    updatedateListBarChart(userUID)
+			    
 			}
 			</script>
 			<input type="hidden" id="delUid">
 			<!-- ================ Main =================== -->
 		</div>
+		<div class="row">
+			<div class="row">
+               <div id="layoutSidenav">
+	            <div id="layoutSidenav_content">
+	                <main>
+	                    <div class="container-fluid px-4">
+	                        <h3 class="breadcrumb-item active"><span id="userNameChart" style="color:green; margin-bottom:20px;"></span></h3>
+	                        <div class="card mb-4">
+	                            <div class="card-header">
+	                            	<div colspan="20">
+		                                <i class="fas fa-chart-area me-1"></i>
+		                                일별 탄소배출량
+		                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                               			<button type="button" class="btn btn-outline-success" onclick="updateLabelsForMonth('01')">1월</button>
+                               			<button type="button" class="btn btn-outline-success" onclick="updateLabelsForMonth('02')">2월</button>
+                               			<button type="button" class="btn btn-outline-success" onclick="updateLabelsForMonth('03')">3월</button>
+                               			<button type="button" class="btn btn-outline-success" onclick="updateLabelsForMonth('04')">4월</button>
+                               			<button type="button" class="btn btn-outline-success" onclick="updateLabelsForMonth('05')">5월</button>
+                               			<button type="button" class="btn btn-outline-success" onclick="updateLabelsForMonth('06')">6월</button>
+                               			<button type="button" class="btn btn-outline-success" onclick="updateLabelsForMonth('07')">7월</button>
+                               			<button type="button" class="btn btn-outline-success" onclick="updateLabelsForMonth('08')">8월</button>
+                               			<button type="button" class="btn btn-outline-success" onclick="updateLabelsForMonth('09')">9월</button>
+                               			<button type="button" class="btn btn-outline-success" onclick="updateLabelsForMonth('10')">10월</button>
+                               			<button type="button" class="btn btn-outline-success" onclick="updateLabelsForMonth('11')">11월</button>
+                               			<button type="button" class="btn btn-outline-success" onclick="updateLabelsForMonth('12')">12월</button>
+                               		</div>
+	                            </div>
+	                            <div class="card-body">
+		                            	<canvas id="myAreaChart" width="100%" height="30"></canvas>
+	                            </div>
+	                            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+	                        </div>
+	                        <div class="row">
+	                            <div class="col-lg-6">
+	                                <div class="card mb-4">
+	                                    <div class="card-header">
+	                                        <i class="fas fa-chart-bar me-1"></i>
+											<span id="userNamebarChart" style="color:green; margin-bottom:20px;"></span>
+	                                    </div>
+	                                    <div class="card-body">
+	                                    	
+	                                    	<div class="row">
+		                                    	<canvas id="myBarChart" width="100%" height="50"></canvas>
+	                                    	</div>
+                                    	</div>
+	                                    <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+	                                </div>
+	                            </div>
+	                            <div class="col-lg-6">
+	                                <div class="card mb-4">
+	                                    <div class="card-header">
+	                                        <i class="fas fa-chart-pie me-1"></i>
+	                                        <span id="userNamedoughnutChart" style="color:green; margin-bottom:20px;"></span>
+	                                    </div>
+	                                    <div class="card-body"><canvas id="myPieChart" width="100%" height="50"></canvas></div>
+	                                    <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </main>
+	            </div>
+        </div>
 	</div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="/onnana/assets/js/adminScripts.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+        <script src="/onnana/assets/demo/chart-area-demo.js"></script>
+        <script src="/onnana/assets/demo/chart-bar-demo.js"></script>
+        <script src="/onnana/assets/demo/chart-doughnut-demo.js"></script>
+		</div>
 	<%@ include file="../common/bottom.jspf" %>
 	<div class="modal" id="updateModal">
         <div class="modal-dialog">
