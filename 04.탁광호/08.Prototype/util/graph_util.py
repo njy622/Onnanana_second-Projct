@@ -14,6 +14,15 @@ import joblib
 from joblib import dump
 from datetime import datetime, timedelta
 import time
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import xml.etree.ElementTree as ET
+import pytz
 plt.rcParams['font.family'] = 'Malgun Gothic'
 plt.rcParams['axes.unicode_minus'] = False
 
@@ -116,7 +125,7 @@ def get_disease_graph(column1, column2, agg_func, agg_func_name_korean):
     plt.title(title)
 
      # 집계 함수 확인
-    print("사용된 집계 함수:", agg_func)
+    print("사용된 집계 함수:", agg_func.__name__)
 
     img = io.BytesIO()
     plt.savefig(img, format='png', bbox_inches='tight')
@@ -236,15 +245,16 @@ def predict(features_scaled, model, scaler_target, n_input, n_features):
     return int(predicted_inverse[0][0])  # round 대신 int 사용
 
 
-def predict_pm10_pm25(selected_variable):
-
+# 예측을 위한 함수
+def predict_pm10_pm25():
     # 먼저 대기오염 데이터를 업데이트합니다.
-    fetch_air_quality_data()
+    fetch_air_quality_api_data()
 
-
+    # 데이터 파일 로드
     filename = os.path.join(current_app.static_folder, 'data/12-23대기오염nan처리.csv')    
     df = pd.read_csv(filename)
 
+    # 예측에 필요한 입력값 설정
     n_input = 30
     n_features_pm10 = 5
     n_features_pm25 = 5
@@ -252,6 +262,7 @@ def predict_pm10_pm25(selected_variable):
     features_pm10 = df[['이산화질소', '오존', '일산화탄소', '아황산', '초미세']]
     features_pm25 = df[['이산화질소', '오존', '일산화탄소', '아황산', '미세']]
 
+    # 스케일러 로드
     scaler_filename_pm10 = os.path.join(current_app.static_folder, 'model/scaler_pm10.joblib')
     scaler_features_pm10 = joblib.load(scaler_filename_pm10)
     features_scaled_pm10 = scaler_features_pm10.transform(features_pm10)
@@ -260,19 +271,49 @@ def predict_pm10_pm25(selected_variable):
     scaler_features_pm25 = joblib.load(scaler_filename_pm25)
     features_scaled_pm25 = scaler_features_pm25.transform(features_pm25)
 
+    # 타겟 스케일러 로드
     scaler_target_pm10 = joblib.load(os.path.join(current_app.static_folder, 'model/scaler_pm10_target.joblib'))
     scaler_target_pm25 = joblib.load(os.path.join(current_app.static_folder, 'model/scaler_pm25_target.joblib'))
 
-    if selected_variable == '미세먼지':
-        model_filename = os.path.join(current_app.static_folder, 'model/pm10_model.h5')
-        model_pm10 = load_model(model_filename)
-        predicted_pm10 = predict(features_scaled_pm10, model_pm10, scaler_target_pm10, n_input, n_features_pm10)
-        return f"예상되는 미세먼지는 {predicted_pm10}입니다."
-    elif selected_variable == '초미세먼지':
-        model_filename = os.path.join(current_app.static_folder, 'model/pm25_model.h5')
-        model_pm25 = load_model(model_filename)
-        predicted_pm25 = predict(features_scaled_pm25, model_pm25, scaler_target_pm25, n_input, n_features_pm25)
-        return f"예상되는 초미세먼지는 {predicted_pm25}입니다."
+    # 모델 로드 및 예측
+    model_filename_pm10 = os.path.join(current_app.static_folder, 'model/pm10_model.h5')
+    model_pm10 = load_model(model_filename_pm10)
+    predicted_pm10 = predict(features_scaled_pm10, model_pm10, scaler_target_pm10, n_input, n_features_pm10)
+
+    model_filename_pm25 = os.path.join(current_app.static_folder, 'model/pm25_model.h5')
+    model_pm25 = load_model(model_filename_pm25)
+    predicted_pm25 = predict(features_scaled_pm25, model_pm25, scaler_target_pm25, n_input, n_features_pm25)
+
+    # 등급 결정 함수
+    def determine_grade_pm10(value):
+        if value <= 30:
+            return '좋음'
+        elif value <= 80:
+            return '보통'
+        elif value <= 150:
+            return '나쁨'
+        else:
+            return '매우나쁨'
+
+    def determine_grade_pm25(value):
+        if value <= 15:
+            return '좋음'
+        elif value <= 35:
+            return '보통'
+        elif value <= 75:
+            return '나쁨'
+        else:
+            return '매우나쁨'
+
+    grade_pm10 = determine_grade_pm10(predicted_pm10)
+    grade_pm25 = determine_grade_pm25(predicted_pm25)
+
+    # 세 개의 문자열 변수 반환
+    prediction_summary = f"내일 예상되는 미세먼지와 초미세먼지는 {predicted_pm10}, {predicted_pm25} 수치를 예상합니다."
+    grade_pm10_str = grade_pm10
+    grade_pm25_str = grade_pm25
+
+    return prediction_summary, grade_pm10_str, grade_pm25_str
 
 
 
@@ -281,9 +322,9 @@ def predict_pm10_pm25(selected_variable):
 
 
 
-def fetch_air_quality_data():
+def fetch_air_quality_api_data():
     
-    filename = os.path.join(current_app.static_folder, 'data/12-23대기오염nan처리.csv')    
+    filename = os.path.join(current_app.static_folder, 'data/12-23대기오염nan처리.csv')   
     df = pd.read_csv(filename)
 
     api_key_file = os.path.join(current_app.static_folder, 'keys/api.txt')
@@ -307,60 +348,142 @@ def fetch_air_quality_data():
     start_date = start_point_datetime + timedelta(days=1)
     end_date = datetime.now()
 
+        # 서울 시간대 설정
+    seoul_timezone = pytz.timezone('Asia/Seoul')
+
+    # 서버의 현재 시간을 서울 시간대로 변환
+    current_time_in_seoul = datetime.now().astimezone(seoul_timezone)
+
+    # 현재 시간의 시간 부분만 추출
+    current_hour = current_time_in_seoul.hour
+
+
     # 시작 날짜와 종료 날짜가 다를 경우에만 데이터 처리
     if start_date < end_date:
-        all_data_df1 = pd.DataFrame()
+        if current_hour >= 10:
+            all_data_df1 = pd.DataFrame()        
+            for attempt in range(3):  # 최대 3번 재시도
+                print(f"시도 {attempt+1}")
+                try:
+                    for single_date in (start_date + timedelta(n) for n in range((end_date - start_date).days + 1)):
+                        date_str = single_date.strftime("%Y%m%d")
+                        for gu_name in gu_names:
+                            url = f"http://openAPI.seoul.go.kr:8088/{road_key}/xml/DailyAverageAirQuality/1/5/{date_str}/{gu_name}"
+                            result = requests.get(url, timeout=20)
+                            if result.status_code == 200:
+                                xml_data = result.text
+                                root = ET.fromstring(xml_data)
+                                rows = []
+                                for row in root.findall('.//row'):
+                                    rows.append({
+                                        "측정일시": row.find('MSRDT_DE').text if row.find('MSRDT_DE') is not None else None,
+                                        "측정소명": row.find('MSRSTE_NM').text if row.find('MSRSTE_NM') is not None else None,
+                                        "이산화질소": row.find('NO2').text if row.find('NO2') is not None else None,
+                                        "오존": row.find('O3').text if row.find('O3') is not None else None,
+                                        "일산화탄소": row.find('CO').text if row.find('CO') is not None else None,
+                                        "아황산": row.find('SO2').text if row.find('SO2') is not None else None,
+                                        "미세": row.find('PM10').text if row.find('PM10') is not None else None,
+                                        "초미세": row.find('PM25').text if row.find('PM25') is not None else None
+                                    })
+                                df2 = pd.DataFrame(rows)
+                                all_data_df1 = pd.concat([all_data_df1, df2], ignore_index=True)
+                            else:
+                                print(f"에러: {gu_name} - {date_str} - 상태 코드: {result.status_code}")
+                except requests.exceptions.RequestException:
+                    time.sleep(5)  # 5초 대기 후 재시도
 
-        for attempt in range(3):  # 최대 3번 재시도
-            try:
-                for single_date in (start_date + timedelta(n) for n in range((end_date - start_date).days + 1)):
-                    date_str = single_date.strftime("%Y%m%d")
-                    for gu_name in gu_names:
-                        url = f"http://openAPI.seoul.go.kr:8088/{road_key}/xml/DailyAverageAirQuality/1/5/{date_str}/{gu_name}"
-                        result = requests.get(url, timeout=20)
-                        if result.status_code == 200:
-                            xml_data = result.text
-                            root = ET.fromstring(xml_data)
-                            rows = []
-                            for row in root.findall('.//row'):
-                                rows.append({
-                                    "측정일시": row.find('MSRDT_DE').text if row.find('MSRDT_DE') is not None else None,
-                                    "측정소명": row.find('MSRSTE_NM').text if row.find('MSRSTE_NM') is not None else None,
-                                    "이산화질소": row.find('NO2').text if row.find('NO2') is not None else None,
-                                    "오존": row.find('O3').text if row.find('O3') is not None else None,
-                                    "일산화탄소": row.find('CO').text if row.find('CO') is not None else None,
-                                    "아황산": row.find('SO2').text if row.find('SO2') is not None else None,
-                                    "미세": row.find('PM10').text if row.find('PM10') is not None else None,
-                                    "초미세": row.find('PM25').text if row.find('PM25') is not None else None
-                                })
-                            df2 = pd.DataFrame(rows)
-                            all_data_df1 = pd.concat([all_data_df1, df2], ignore_index=True)
-                        else:
-                            print(f"에러: {gu_name} - {date_str} - 상태 코드: {result.status_code}")
-            except requests.exceptions.RequestException:
-                time.sleep(5)  # 5초 대기 후 재시도
+            all_data_df1.replace({None: np.nan}, inplace=True)
+            combined_df = all_data_df1.dropna()
+            combined_df = combined_df.drop(columns=['측정소명'])
 
-        all_data_df1.replace({None: np.nan}, inplace=True)
-        combined_df = all_data_df1.dropna()
-        combined_df = combined_df.drop(columns=['측정소명'])
+            for col in combined_df.columns:
+                if col == '측정일시':
+                    combined_df[col] = combined_df[col].astype(np.int64)
+                else:
+                    combined_df[col] = combined_df[col].astype(float)
 
-        for col in combined_df.columns:
-            if col == '측정일시':
-                combined_df[col] = combined_df[col].astype(np.int64)
-            else:
-                combined_df[col] = combined_df[col].astype(float)
+            combined_df = combined_df.groupby('측정일시', as_index=False).mean()
+            combined_df['이산화질소'] = combined_df['이산화질소'].round(3)
+            combined_df['오존'] = combined_df['오존'].round(3)
+            combined_df['일산화탄소'] = combined_df['일산화탄소'].round(1)
+            combined_df['아황산'] = combined_df['아황산'].round(3)
+            combined_df['미세'] = combined_df['미세'].round(0)
+            combined_df['초미세'] = combined_df['초미세'].round(0)
 
-        combined_df = combined_df.groupby('측정일시', as_index=False).mean()
-        combined_df['이산화질소'] = combined_df['이산화질소'].round(3)
-        combined_df['오존'] = combined_df['오존'].round(3)
-        combined_df['일산화탄소'] = combined_df['일산화탄소'].round(1)
-        combined_df['아황산'] = combined_df['아황산'].round(3)
-        combined_df['미세'] = combined_df['미세'].round(0)
-        combined_df['초미세'] = combined_df['초미세'].round(0)
-
-        df = pd.concat([df, combined_df], ignore_index=True)
-        df.to_csv('1211.대기오염미래예측/data/12-23대기오염nan처리.csv', index=False)
-
+            df = pd.concat([df, combined_df], ignore_index=True)
+            save_path = os.path.join(current_app.static_folder, 'data')
+        
+            # 디렉토리 존재 여부 확인 및 생성
+            if not os.path.exists(save_path):
+                os.makedirs(save_path)
+            # 수정된 경로로 파일 저장
+            file_path = os.path.join(save_path, '12-23대기오염nan처리.csv')
+            df.to_csv(file_path, index=False)
+        else:
+            print("현재 시간이 오전 10시가 아닙니다. 데이터 크롤링을 건너뜁니다.")
     else:
         print("데이터가 이미 최신 상태입니다.")
 
+def fetch_air_quality_data():
+    # 현재 날짜 구하기
+    now_date = datetime.now().date()
+
+    # 데이터 프레임 불러오기
+    filename = os.path.join(current_app.static_folder, 'data/크롤링미세먼지.csv')
+    if os.path.exists(filename):
+        df = pd.read_csv(filename)
+        if now_date in pd.to_datetime(df['오늘날짜']).dt.date.values:
+            # 오늘 날짜의 데이터가 이미 있으면 해당 데이터를 반환
+            latest_data = df[df['오늘날짜'] == str(now_date)].iloc[-1]
+            return latest_data['내일미세10'], latest_data['내일미세25'], latest_data['오늘미세10'], latest_data['오늘미세25']
+    else:
+        df = pd.DataFrame(columns=['오늘날짜', '내일미세10', '내일미세25', '오늘미세10', '오늘미세25'])
+
+    # 크롤링 시작
+    # 헤드리스 모드 설정
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+
+    # 웹드라이버 초기화 및 웹사이트 접속
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    url = 'https://www.airkorea.or.kr/web/dustForecast?pMENU_NO=113'
+    driver.get(url)
+
+    try:
+        # 원하는 요소 찾기 및 기다리기
+        element = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, '//*[@id="lnb"]/div[2]/div/div[4]/div[2]/div/table/tbody/tr[2]/td[1]'))
+        )
+        element2 = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, '//*[@id="lnb"]/div[2]/div/div[4]/div[2]/div/table/tbody/tr[3]/td[1]'))
+        )
+        element3 = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, '//*[@id="lnb"]/div[2]/div/div[3]/div[2]/div/table/tbody/tr[2]/td[1]'))
+        )
+        element4 = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, '//*[@id="lnb"]/div[2]/div/div[3]/div[2]/div/table/tbody/tr[3]/td[1]'))
+        )
+
+        # 요소의 텍스트 추출
+        tomorrow_cw_pm10 = element.text
+        tomorrow_cw_pm25 = element2.text
+        today_cw_pm10 = element3.text
+        today_cw_pm25 = element4.text
+
+    finally:
+        driver.quit()
+
+    # 새로운 데이터 행 생성 및 데이터 프레임에 추가
+    new_row = {
+        '오늘날짜': str(now_date),
+        '내일미세10': tomorrow_cw_pm10,
+        '내일미세25': tomorrow_cw_pm25,
+        '오늘미세10': today_cw_pm10,
+        '오늘미세25': today_cw_pm25
+    }
+    df = df.append(new_row, ignore_index=True)
+
+    # 데이터 프레임을 CSV 파일로 저장
+    df.to_csv(filename, index=False)
+
+    return tomorrow_cw_pm10, tomorrow_cw_pm25, today_cw_pm10, today_cw_pm25
