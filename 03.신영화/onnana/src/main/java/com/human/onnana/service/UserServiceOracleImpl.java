@@ -1,7 +1,10 @@
 package com.human.onnana.service;
 
 import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -9,6 +12,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +27,10 @@ public class UserServiceOracleImpl implements UserService{
 
 	@Autowired
     private JdbcTemplate jdbcTemplate;  // JdbcTemplate 추가
+	
+	@Autowired
+	NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+	
 	
 	@Override
 	public int getUserCount() {
@@ -93,28 +101,30 @@ public class UserServiceOracleImpl implements UserService{
 	    public void updateLastLoginDate(String uid, Timestamp currentTimestamp) {
 	        // 구현 내용 추가
 	    }
-
-
-	 @Override
-	    @Transactional
-	    public void updateAttendanceCount(String uid) {
-	        // 출석 횟수를 1 증가시키는 쿼리
-	        String updateQuery = "UPDATE USERS SET ATTENDANCE_COUNT = ATTENDANCE_COUNT + 1 WHERE UID = ?";
-	        
-	        // JdbcTemplate을 사용하여 쿼리 실행
-	        jdbcTemplate.update(updateQuery, uid);
-	    }
-	 
 	 
 	 @Override
-	    public int getAttendanceCount(String uid) {
-	        String sql = "SELECT ATTENDANCE_COUNT FROM USERS WHERE UID = ?";
-	        try {
-	            int attendanceCount = jdbcTemplate.queryForObject(sql, Integer.class, uid);
-	            return attendanceCount;
-	        } catch (DataAccessException e) {
-	            e.printStackTrace();
-	            return 0;
-	        }
-	    }
+	 @Transactional
+	 public void updateAttendanceCount(String uid) {
+	     // 출석 횟수를 1 증가시키는 쿼리
+	     String updateQuery = "UPDATE USERS SET ATTENDANCE_COUNT = :attendanceCount + 1 WHERE UID = :uid";
+
+	     // NamedParameterJdbcTemplate을 사용하여 쿼리 실행
+	     Map<String, Object> paramMap = new HashMap<>();
+	     paramMap.put("attendanceCount", 0); // 초기값 설정
+	     paramMap.put("uid", uid);
+	     namedParameterJdbcTemplate.update(updateQuery, paramMap);
+	 }
+
+	 @Override
+	 public int getAttendanceCount(String uid) {
+	     String sql = "SELECT ATTENDANCE_COUNT FROM USERS WHERE UID = ?";
+	     try {
+	         int attendanceCount = jdbcTemplate.queryForObject(sql, Integer.class, uid);
+	         return attendanceCount;
+	     } catch (DataAccessException e) {
+	         e.printStackTrace();
+	         return 0;
+	     }
+	 }
+
 }

@@ -134,61 +134,29 @@ public class UserController {
 	}
 	
 	
-	public void updateLastLoginDate(String uid, HttpSession session) {
-	    Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-	    userService.updateLastLoginDate(uid, currentTimestamp);
-
-	    // 출석 횟수 가져오는 로직 전에 로그 추가
-	    System.out.println("Trying to update last login date and attendance count for uid: " + uid);
-
-	    // 출석 횟수 가져오는 로직
-	    int attendanceCount = schedService.getAttendanceCount(uid);
-
-	    // 로그에 출석 횟수 정보 출력
-	    System.out.println("Attendance count retrieved from the database: " + attendanceCount);
-
-	    // 세션 초기화
-	    session.removeAttribute("attendanceCount");
-
-	    // 출석 횟수를 세션에 저장
-	    session.setAttribute("attendanceCount", attendanceCount);
-
-	    // 출석 횟수 저장 로그 추가
-	    System.out.println("Attendance count saved in session: " + attendanceCount);
-	}
-
-
-		
-	// 새로운 메서드 추가: 사용자의 출석 횟수 증가
-	public void incrementAttendanceCount(String uid, HttpSession session) {
-	    Integer attendanceCount = (Integer) session.getAttribute("attendanceCount");
-	    if (attendanceCount == null) {
-	    	// 세션에 출석 횟수가 없으면 데이터베이스에서 가져와 설정
-	        attendanceCount = schedService.getAttendanceCount(uid);
-	    } else {
-	        attendanceCount++;
-	    }
-	    session.setAttribute("attendanceCount", attendanceCount);
-
-	}
-
-		
 	@PostMapping("/login")
 	public String loginProc(String uid, String pwd, HttpSession session, Model model) {
+
 		int result = userService.login(uid, pwd);
+
 	    if (result == userService.CORRECT_LOGIN) {
-	    	// 사용자 로그인 시마다 last_login_date 갱신
+	        // 사용자 로그인 시마다 last_login_date 갱신
 	        updateLastLoginDate(uid, session);
 
 	        // 호출 추가: 사용자의 출석 횟수 증가
-	        incrementAttendanceCount(uid, session);
+	        userService.updateAttendanceCount(uid);
+
+	     // 세션에 출석 횟수 저장
+	        int sessionAttendanceCount = userService.getAttendanceCount(uid);
+	        session.setAttribute("attendanceCount", sessionAttendanceCount);
+
 	        
 	        session.setAttribute("sessUid", uid);
 			User user = userService.getUser(uid);
 			session.setAttribute("sessUname", user.getUname());
 			session.setAttribute("sessEmail", user.getEmail());
 	        
-	        // 출석 횟수 불러와서 증가
+			// 출석 횟수 불러와서 증가
 	        Integer attendanceCount = (Integer) session.getAttribute("attendanceCount");
 	        if (attendanceCount == null) {
 	            attendanceCount = 1;
@@ -197,12 +165,9 @@ public class UserController {
 	        }
 	        session.setAttribute("attendanceCount", attendanceCount);
 
-			
-			// 세션에서 출석 횟수 가져오는 부분에 로그 추가
-	        int sessionAttendanceCount = (Integer) session.getAttribute("attendanceCount");
-	        System.out.println("Attendance count retrieved from session: " + sessionAttendanceCount);
-			
-
+	        // 세션에서 출석 횟수 가져오는 부분에 로그 추가
+	        System.out.println("Attendance count retrieved from session: " + attendanceCount);
+	        
 			// 게시판 글 전체 카운트
 			session.setAttribute("sessAllId", schedService.getCount());
 			// 게시판 글 유저 카운트
@@ -227,6 +192,30 @@ public class UserController {
 		return "common/alertMsg";
 	}
 	
+	private void updateLastLoginDate(String uid, HttpSession session) {
+		 Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+		    userService.updateLastLoginDate(uid, currentTimestamp);
+
+		    // 출석 횟수 가져오는 로직 전에 로그 추가
+		    System.out.println("Trying to update last login date and attendance count for uid: " + uid);
+
+		    // 출석 횟수 가져오는 로직
+		    int attendanceCount = schedService.getAttendanceCount(uid);
+
+		    // 로그에 출석 횟수 정보 출력
+		    System.out.println("Attendance count retrieved from the database: " + attendanceCount);
+
+		    // 세션 초기화
+		    session.removeAttribute("attendanceCount");
+
+		    // 출석 횟수를 세션에 저장
+		    session.setAttribute("attendanceCount", attendanceCount);
+
+		    // 출석 횟수 저장 로그 추가
+		    System.out.println("Attendance count saved in session: " + attendanceCount);
+		
+	}
+
 	@GetMapping("/logout")
 	public String logout(HttpSession session) {
 		 // 세션을 완전히 비우는 코드
