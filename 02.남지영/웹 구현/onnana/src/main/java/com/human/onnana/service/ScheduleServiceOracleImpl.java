@@ -101,11 +101,30 @@ public class ScheduleServiceOracleImpl implements ScheduleService {
 		return schedDao.carbonUserCount(uid);
 	}
 
+
+	
 	@Override
-	public List<Schedule> getuserdateCarvon(String uid, String sdate) {
-		List<Schedule> list = schedDao.getuserdateCarvon(uid, sdate);
-		return list;
-		
+    public int getAttendanceCount(String uid) {
+        // 여기에서 출석 횟수를 어떻게 계산할지 구현해야 합니다.
+        // 예시로는 해당 유저의 스케줄 개수를 리턴하도록 구현하겠습니다.
+        return schedDao.getUserSchedCount(uid);
 	}
 
+	@Override
+	public double getUserCarbonReductionTotal(int sid) {
+		return schedDao.getUserCarbonReductionTotal(sid);
+	}
+
+	@Override
+	public double UserdaycarbonSum(String uid, String sdate) {
+		return schedDao.UserdaycarbonSum(uid, sdate);
+	}
+
+	@Override
+	public double UserAlldaycarbonSum(String sdate) {
+		// TODO Auto-generated method stub
+		return schedDao.UserAlldaycarbonSum(sdate);	
+		}
+	
+	
 }

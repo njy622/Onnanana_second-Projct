@@ -1,5 +1,6 @@
 package com.human.onnana.service;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import com.human.onnana.entity.User;
@@ -36,5 +37,12 @@ public interface UserService {
 	String idsearch(String uname, String email);
 	
 	String userinfosame(String uname, String uid, String email);
+
+	 void updateUser(String uid, Timestamp currentTimestamp);
+	
+	// 사용자의 last_login_date를 현재 시간으로 갱신
+	void updateLastLoginDate(String uid, Timestamp currentTimestamp);
+	
+	int getAttendanceCount(String uid);
 	
 }

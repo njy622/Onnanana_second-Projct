@@ -61,13 +61,32 @@ public interface ScheduleDaoOracle {
 	Double carbonUserCount(String uid);
 	
 	
-	// 한 유저의 탄소감소량 
-	@Select("SELECT uid, SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))) AS total_sum FROM schedule WHERE \"uid\" = #{uid} AND sdate = #{sdate} GROUP BY uid")
-	List<Schedule> getuserdateCarvon(String uid, String sdate);
+	@Select("SELECT COALESCE(SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))), 0) + COALESCE(SUM(TO_NUMBER(REGEXP_SUBSTR(title2, '\\d+(\\.\\d+)?'))), 0) AS total_sum FROM schedule WHERE sid = #{sid}")
+	double getUserCarbonReductionTotal(int sid);
+	
+	
+	private int convertToNumber(String uid) {
+	    try {
+	        return Integer.parseInt(uid);
+	    } catch (NumberFormatException e) {
+	        // 숫자로 변환할 수 없는 경우 0을 반환하거나 예외 처리
+	        return 0;
+	    }
+	}
 	
 	
 	
+	@Select("SELECT COUNT(*) FROM schedule WHERE \"uid\"=#{uid}")
+	int getUserSchedCount(String uid);
 	
+	// 한유저의 특정일자 탄소감소량 합계
+	@Select("SELECT  COALESCE(SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))), 0) + COALESCE(SUM(TO_NUMBER(REGEXP_SUBSTR(title2, '\\d+(\\.\\d+)?'))), 0) AS total_sum FROM schedule where \"uid\"= #{uid}  and sdate =  #{sdate}")
+	double UserdaycarbonSum(String uid, String sdate);
+	
+	
+	// 한유저의 특정일자 탄소감소량 합계
+	@Select("SELECT  COALESCE(SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))), 0) + COALESCE(SUM(TO_NUMBER(REGEXP_SUBSTR(title2, '\\d+(\\.\\d+)?'))), 0) AS total_sum FROM schedule where sdate =  #{sdate}")
+	double UserAlldaycarbonSum(String sdate);
 	
 	
 }
