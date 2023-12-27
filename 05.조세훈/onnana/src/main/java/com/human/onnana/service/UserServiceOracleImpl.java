@@ -1,10 +1,12 @@
 package com.human.onnana.service;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.human.onnana.db.UserDaoOracle;
 import com.human.onnana.entity.User;
@@ -73,4 +75,22 @@ public class UserServiceOracleImpl implements UserService{
 		return userDao.userinfosame(uname,uid, email);
 	}
 
+
+	@Override
+    @Transactional
+    public void updateUser(String uid, Timestamp currentTimestamp) {
+        // UserDaoOracle의 updateLastLoginDate 메서드 호출
+        userDao.updateLastLoginDate(uid, currentTimestamp);
+    }
+
+	 @Override
+	    public void updateLastLoginDate(String uid, Timestamp currentTimestamp) {
+	        // 구현 내용 추가
+	    }
+	 @Override
+	    public int getAttendanceCount(String uid) {
+	        // 여기에서 출석 횟수를 어떻게 계산할지 구현해야 합니다.
+	        // 예시로는 해당 유저의 스케줄 개수를 리턴하도록 구현하겠습니다.
+	        return userDao.getUserSchedCount(uid);
+	    }
 }

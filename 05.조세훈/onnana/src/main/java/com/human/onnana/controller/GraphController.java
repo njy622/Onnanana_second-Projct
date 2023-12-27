@@ -3,8 +3,10 @@ package com.human.onnana.controller;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -21,6 +23,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import java.util.Map;
 import java.util.HashMap;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 
 
 
@@ -269,7 +273,7 @@ public class GraphController {
         model.addAttribute("selectedVariable", session.getAttribute("selectedVariable"));
 
         
-        
+        model.addAttribute("menu", "analy"); // 아이콘 불들어옴
         return "graph/corona_graph";
     }
 
@@ -331,7 +335,128 @@ public class GraphController {
     }
 
 
-	
+
+    
+    private final String FLASK_API_URL = "http://localhost:5000/graph/future-prediction-api";
+
+    @GetMapping("/prediction")
+    public String showPredictionForm(Model model, HttpSession session, HttpServletRequest request2) {
+        // 세션에서 속성 제거 및 로그 출력
+        if (session.getAttribute("predictionSummary") != null) {
+            session.removeAttribute("predictionSummary");
+            System.out.println("Removed 'predictionSummary' from session");
+        }
+        if (session.getAttribute("gradePm10") != null) {
+            session.removeAttribute("gradePm10");
+            System.out.println("Removed 'gradePm10' from session");
+        }
+        if (session.getAttribute("gradePm25") != null) {
+            session.removeAttribute("gradePm25");
+            System.out.println("Removed 'gradePm25' from session");
+        }
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.getForEntity(FLASK_API_URL, String.class);
+        
+        // HTTP 상태 코드 확인
+        System.out.println("Response Status Code: " + response.getStatusCode());
+        
+        if (response.getStatusCode() == HttpStatus.OK) {
+            String responseBody = response.getBody();
+            
+            // 전체 응답 내용 출력
+            System.out.println("Response Body: " + responseBody);
+            
+            try {
+                JSONObject jsonResponse = new JSONObject(responseBody);
+                
+                // 'success' 키가 있는지 확인
+                if (jsonResponse.has("success") && jsonResponse.getBoolean("success")) {
+                    System.out.println("성공");
+                    
+                    // air_quality_data 처리
+                    if (jsonResponse.has("air_quality_data")) {
+                        JSONObject airQualityData = jsonResponse.getJSONObject("air_quality_data");
+                        Map<String, String> airQualityMap = new HashMap<>();
+                        airQualityMap.put("todayPm10", airQualityData.optString("todayPm10"));
+                        airQualityMap.put("todayPm25", airQualityData.optString("todayPm25"));
+                        airQualityMap.put("tomorrowPm10", airQualityData.optString("tomorrowPm10"));
+                        airQualityMap.put("tomorrowPm25", airQualityData.optString("tomorrowPm25"));
+                        
+                        session.setAttribute("airQualityData", airQualityMap);
+                    }
+                    
+                   
+                    
+                    // API 데이터 업데이트 상태 처리
+                    model.addAttribute("apiDataUpdated", jsonResponse.optBoolean("api_data_updated", false));
+                } else {
+                    // 'success' 키가 없거나 false일 경우
+                    System.out.println("API 응답 실패 또는 'success' 키가 없음");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            // 응답 상태 코드가 OK가 아닌 경우
+            System.out.println("API 응답 오류: 상태 코드 " + response.getStatusCode());
+        }
+        model.addAttribute("menu", "analy"); // 아이콘 불들어옴
+        model.addAttribute("requestMethod", request2.getMethod());
+        return "graph/predictionForm";
+    }
+
+    
+	@PostMapping("/prediction")
+	public String getPrediction(Model model, HttpSession session, HttpServletRequest request2) {
+	    RestTemplate restTemplate = new RestTemplate();
+	    HttpHeaders headers = new HttpHeaders();
+	    headers.setContentType(MediaType.APPLICATION_JSON);
+
+	    // Flask API에 POST 요청을 보낼 때 body는 빈 JSON 객체입니다.
+	    HttpEntity<String> request = new HttpEntity<>("{}", headers);
+	    ResponseEntity<String> response = restTemplate.exchange(FLASK_API_URL, HttpMethod.POST, request, String.class);
+
+	    if (response.getStatusCode() == HttpStatus.OK) {
+	        String responseBody = response.getBody();
+	        try {
+	            JSONObject jsonResponse = new JSONObject(responseBody);
+	            if (jsonResponse.getBoolean("success")) {
+	                // 예측 요약 및 등급 정보 처리
+	                String predictionSummary = jsonResponse.optString("prediction_summary");
+	                String gradePm10 = jsonResponse.optString("grade_pm10");
+	                String gradePm25 = jsonResponse.optString("grade_pm25");
+
+	                // API 응답 프린트
+	                System.out.println("API Response: Prediction Summary: " + predictionSummary);
+	                System.out.println("API Response: Grade PM10: " + gradePm10);
+	                System.out.println("API Response: Grade PM25: " + gradePm25);
+
+	                model.addAttribute("predictionSummary", predictionSummary);
+	                model.addAttribute("gradePm10", gradePm10);
+	                model.addAttribute("gradePm25", gradePm25);
+	            }
+	        } catch (JSONException e) {
+	            e.printStackTrace();
+	        }
+	    } else {
+	        System.out.println("API Response Error: Status Code " + response.getStatusCode());
+	    }
+
+	    // 세션에서 저장된 airQualityData를 다시 모델에 추가
+	    if (session.getAttribute("airQualityData") != null) {
+	        @SuppressWarnings("unchecked")
+	        Map<String, String> airQualityMap = (Map<String, String>) session.getAttribute("airQualityData");
+	        model.addAttribute("airQualityData", airQualityMap);
+	    }
+	    model.addAttribute("menu", "analy"); // 아이콘 불들어옴
+	    model.addAttribute("apiDataUpdated", session.getAttribute("apiDataUpdated"));
+	    model.addAttribute("requestMethod", request2.getMethod());
+	    return "graph/predictionForm";
+	}
+
+
+
 	
 
 }

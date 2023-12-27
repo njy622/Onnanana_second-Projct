@@ -10,8 +10,8 @@
 <body>
    <div class="container" style="margin-top:200px;">
    		<div class="row">
-   			<div class="col-2"></div>
-   			<div class="col-4">
+   			<div class="col-1"></div>
+   			<div class="col-5">
    				<a href="/onnana/home/">
 					<img src="/onnana/img/onna.png" width="100px" style="float: right; z-index:-1;">   
    				</a>
@@ -20,23 +20,23 @@
 				<form action="/onnana/user/Pwdchange" method="post">				
                 <table class="table table-borderless">
                     <tr>
-                        <td style="width:35%"><label class="col-form-label">사용자 ID</label></td>
+                        <td style="width:35%"><label class="col-form-label" style="float:left;">사용자 ID</label></td>
                         <td style="width:65%"><input type="text" id="pwdUid" name="pwdUid" class="form-control" ></td>
                     </tr>
                     <tr>
-                        <td><label class="col-form-label">이름</label></td>
+                        <td><label class="col-form-label" style="float:left;">이름</label></td>
                         <td><input type="text" name="pwdUname" id="pwdUname" class="form-control"></td>
                     </tr>
                     <tr>
-                        <td><label class="col-form-label">이메일</label></td>
+                        <td><label class="col-form-label" style="float:left;">이메일</label></td>
                         <td><input type="text" name="pwdEmail" id="pwdEmail" class="form-control"></td>
                     </tr>
                     <tr>
-                        <td><label class="col-form-label">새로운 비밀번호</label></td>
+                        <td><label class="col-form-label" style="float:left;">새로운 비밀번호</label></td>
                         <td><input type="password" name="pwd"  class="form-control"></td>
                     </tr>
                     <tr>
-                        <td><label class="col-form-label">패스워드 확인</label></td>
+                        <td><label class="col-form-label" style="float:left;">비밀번호 확인</label></td>
                         <td><input type="password" name="pwd2" class="form-control"></td>
                     </tr>
                     <tr>
