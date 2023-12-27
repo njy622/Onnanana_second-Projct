@@ -1,9 +1,11 @@
 package com.human.onnana.db;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -45,4 +47,13 @@ public interface UserDaoOracle {
    		+ "FROM users "
    		+ "WHERE uname = #{uname} AND \"uid\" = #{uid} AND email = #{email}")
    public String userinfosame(String uname, String uid, String email);
+   
+   
+// UserDaoOracle 클래스에서 수정
+	@Update("UPDATE users SET last_login_date=#{currentTimestamp} WHERE uid=#{uid}")
+	void updateLastLoginDate(@Param("uid") String uid, @Param("currentTimestamp") Timestamp currentTimestamp);
+
+	 @Select("SELECT COUNT(sid) FROM schedule WHERE uid=#{uid}")
+	    int getUserSchedCount(String uid); 
+   
 }

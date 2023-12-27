@@ -32,5 +32,10 @@ public interface ScheduleService {
 	
 	Double getCarbonUserCount(String uid);
 	
+	double getUserCarbonReductionTotal(int sid);
+	
+	int getAttendanceCount(String uid);
+
+	
 	
 }

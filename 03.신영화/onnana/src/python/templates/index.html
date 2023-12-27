@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Data Visualization</title>
+    <!-- chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 안내메시지 창 만들때 사용되는 것-->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-tooltip"></script>
+    <style>
+        div {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center; /* 중앙 정렬을 유지하면서 좌우 정렬 */
+        }
+        canvas {
+            margin-top: 100px; /* 각 차트의 상단 간격 조절 */
+            position: relative; /* Canvas에 상대 위치 지정 */
+        }
+        .chart-container {
+            position: relative;
+            text-align: center; /* 텍스트 중앙 정렬을 위한 추가 스타일 */
+        }
+        .chart-image {
+            position: absolute;
+            top: 70%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 20%; /* 이미지 최대 너비 지정 */
+            max-height: 20%; /* 이미지 최대 높이 지정 */
+        }
+        .chart-text {
+            position: absolute;
+            top: 110%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 각 차트를 감싸는 부모 요소 -->
+    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+        <!-- 각 차트를 표시할 Canvas 요소 -->
+        <div class="chart-container">
+            <canvas id="myChart0" width="250" height="250"></canvas>
+            <div class="chart-text" id="text0"></div>
+        </div>
+        <div class="chart-container">
+            <canvas id="myChart1" width="250" height="250"></canvas>
+            <div class="chart-text" id="text1"></div>
+        </div>
+        <div class="chart-container">
+            <canvas id="myChart2" width="250" height="250"></canvas>
+            <div class="chart-text" id="text2"></div>
+        </div>
+        <div class="chart-container">
+            <canvas id="myChart3" width="250" height="250"></canvas>
+            <div class="chart-text" id="text3"></div>
+        </div>
+        <div class="chart-container">
+            <canvas id="myChart4" width="250" height="250"></canvas>
+            <div class="chart-text" id="text4"></div>
+        </div>
+        <div class="chart-container">
+            <canvas id="myChart5" width="250" height="250"></canvas>
+            <div class="chart-text" id="text5"></div>
+        </div>
+        <div class="chart-container">
+            <canvas id="myChart6" width="250" height="250"></canvas>
+            <div class="chart-text" id="text6"></div>
+        </div>
+        <div class="chart-container">
+            <canvas id="myChart7" width="250" height="250"></canvas>
+            <div class="chart-text" id="text7"></div>
+        </div>
+    </div>
+
+    <!-- 스크립트로 데이터 추출 및 각 차트 생성 -->
+    <script>
+        // Fetch API를 사용하여 서버에서 JSON 데이터를 비동기적으로 요청
+        // 스크립트로 데이터 추출 및 각 차트 생성
+        fetch('http://localhost:5000/test')
+            .then(response => response.json())
+            .then(data => {
+                // 콘솔에 데이터 출력
+                console.log(data);
+
+                var jsonData = data;
+
+                for (var i = 0; i < jsonData.length; i++) {
+                    var labels = [jsonData[i]["생활지수"], ""];
+
+                    var dataset = {
+                        data: [jsonData[i]["그래프 값"], jsonData[i]["그래프 최댓값"] - jsonData[i]["그래프 값"]],
+                        backgroundColor: ['#87CEEB', '#808080'],
+                    };
+
+                    var chartId = 'myChart' + i;
+                    var ctx = document.getElementById(chartId).getContext('2d');
+
+                    // 차트 생성
+                    var myChart = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: labels,
+                            datasets: [dataset],
+                        },
+                        options: {
+                            responsive: false,
+                            plugins: {
+                                tooltip: {
+                                    enabled: false,
+                                },
+                            },
+                            onHover: (event, chartElement) => {
+                                document.body.style.cursor = chartElement[0] ? 'pointer' : 'default';
+                            },
+                            onClick: (event, chartElement) => {
+                                if (chartElement[0]) {
+                                    // chartElement를 기반으로 원하는 동작 수행
+                                    console.log('Clicked on chart element:', chartElement[0]);
+                                }
+                            },
+                            tooltips: {
+                                enabled: false, // 툴팁 비활성화
+                            },
+                        },
+                    });
+
+                    // 이미지 URL 가져오기
+                    var imageUrl = jsonData[i]["이미지"];
+
+                    // 이미지 요소 생성
+                    var imgElement = new Image();
+                    imgElement.src = imageUrl;
+                    imgElement.classList.add('chart-image');
+
+                    // 이미지를 Canvas 부모에 추가
+                    var chartContainer = document.getElementsByClassName('chart-container')[i];
+                    chartContainer.appendChild(imgElement);
+
+                    // 생활지수 텍스트 추가
+                    var textElement = document.getElementById('text' + i);
+                    textElement.textContent = jsonData[i]["생활지수"]  + jsonData[i]["그래프 값"];
+
+                }
+            })
+            .catch(error => console.error('데이터 가져오는 중 오류 발생:', error));
+
+    </script>
+</body>
+</html>

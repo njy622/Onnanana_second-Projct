@@ -10,8 +10,8 @@
 <body>
    <div class="container" style="margin-top:200px;">
    		<div class="row">
-   			<div class="col-2"></div>
-   			<div class="col-4">
+   			<div class="col-1"></div>
+   			<div class="col-5">
    				<a href="/onnana/home/">
 					<img src="/onnana/img/onna.png" width="100px" style="float: right; z-index:-1;">   
    				</a>
@@ -24,11 +24,11 @@
 							<td style="width: 80%"><input type="text" name="uid" class="form-control"></td>
 						</tr>
 						<tr>
-							<td><label class="col-form-label" style="float:left;">패스워드</label></td>
+							<td><label class="col-form-label" style="float:left;">PW</label></td>
 							<td><input type="password" name="pwd" class="form-control"></td>
 						</tr>
 						<tr>
-							<td><label class="col-form-label" style="float:left; font-size:10px;">(패스워드 확인)</label></td>
+							<td><label class="col-form-label" style="float:left;">(PW 확인)</label></td>
 							<td><input type="password" name="pwd2" class="form-control"></td>
 						</tr>
 						<tr>
@@ -42,7 +42,9 @@
 						<tr>
 							<td colspan="2">
 								<input type="submit" class="btn btn-success" value="제출">
-								<input type="reset" class="btn btn-secondary" value="취소">
+								<a href="onnana/home">
+									<input type="reset" class="btn btn-secondary" value="취소">
+								</a>
 							</td>
 						</tr>
 					</table>

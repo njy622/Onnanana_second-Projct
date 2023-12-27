@@ -8,11 +8,10 @@
 </head>
 <body>
     <%@ include file="../common/top.jspf" %>
-    <div class="container" style="margin-top:80px">
+    <div class="container" style="margin:130px">
         <div class="row">
             <%@ include file="../common/aside.jspf" %>
             <div>
-                <hr>
 			 	 <form action="/onnana/graph/disease-graph" method="post" class="d-flex align-items-end">
                     <!-- 첫 번째 변수 선택 -->
                     <div class="form-group mb-0 mr-2" style="flex-grow: 0; min-width: 0;">

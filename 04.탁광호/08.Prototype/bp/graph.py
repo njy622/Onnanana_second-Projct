@@ -63,6 +63,58 @@ def corona_graph_api():
     })
 
 
+@graph_bp.route('/future-prediction-api', methods=['GET', 'POST'])
+def predict_pm_api():
+    if request.method == 'POST':
+     
+        # 변수에 따라 적절한 예측 수행
+        try:
+            prediction_summary, grade_pm10_str, grade_pm25_str = gu.predict_pm10_pm25()
+            return jsonify({
+                'success': True, 
+                'prediction_summary': prediction_summary, 
+                'grade_pm10': grade_pm10_str, 
+                'grade_pm25': grade_pm25_str
+            })
+        except Exception as e:
+            return jsonify({'success': False, 'message': str(e)})
+
+    elif request.method == 'GET':
+        # GET 요청 처리 - 현재 설정된 변수와 예측값을 반환
+        try:
+            prediction_summary = None
+            grade_pm10_str = None
+            grade_pm25_str = None
+            air_quality_data = None
+            air_quality_data = gu.fetch_air_quality_data()
+            api_data_updated = gu.fetch_air_quality_api_data()
+
+            # air_quality_data는 (pm10_today, pm25_today, pm10_tomorrow, pm25_tomorrow) 형식의 튜플임을 가정
+            air_quality_json = {
+                'todayPm10': air_quality_data[0],
+                'todayPm25': air_quality_data[1],
+                'tomorrowPm10': air_quality_data[2],
+                'tomorrowPm25': air_quality_data[3]
+            }
+
+            print("GET request received. Returning data:")
+            print(f"Air Quality Data: {air_quality_json}")
+            print(f"API Data Updated: {api_data_updated}")
+
+            prediction_summary, grade_pm10_str, grade_pm25_str = gu.predict_pm10_pm25()
+            return jsonify({
+                'success': True, 
+                'prediction_summary': prediction_summary, 
+                'grade_pm10': grade_pm10_str, 
+                'grade_pm25': grade_pm25_str,
+                'air_quality_data': air_quality_json,  
+                'api_data_updated': api_data_updated
+            })
+        except Exception as e:
+            return jsonify({'success': False, 'message': str(e)})
+
+    else:
+        return jsonify({'success': False, 'message': 'Invalid request method'})
 
 
 
@@ -91,9 +143,9 @@ def select_variable():
 def disease_graph():
     # 사용자가 선택할 수 있는 변수 목록
     variables1 = [
-        '미세먼지(농도)', '미세먼지(농도80)', '초미세먼지(농도)', '초미세먼지(농도35)', 
-        '아황산가스(농도0.05)', '아황산가스(농도)', '이산화질소(농도0.06)', '이산화질소(농도0.03)', 
-        '이산화질소(농도)', '일산화탄소(농도9)', '일산화탄소(농도)', '구리(농도)', '납(농도0.5)', 
+        '미세먼지(농도)', '미세먼지(농도80)', '초미세먼지(농도)', '초미세먼지(농도35)',
+        '아황산가스(농도0.05)', '아황산가스(농도)', '이산화질소(농도0.06)', '이산화질소(농도0.03)',
+        '이산화질소(농도)', '일산화탄소(농도9)', '일산화탄소(농도)', '구리(농도)', '납(농도0.5)',
         '납(농도)', '니켈(농도)', '망간(농도)', '비소(농도)', '철(농도)', '카드뮴(농도)', '크롬(농도)'
     ]
     variables2 = ['비염환자(질병)', '아토피환자(질병)', '천식환자(질병)']
@@ -130,16 +182,14 @@ def disease_graph():
         graph = None
         selected_agg_func_korean = aggregation_functions_korean[selected_agg_func]
 
-
-
-    return render_template('/graph/disease_graph.html', 
-                           variables1=variables1, 
-                           variables2=variables2, 
-                           aggregation_functions=aggregation_functions, 
+    return render_template('/graph/disease_graph.html',
+                           variables1=variables1,
+                           variables2=variables2,
+                           aggregation_functions=aggregation_functions,
                            selected_variable1=selected_variable1, 
-                           selected_variable2=selected_variable2, 
-                           selected_agg_func=selected_agg_func, 
-                           selected_agg_func_korean=selected_agg_func_korean, 
+                           selected_variable2=selected_variable2,
+                           selected_agg_func=selected_agg_func,
+                           selected_agg_func_korean=selected_agg_func_korean,
                            graph=graph, 
                            menu=menu)
 
@@ -167,13 +217,44 @@ def corona_graph():
     if request.method == 'POST':
         selected_sido = request.form.get('sido')
         selected_variable = request.form.get('variable')
-
         # 선택된 시도와 변수에 따른 그래프 생성 및 코로나 증감폭 계산
         graph_url, percent_change = gu.get_corona_graph(selected_sido, selected_variable)
-
         # 유사한 증감폭 찾기
         similar_impact_message = gu.find_similar_covid_impact(selected_sido, selected_variable, percent_change)
     else:
         graph_url = None
 
     return render_template('/graph/corona_graph.html', sidos=sidos, variables=variables, selected_sido=selected_sido, selected_variable=selected_variable, graph=graph_url, similar_impact=similar_impact_message, menu=menu)
+
+@graph_bp.route('/future-prediction', methods=['GET', 'POST'])
+def predict_pm():
+    prediction_summary = None
+    grade_pm10_str = None
+    grade_pm25_str = None
+    air_quality_data = None
+
+    api_data_updated = gu.fetch_air_quality_api_data()
+
+    try:
+        air_quality_data = gu.fetch_air_quality_data()
+    except Exception as e:
+        print(f"크롤링 중 에러 발생: {e}")
+
+    if request.method == 'POST':
+        # POST 요청 시 미세먼지와 초미세먼지에 대한 예측을 동시에 수행합니다.
+        prediction_summary, grade_pm10_str, grade_pm25_str = gu.predict_pm10_pm25()
+
+    # 변수 타입 출력
+    print("Type of 'prediction_summary':", type(prediction_summary))
+    print("Type of 'grade_pm10_str':", type(grade_pm10_str))
+    print("Type of 'grade_pm25_str':", type(grade_pm25_str))
+    print("Type of 'air_quality_data':", type(air_quality_data))
+    print("Type of 'api_data_updated':", type(api_data_updated))
+
+    return render_template('/graph/future_prediction.html',
+                           prediction_summary=prediction_summary,
+                           grade_pm10_str=grade_pm10_str,
+                           grade_pm25_str=grade_pm25_str,
+                           air_quality_data=air_quality_data,
+                           api_data_updated=api_data_updated,
+                           menu=menu)

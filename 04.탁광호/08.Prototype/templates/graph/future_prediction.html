@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block additional_head %} 
+    <style>
+        input {margin: 10px;}
+    </style>
+{% endblock %}
+{% block subtitle %}미래예측{% endblock %}
+{% block content %}
+   
+    <body>
+        <div class="container" style="margin-top:80px">
+            <div class="row">
+                <!-- "미세먼지 내일 예측하기" 버튼과 예측 결과 섹션 (col-4) -->
+                <div class="col-4">
+                    <form method="post" action="">
+                        <input type="submit" value="미세먼지 내일 예측하기" class="btn btn-primary mt-2">
+                    </form>
+                    
+                    {% if prediction_summary %}
+                        <p class="mt-3">{{ prediction_summary }}</p>
+                    {% endif %}
+
+                    {% if grade_pm10_str or grade_pm25_str %}
+                        <h2>내일 서울시 예보</h2>
+                        <table class="table table-bordered mt-3">
+                            <thead>
+                                <tr>
+                                    <th scope="col">구분</th>
+                                    <th scope="col">내일</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">미세먼지</th>
+                                    <td>{{ grade_pm10_str }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">초미세먼지</th>
+                                    <td>{{ grade_pm25_str }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p>-출처(온나나팀)-</p>
+                    {% else %}
+                        <p class="mt-3">미래예측을 해주세요</p>
+                    {% endif %}
+                </div>
+
+                <!-- 서울시 예보 섹션 (col-4) -->
+                <div class="col-4">
+                    {% if air_quality_data %}
+                        <h2>서울시 예보</h2>
+                        <table class="table table-bordered mt-3">
+                            <thead>
+                                <tr>
+                                    <th scope="col">구분</th>
+                                    <th scope="col">내일</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">미세먼지</th>
+                                    <td>{{ air_quality_data[0] }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">초미세먼지</th>
+                                    <td>{{ air_quality_data[1] }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p>-출처(에어코리아)-</p>
+                    {% else %}
+                        <p class="mt-3">로딩 중...</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </body>
+
+   
+{% endblock %}

@@ -40,23 +40,30 @@
 <!-- Offcanvas 영역 -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasWithBackdrop" aria-labelledby="offcanvasWithBackdropLabel">
     <div class="offcanvas-header" style="text-align:center;">
-        <img src="/onnana/img/onna.png" height="70">
+    	<a href="/onnana/home">
+        	<img class="me-3" src="/onnana/img/onna.png" height="70">
+       	</a>
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
+    	
     	<!-- <body> 좌측에 있는 aside menu -->
 	
 		<c:if test="${not empty sessUid}">
-		    <h5 class="navbar-text me-3" style="color:green;"><i class="fa-solid fa-tree"></i>&nbsp;${sessUname}님의 그린 발자취.</h5>
-		   	<p class="ms-4">그린캠페인 참여일 : <span id="asideSessId">${sessId}</span> 일</p>
+		    <h5 class="me-3" style="color:green;"><i class="fa-solid fa-tree"></i>&nbsp;${sessUname}님의 그린 발자취.</h5>
+		    <!-- 출석 횟수 표시 -->
+   			<p class="ms-4" style="margin-bottom:-1px;"">출석 횟수: ${attendanceCount}</p>
+		   	<p class="ms-4" style="margin-bottom:-1px;">그린캠페인 참여일 : <span id="asideSessId">${sessId}</span> 일</p>
 		    <p class="ms-4">나의 감소량: <span id="asideSessCarbonId">${sessCarbonId}</span> kg</p>
 		    <hr>
-		    <h5  style="color:green;"><i class="fa-solid fa-people-carry-box"></i> 그린캠페인에 함께한 우리들</h5>
-		    <p class="ms-4"> 그린캠페인 참여인원 : <span id="asideSessAllId">${sessAllId}</span> 명</p>
+		    <h5 class="me-3"  style="color:green;"><i class="fa-solid fa-people-carry-box"></i> 그린캠페인에 함께한 우리들</h5>
+		    <p class="ms-4" style="margin-bottom:-1px;"> 그린캠페인 참여인원 : <span id="asideSessAllId">${sessAllId}</span> 명</p>
 		    <p class="ms-4"> 캠페인 배출 감소량 : <span id="asidesessAllCarbonId">${sessAllCarbonId}</span> kg</p>
 		    
+
+			<hr> 
 			 
-	            <strong style="color:green;"><i class="fa-regular fa-lightbulb"></i> TIP</strong>
+	            <strong  class="me-2" style="color:green; margin-bottom:4px;"><i class="fa-regular fa-lightbulb"></i> TIP</strong>
 	            <%-- quotes.txt 파일이 static/data 디렉터리에 있다고 가정합니다 --%>
 	        <p class="ms-4">
 	             <% 
@@ -65,7 +72,7 @@
 	            %>
 	            <%= quote %>
 	        </p>
-		    <p>회원 등급 표기</p>
+		    <p class="ms-4">회원 등급 표기</p>
 		    
 		</c:if>
 		<c:if test="${empty sessUid}">
@@ -80,19 +87,27 @@
 				</h4>
 				<hr>
 				<form action="/onnana/user/login" method="post">
-					<table class=table table-borderless">
+					<table class="table table-borderless">
 						<tr>
-							<td style="width: 35%"><label class="col-form-label"> ID</label></td>
-							<td style="width: 65%"><input type="text" name="uid" class="form-control"></td>
+							<td style="width: 15%"><label class="col-form-label"> ID</label></td>
+							<td style="width: 85%"><input type="text" name="uid" class="form-control"></td>
 						</tr>
 						<tr>
 							<td><label class="col-form-label"> PW</label></td>
 							<td><input type="password" name="pwd" class="form-control"></td>
 						</tr>
 						<tr>
-							<td colspan="2">
-								<input type="submit" class="btn btn-primary" value="로그인">
-								<input type="reset" class="btn btn-secondary" value="취소">
+							<td colspan="3">
+								<input type="submit" class="btn btn-success ms-5" value="로그인">
+							<!-- 	<input type="reset" class="btn btn-secondary" value="취소"> -->
+								<!-- 아이디 찾기 버튼 -->
+								<a href="/onnana/user/Idsearch">
+							        <button type="button" class="btn btn-light" ">ID찾기</button>
+								</a>
+						        <!-- 비밀번호 변경 버튼 -->
+								<a href="/onnana/user/Pwdchange">
+						        	<button type="button" class="btn btn-light">PW변경</button>
+								</a>
 							</td>
 						</tr>
 					</table>
@@ -102,57 +117,63 @@
 		</c:if>
 			<hr>
 			<!-- 날씨 정보 -->
-			    <p id="location"></p>
-    			<p id="weather"></p>
-
-		    <p>팀원이름</p>
+             <p id="location" style="margin-bottom:-1px;"></p>
+             <p id="weather" class="ms-2"></p>
+			
+		    <div class="ms-4 row">
+		    	<p style="margin-bottom:-1px;"><strong>팀장 심민준</strong></p>
+		    	<p>팀원: 남지영, 신영화, 조세훈, 탁광호</p>
+		    </div>
 			<img src="/onnana/img/nanana.gif" width="70%" >
 		
 	</div>
  </div>
-    <!-- JavaScript 코드 -->
-	<script>
-	$(document).ready(function() {
-	    // 페이지 로드 시 현재 기상 및 위치 정보 가져와서 표시
-	    getWeatherInfo();
-	
-	    // 날씨 정보 업데이트 버튼 클릭 시 새로고침
-	    $("#weatherBtn").click(function() {
-	        getWeatherInfo();
-	    });
-	});
-	
-	function getWeatherInfo() {
-	    // Geolocation API를 사용하여 현재 위치 가져오기
-	    if (navigator.geolocation) {
-	        navigator.geolocation.getCurrentPosition(function(position) {
-	            // 위치 정보 성공적으로 가져옴
-	            var latitude = position.coords.latitude;
-	            var longitude = position.coords.longitude;
+ 
+  <!-- JavaScript 코드 -->
+   <script>
+   $(document).ready(function() {
+       // 페이지 로드 시 현재 기상 및 위치 정보 가져와서 표시
+       getWeatherInfo();
+   
+       // 날씨 정보 업데이트 버튼 클릭 시 새로고침
+       $("#weatherBtn").click(function() {
+           getWeatherInfo();
+       });
+   });
+   
+   function getWeatherInfo() {
+       // Geolocation API를 사용하여 현재 위치 가져오기
+       if (navigator.geolocation) {
+           navigator.geolocation.getCurrentPosition(function(position) {
+               // 위치 정보 성공적으로 가져옴
+               var latitude = position.coords.latitude;
+               var longitude = position.coords.longitude;
 
-	            // 서버로 현재 위치 전송하여 날씨 정보 가져오기
-	            $.ajax({
-	                url: "/onnana/aside/weather",
-	                method: "GET",
-	                data: { lat: latitude, lon: longitude },
-	                dataType: "json",
-	                success: function(response) {
-	                    // 날씨 및 위치 정보를 표시할 div에 결과를 추가
-	                    $("#location").html("현재 위치: " + response.location);
-	                    $("#weather").html("현재 날씨: " + response.weather);
-	                },
-	                error: function(error) {
-	                    console.error("날씨 정보를 가져오는 중 에러 발생: ", error);
-	                }
-	            });
-	        }, function(error) {
-	            console.error("현재 위치 정보를 가져오는 중 에러 발생: ", error);
-	        });
-	    } else {
-	        console.error("Geolocation API를 지원하지 않는 브라우저입니다.");
-	    }
-	}
-	</script>
+               // 서버로 현재 위치 전송하여 날씨 정보 가져오기
+               $.ajax({
+                   url: "/onnana/aside/weather",
+                   method: "GET",
+                   data: { lat: latitude, lon: longitude },
+                   dataType: "json",
+                   success: function(response) {
+                       // 날씨 및 위치 정보를 표시할 div에 결과를 추가
+                       $("#location").html("<i class='fa-solid fa-location-dot' style='color:green;'></i>&nbsp;&nbsp;" + response.location +"의 날씨");
+                       $("#weather").html(response.weather);
+                   },
+                   error: function(error) {
+                       console.error("날씨 정보를 가져오는 중 에러 발생: ", error);
+                   }
+               });
+           }, function(error) {
+               console.error("현재 위치 정보를 가져오는 중 에러 발생: ", error);
+           });
+       } else {
+           console.error("Geolocation API를 지원하지 않는 브라우저입니다.");
+       }
+   }
+   </script>
 
+ 
+    
 </body>
 </html>
