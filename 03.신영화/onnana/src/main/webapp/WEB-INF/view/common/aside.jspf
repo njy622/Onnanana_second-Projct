@@ -72,7 +72,7 @@
 	            %>
 	            <%= quote %>
 	        </p>
-		    <p class="ms-4">회원 등급 표기</p>
+		 <!--    <p class="ms-4">회원 등급 표기</p>
 		    
 		</c:if>
 		<c:if test="${empty sessUid}">
@@ -124,7 +124,7 @@
 		    	<p style="margin-bottom:-1px;"><strong>팀장 심민준</strong></p>
 		    	<p>팀원: 남지영, 신영화, 조세훈, 탁광호</p>
 		    </div>
-			<img src="/onnana/img/nanana.gif" width="70%" >
+			<img src="/onnana/img/greencam.png" width="100%" >
 		
 	</div>
  </div>

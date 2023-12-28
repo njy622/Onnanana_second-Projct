@@ -12,8 +12,8 @@
 <body>
    <div class="container" style="margin-top:200px;">
    		<div class="row">
-   			<div class="col-2"></div>
-   			<div class="col-4">
+   			<div class="col-1"></div>
+   			<div class="col-5">
    				<a href="/onnana/home/">
 					<img src="/onnana/img/onna.png" width="100px" style="float: right; z-index:-1;">   
    				</a>
@@ -22,11 +22,11 @@
 				<form action="/onnana/user/Idsearch" method="post">
 					<table class="table table-borderless">
 	                     <tr>
-	                         <td><label class="col-form-label">이름</label></td>
+	                         <td><label class="col-form-label" style="float:left;">이름</label></td>
 	                         <td><input type="text" name="idUname" id="idUname" class="form-control"></td>
 	                     </tr>
 	                     <tr>
-	                         <td><label class="col-form-label">이메일</label></td>
+	                         <td><label class="col-form-label" style="float:left;">이메일</label></td>
 	                         <td><input type="text" name="idEmail" id="idEmail" class="form-control"></td>
 	                     </tr>
 	                     <tr>

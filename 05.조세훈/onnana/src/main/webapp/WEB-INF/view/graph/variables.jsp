@@ -22,14 +22,13 @@
 </head>
 <body>
     <%@ include file="../common/top.jspf" %>
-    <div class="container" style="margin-top:80px">
+    <div class="container" style="margin:130px">
         <div class="row">
             <%@ include file="../common/aside.jspf" %>
             <div>
-                <hr>
                 <!-- 이미지 표시 및 클릭 이벤트 -->
+                <p style="font-size:12px;">출처:KOSIS/국내통계포털(https://kosis.kr/)</p>
                 <img src="${imageData}" alt="변수 그래프 이미지" class="graph-image" onclick="openImagePopup(this.src)"/>
-                <img src="/onnana/img/anay.png">
             </div>
         </div>
     </div>

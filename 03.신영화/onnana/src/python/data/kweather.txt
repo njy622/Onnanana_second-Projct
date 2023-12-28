@@ -1,0 +1,9 @@
+이미지	생활지수	지수	안내멘트
+../img/icon_idx_carwash.png?ver=20231214	세차지수	0	세차하기 안 좋은 날씨예요
+../img/icon_idx_running.png?ver=20231214	달리기지수	0	오늘은 꼭 실내에서 운동하세요
+../img/icon_idx_washing.png?ver=20231214	빨래지수	13	굳이 오늘 빨래해야 한다면 빨래방으로
+../img/icon_idx_sleep.png?ver=20231214	수면지수	20	잠자기에 조금 힘든 날이에요
+../img/icon_idx_umb.png?ver=20231214	우산지수	80	외출 시 크고 튼튼한 우산을 챙기세요
+../img/icon_life_uv.png?ver=20231214	자외선지수	0	오늘은 안심하고 야외 활동하세요
+../img/icon_life_cold.png?ver=20231214	감기지수	3	보온 유지에 신경 써주세요
+../img/icon_life_freez.png?ver=20231214	동파지수	25	큰 추위 없어 동파 걱정 없어요

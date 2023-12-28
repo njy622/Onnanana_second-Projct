@@ -10,8 +10,7 @@ public class User {
 	private String email;
 	private LocalDate regDate;
 	private int isDeleted;
-    private int attendanceCount; // 새로 추가한 필드
-
+	
 	
 	public User() {	}
 	public User(String uid, String pwd, String uname, String email) {
@@ -64,18 +63,12 @@ public class User {
 	public void setIsDeleted(int isDeleted) {
 		this.isDeleted = isDeleted;
 	}
-
-	public int getAttendanceCount() {
-        return attendanceCount;
-    }
-
-    public void setAttendanceCount(int attendanceCount) {
-        this.attendanceCount = attendanceCount;
-    }
 	
-    @Override
-    public String toString() {
-        return "User [uid=" + uid + ", pwd=" + pwd + ", uname=" + uname + ", email=" + email + ", regDate=" + regDate
-                + ", isDeleted=" + isDeleted + ", attendanceCount=" + attendanceCount + "]";
-    }
+	
+	@Override
+	public String toString() {
+		return "User [uid=" + uid + ", pwd=" + pwd + ", uname=" + uname + ", email=" + email + ", regDate=" + regDate
+				+ ", isDeleted=" + isDeleted + "]";
+	}
+	
 }

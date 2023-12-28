@@ -8,6 +8,7 @@ var schedClicked = false;
 function cellClick(date) {
 	if (schedClicked)
 		schedClicked = false;
+				
 	else {
 		date = date + '';		// number type을 문자열로 변환
 		const dateForm = date.substring(0,4)+'-'+date.substring(4,6)+'-'+date.substring(6,8);
@@ -26,32 +27,39 @@ function cellClick(date) {
 		$('#endDate').val(dateForm);
 		$('#endTime').val(endStr);
 		$('#addModal').modal('show');
-	}
+		 
+		}
 }
 
-
 function schedClick(sid) {
-	
     schedClicked = true;
     $.ajax({
         type: 'GET',
         url: '/onnana/schedule/detail/' + sid,
         success: function(jsonSched) {
             let sched = JSON.parse(jsonSched);
+			console.log(jsonSched);
             $('#sid2').val(sched.sid);
-            $('#title2').val(sched.title);
+            $('#title3').val(sched.title);
+            $('#title4').val(sched.title2);
             $('#startDate2').val(sched.startTime.substring(0, 10));
             $('#startTime2').val(sched.startTime.substring(11, 16));
-            $('#place2').val(sched.place);
-            $('#smoke2').val(sched.smoke);
+            $('#place3').val(sched.place);
+            $('#startplace2').val(sched.startplace);
+            $('#endplace2').val(sched.endplace);
+            $('#smoke3').val(sched.smoke);
+            $('#smoke4').val(sched.smoke2);
+            $('#waypoint20').val(sched.waypoint1); // Updated to 'waypoint1'
+            $('#waypoint21').val(sched.waypoint2);
+            $('#waypoint22').val(sched.waypoint3);
+			$('#totalSum2222').text(sched.totalSum);
 
-
+			
+			console.log(sched.totalSum)
             $('#updateModal').modal('show');
         }
     });
 }
-
-
 
 
 function deleteSchedule() {

@@ -45,7 +45,4 @@ public interface UserService {
 	
 	int getAttendanceCount(String uid);
 	
-	// 로그인 시 출석 카운트 업데이트
-    void updateAttendanceCount(String uid);
-	
 }

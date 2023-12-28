@@ -174,9 +174,9 @@
                                	<div class="${(day.date eq 0 or day.isHoliday eq 1) ? 'text-danger' : day.date eq 6 ? 'text-primary' : ''}">
                                		<strong>${day.day}</strong></div>
                                	<div>
-			                        <c:forEach var="name" items="${day.annivList}" varStatus="loop">
-			                        	${loop.first ? '' : '&middot;'} ${name}
-		                        	</c:forEach>
+		                        <c:forEach var="name" items="${day.annivList}" varStatus="loop">
+		                        	${loop.first ? '' : '&middot;'} ${name}
+	                        	</c:forEach>
 	                        	</div>
                            	</c:if>
                             </div>
@@ -186,8 +186,8 @@
 						        <div style="display: inline-block; margin-top:-10px;">
 						            <!-- Stamp Image -->
 						            <img id="stampImage" height="60px" src="/onnana/img/stamp.png">
-									<p id="totalSum2222"></p>
-
+						            <p style="margin-bottom:-5px">${sched.title}</p>
+						            <p>${sched.title2}</p>
 						</c:forEach>
 
                         </td>

@@ -8,11 +8,10 @@
 </head>
 <body>
     <%@ include file="../common/top.jspf" %>
-    <div class="container" style="margin-top:80px">
+    <div class="container" style="margin:130px">
         <div class="row">
             <%@ include file="../common/aside.jspf" %>
             <div>
-                <hr>
 	 			<!-- 폼과 버튼을 플렉스 레이아웃으로 배치 -->
 	            <form action="/onnana/graph/select-variable" method="post" class="d-flex align-items-end">
 	                <div class="form-group mb-0 mr-2" style="flex-grow: 0; min-width: 0;">
@@ -27,6 +26,7 @@
 	
 	            <!-- Flask 서버로부터 반환된 그래프를 표시 -->
 	            <c:if test="${!empty graph}">
+					<p style="font-size:12px;">출처:KOSIS/국내통계포털(https://kosis.kr/)</p>
 	                <img src="${graph}" alt="상관 관계 그래프" class="img-fluid mt-3" />
 	            </c:if>
 	            <c:if test="${empty graph}">

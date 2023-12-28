@@ -234,8 +234,9 @@ public class AsideUtil {
    // ★★★ OpenWeather API ★★
    public String getWeather(String lon, String lat) {
       String apiUrl = "https://api.openweathermap.org/data/2.5/weather";
-      apiUrl += "?lat=37.5207569&lon=126.9003409&appid=7bf73c254c8083bf83a5f9b40a7146bf&units=metric";
-   
+      apiUrl += "?lat="+lon+"&lon="+lat+"&appid="+ openWeatherApiKey + "&lang=kr" + "&units=metric";
+      // 현재위치 위도경도가 서로 바뀌어서 데이터가 불러와짐(2023.12.18일에는 정상으로 되었으나, 2023.12.19일 이상발견)
+      
       String weatherStr = null;
       try {
          URL url = new URL(apiUrl);

@@ -8,11 +8,10 @@
 </head>
 <body>
     <%@ include file="../common/top.jspf" %>
-    <div class="container" style="margin-top:80px">
+    <div class="container" style="margin:130px">
         <div class="row">
             <%@ include file="../common/aside.jspf" %>
             <div>
-                <hr>
 				<form action="/onnana/graph/corona-graph" method="post" class="d-flex flex-wrap align-items-end">
                     <!-- 시도 선택 -->
                     <div class="form-group mb-0 mr-2" style="flex-grow: 0; min-width: 0;">
@@ -43,6 +42,7 @@
                
                 <!-- 이미지 및 추가적인 정보 표시 부분 -->
                 <c:if test="${not empty graph}">
+	       			<p style="font-size:12px;">출처:KOSIS/국내통계포털(https://kosis.kr/)</p>
                     <img src="${graph}" alt="코로나19 기간 대비 데이터 비교 그래프" class="img-fluid mt-3" />
                 </c:if>
                 <c:if test="${empty graph}">

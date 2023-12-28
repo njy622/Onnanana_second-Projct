@@ -1,7 +1,17 @@
 package com.human.onnana.controller;
-
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+
+
+import java.awt.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -11,6 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -26,13 +37,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
+import com.google.gson.Gson;
 import com.human.onnana.entity.Button;
 import com.human.onnana.entity.User;
 import com.human.onnana.service.ScheduleService;
 import com.human.onnana.service.UserService;
+
 
 @Controller
 @RequestMapping("/user")
@@ -109,23 +123,150 @@ public class UserController {
 	
 	
 	
-	
+	// 관리자 모드의 유저의 사용자목록창
 	@GetMapping("/list/{page}")
 	public String list(@PathVariable int page, HttpSession session, Model model) {
-		List<User> list = userService.getUserList(page);
-		model.addAttribute("userList", list);
-		
-		int totalUsers = userService.getUserCount();
-		int totalPages = (int) Math.ceil((double)totalUsers / userService.RECORDS_PER_PAGE);
-		List<String> pageList = new ArrayList<>();
-		for (int i=1; i<=totalPages; i++)
-			pageList.add(String.valueOf(i));
-		model.addAttribute("pageList", pageList);
-		session.setAttribute("currentUserPage", page);
-		model.addAttribute("menu", "user"); // 유저아이콘 불들어옴
-		
-		return "user/list";
+	    // 유저 리스트를 가져오는 코드
+	    List<User> list = userService.getUserList(page);
+	    model.addAttribute("userList", list);
+
+	    // 페이징 처리 코드
+	    int totalUsers = userService.getUserCount();
+	    int totalPages = (int) Math.ceil((double) totalUsers / userService.RECORDS_PER_PAGE);
+	    List<String> pageList = new ArrayList<>();
+	    for (int i = 1; i <= totalPages; i++)
+	        pageList.add(String.valueOf(i));
+	    model.addAttribute("pageList", pageList);
+
+	    session.setAttribute("currentUserPage", page);
+	    model.addAttribute("menu", "user");
+
+	    return "user/list";
 	}
+	
+	
+	
+	// 한 유저의 사용자 창
+	@GetMapping("/list2/{page}")
+	public String list2(@PathVariable int page, HttpSession session, Model model) {
+	    // 유저 리스트를 가져오는 코드
+	    List<User> list = userService.getUserList(page);
+	    model.addAttribute("userList", list);
+
+	    // 페이징 처리 코드
+	    int totalUsers = userService.getUserCount();
+	    int totalPages = (int) Math.ceil((double) totalUsers / userService.RECORDS_PER_PAGE);
+	    List<String> pageList = new ArrayList<>();
+	    for (int i = 1; i <= totalPages; i++)
+	        pageList.add(String.valueOf(i));
+	    model.addAttribute("pageList", pageList);
+
+	    session.setAttribute("currentUserPage", page);
+	    model.addAttribute("menu", "user");
+
+	    return "user/list2";
+	}
+
+	
+	
+	@PostMapping("/processUid")
+	@ResponseBody // AJAX를 통해 JSON 데이터를 반환하기 위해 사용합니다.
+	public String processUid(HttpServletRequest req, HttpSession session, @RequestParam("userUID") String userUID) {
+	    System.out.println(userUID);
+		// DecimalFormat 객체를 생성하여 소수점 자릿수를 지정합니다. 
+		DecimalFormat decimalFormat = new DecimalFormat("#.###");
+		
+	    // 한유저의 캠페인 참여일수와 감소량을 jsp에서 사용자리스트 클릭시, 해당되는 사용자의 uid값을 가져와서 DB와 연동시킴
+	    int listUidCount = schedService.getUserCount(userUID);
+	    Double listUidcarbon = schedService.getCarbonUserCount(userUID);
+	    // 한유저의 하루 평균 감소량(소숫점 3자리까지 나타냄)
+	    double UserDateAve = Math.round(listUidcarbon /listUidCount * 1000.0) / 1000.0;
+	    
+	    
+	    // 모든 유저의 캠페인 참여일수와 감소량을DB와 연동시킴
+	    int listUidCountAll = schedService.getCount();
+	    Double listUidcarbonAll = schedService.getCarbonCount();
+	    // 모든 유저의 하루 평균 감소량(소숫점 3자리까지 나타냄)
+	    double UserDateAveAll = Math.round(listUidcarbonAll /listUidCountAll * 1000.0) / 1000.0;
+	    
+	    
+	    // 모든 유저의 평균 하루 평균 대비 나의 평균 감소량 기여도
+	    double AveDifference = (int)(listUidcarbon / listUidcarbonAll *100);
+	    
+	    
+	    Map<String, Object> response = new HashMap<>();
+	    
+		response.put("userlistCount", listUidCount);
+		response.put("userlistCarbon", listUidcarbon);
+		response.put("UserDateAve", UserDateAve);
+		
+		response.put("userlistCountAll", listUidCountAll);
+		response.put("userlistCarbonAll", listUidcarbonAll);
+		response.put("UserDateAveAll", UserDateAveAll);
+		
+		response.put("AveDifference", AveDifference);
+		
+
+
+		System.out.println(response);
+		return new Gson().toJson(response) ;
+	}
+	
+	
+	@PostMapping("/processdaycarbon")
+	@ResponseBody // AJAX를 통해 JSON 데이터를 반환하기 위해 사용합니다.
+	public String processdaycarbon(HttpServletRequest req, HttpSession session, @RequestParam("userUID") String userUID,
+			 @RequestParam("month") String month) {
+	    
+	    
+	 
+
+	 // 예시로 2023년의 월별 마지막 날짜를 구합니다.
+        int year = 2023;
+        
+        // 각 월의 첫째 날
+        LocalDate startDate = LocalDate.of(year, Integer.parseInt(month), 1);
+        // 각 월의 마지막 날
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+
+	     // 날짜 수 계산
+        int daysInMonth = endDate.getDayOfMonth();
+
+        // 날짜 수에 따라 배열 크기 지정
+        double[] userDayCarbonSumArray = new double[daysInMonth];
+        double[] userAllDayCarbonSumArray = new double[daysInMonth];
+        
+        int index = 0;
+        // 해당 월의 시작일부터 마지막 일까지 반복하여 sdate를 생성
+        for (LocalDate date = startDate; date.isBefore(endDate.plusDays(1)); date = date.plusDays(1)) {
+            String formattedMonth = String.format("%02d", date.getMonthValue());
+            String formattedDay = String.format("%02d", date.getDayOfMonth());
+            String sdate = year + formattedMonth + formattedDay;
+
+            // sdate를 이용하여 필요한 작업 수행
+            double userDayCarbonSum = schedService.UserdaycarbonSum(userUID, sdate);
+            double userAllDayCarbonSum = schedService.UserAlldaycarbonSum(sdate);
+            
+            // 배열에 값을 추가
+            userDayCarbonSumArray[index] = userDayCarbonSum;
+            userAllDayCarbonSumArray[index] = userAllDayCarbonSum;
+            index++;
+            
+            System.out.print("유저데이터:"+userDayCarbonSum);
+            System.out.print("전체 데이터:"+userAllDayCarbonSum);
+
+            
+        }
+        
+        Map<String, Object> responsedata = new HashMap<>();
+        responsedata.put("userdaydata", userDayCarbonSumArray);
+        responsedata.put("userAlldaydata", userAllDayCarbonSumArray);
+        
+        System.out.println(responsedata);
+		return new Gson().toJson(responsedata) ;
+	}
+	
+	
 	
 	
 	@GetMapping("/login")
@@ -134,75 +275,45 @@ public class UserController {
 	}
 	
 	
-	public void updateLastLoginDate(String uid, HttpSession session) {
-	    Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-	    userService.updateLastLoginDate(uid, currentTimestamp);
+	// 새로운 메서드 추가: 사용자의 last_login_date를 현재 시간으로 갱신
+		@Transactional
+		public void updateLastLoginDate(String uid, HttpSession session) {
+		    Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+		    userService.updateLastLoginDate(uid, currentTimestamp);
 
-	    // 출석 횟수 가져오는 로직 전에 로그 추가
-	    System.out.println("Trying to update last login date and attendance count for uid: " + uid);
-
-	    // 출석 횟수 가져오는 로직
-	    int attendanceCount = schedService.getAttendanceCount(uid);
-
-	    // 로그에 출석 횟수 정보 출력
-	    System.out.println("Attendance count retrieved from the database: " + attendanceCount);
-
-	    // 세션 초기화
-	    session.removeAttribute("attendanceCount");
-
-	    // 출석 횟수를 세션에 저장
-	    session.setAttribute("attendanceCount", attendanceCount);
-
-	    // 출석 횟수 저장 로그 추가
-	    System.out.println("Attendance count saved in session: " + attendanceCount);
-	}
-
+		    // 출석 횟수 계산 및 세션에 저장
+		    int attendanceCount = schedService.getAttendanceCount(uid);
+		    session.setAttribute("attendanceCount", attendanceCount);
+		}
 
 		
-	// 새로운 메서드 추가: 사용자의 출석 횟수 증가
-	public void incrementAttendanceCount(String uid, HttpSession session) {
-	    Integer attendanceCount = (Integer) session.getAttribute("attendanceCount");
-	    if (attendanceCount == null) {
-	    	// 세션에 출석 횟수가 없으면 데이터베이스에서 가져와 설정
-	        attendanceCount = schedService.getAttendanceCount(uid);
-	    } else {
-	        attendanceCount++;
-	    }
-	    session.setAttribute("attendanceCount", attendanceCount);
-
-	}
-
-		
+		// 새로운 메서드 추가: 사용자의 출석 횟수 증가
+		@Transactional
+		public void incrementAttendanceCount(String uid, HttpSession session) {
+		    Integer attendanceCount = (Integer) session.getAttribute("attendanceCount");
+		    if (attendanceCount == null) {
+		        attendanceCount = 1;
+		    } else {
+		        attendanceCount++;
+		    }
+		    session.setAttribute("attendanceCount", attendanceCount);
+		}
+	
 	@PostMapping("/login")
 	public String loginProc(String uid, String pwd, HttpSession session, Model model) {
 		int result = userService.login(uid, pwd);
-	    if (result == userService.CORRECT_LOGIN) {
-	    	// 사용자 로그인 시마다 last_login_date 갱신
+		if (result == userService.CORRECT_LOGIN) {
+			// 사용자 로그인 시마다 last_login_date 갱신
 	        updateLastLoginDate(uid, session);
-
-	        // 호출 추가: 사용자의 출석 횟수 증가
+            
+	        // 출석 횟수 증가
 	        incrementAttendanceCount(uid, session);
-	        
-	        session.setAttribute("sessUid", uid);
+			
+			session.setAttribute("sessUid", uid);
 			User user = userService.getUser(uid);
 			session.setAttribute("sessUname", user.getUname());
 			session.setAttribute("sessEmail", user.getEmail());
-	        
-	        // 출석 횟수 불러와서 증가
-	        Integer attendanceCount = (Integer) session.getAttribute("attendanceCount");
-	        if (attendanceCount == null) {
-	            attendanceCount = 1;
-	        } else {
-	            attendanceCount++;
-	        }
-	        session.setAttribute("attendanceCount", attendanceCount);
-
 			
-			// 세션에서 출석 횟수 가져오는 부분에 로그 추가
-	        int sessionAttendanceCount = (Integer) session.getAttribute("attendanceCount");
-	        System.out.println("Attendance count retrieved from session: " + sessionAttendanceCount);
-			
-
 			// 게시판 글 전체 카운트
 			session.setAttribute("sessAllId", schedService.getCount());
 			// 게시판 글 유저 카운트
@@ -212,6 +323,9 @@ public class UserController {
 			session.setAttribute("sessAllCarbonId", schedService.getCarbonCount());
 			// 탄소배출감소량 한 유저 카운트
 			session.setAttribute("sessCarbonId", schedService.getCarbonUserCount(uid));
+			
+			
+			
 			
 			// 환영 메세지
 			// 로그인 입력 잘못해도, home으로 바로 이동
@@ -229,13 +343,9 @@ public class UserController {
 	
 	@GetMapping("/logout")
 	public String logout(HttpSession session) {
-		 // 세션을 완전히 비우는 코드
-		    session.invalidate();
-
-	    return "redirect:/home";
+		session.invalidate();
+		return "redirect:/home";		// 로그아웃시, 홈으로 가도록 설정
 	}
-
-
 	
 	@GetMapping("/register")
 	public String registerForm() {

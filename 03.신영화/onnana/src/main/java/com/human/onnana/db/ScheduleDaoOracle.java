@@ -74,12 +74,19 @@ public interface ScheduleDaoOracle {
 	    }
 	}
 	
-
+	
+	
 	@Select("SELECT COUNT(*) FROM schedule WHERE \"uid\"=#{uid}")
 	int getUserSchedCount(String uid);
-
-	@Select("SELECT COUNT(*) FROM schedule where \"uid\"=#{uid}")
-	int getAttendanceCount(String uid);
-
-
+	
+	// 한유저의 특정일자 탄소감소량 합계
+	@Select("SELECT  COALESCE(SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))), 0) + COALESCE(SUM(TO_NUMBER(REGEXP_SUBSTR(title2, '\\d+(\\.\\d+)?'))), 0) AS total_sum FROM schedule where \"uid\"= #{uid}  and sdate =  #{sdate}")
+	double UserdaycarbonSum(String uid, String sdate);
+	
+	
+	// 한유저의 특정일자 탄소감소량 합계
+	@Select("SELECT  COALESCE(SUM(TO_NUMBER(REGEXP_SUBSTR(title, '\\d+(\\.\\d+)?'))), 0) + COALESCE(SUM(TO_NUMBER(REGEXP_SUBSTR(title2, '\\d+(\\.\\d+)?'))), 0) AS total_sum FROM schedule where sdate =  #{sdate}")
+	double UserAlldaycarbonSum(String sdate);
+	
+	
 }
