@@ -126,6 +126,7 @@ public class ScheduleController {
 			}
 			calendar.add(week);
 		}
+
 		
 		model.addAttribute("calendar", calendar);
 		model.addAttribute("today", today + "(" + date + ")");
@@ -141,9 +142,9 @@ public class ScheduleController {
 	
 	
 	@PostMapping("/calendar")
-	public String list(@PathVariable int page, HttpSession session, Model model, String uid, String sdate) {
+	public String list(@PathVariable int sid,@PathVariable int page, HttpSession session, Model model, String uid, String sdate) {
 	    String sessUid = (String) session.getAttribute("sessUid");
-	    
+	    model.addAttribute("totalSum", schedService.getUserCarbonReductionTotal(sid));
 	    model.addAttribute("sdate", sdate); // 해당 날짜도 함께 전달합니다.
 	    return "schedule/calendar";
 	}
@@ -274,6 +275,8 @@ public class ScheduleController {
 		String waypoint3 = req.getParameter("waypoint3");
 		int sid = Integer.parseInt(req.getParameter("sid"));
 		String sdate = startDate.replace("-", "");
+		
+
 		
 		String sessUid = (String) session.getAttribute("sessUid");
 	    Schedule schedule = new Schedule(sid, sessUid, sdate, startDateTime);

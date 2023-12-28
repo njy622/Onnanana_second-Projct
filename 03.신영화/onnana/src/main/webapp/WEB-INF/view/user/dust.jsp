@@ -84,13 +84,20 @@
       <!-- 그래프 이미지 및 설명을 표시하는 부분 추가 -->
        <div class="col-5">
           <div class="image-description" id="image-description">
-              <h5 id="description-title" class="text-info"></h5>
+          	<div class="row">
+          		<div class="col-8">
+		              <h5 id="description-title" class="text-info"></h5>
+          		</div>
+          		<div class="col-4">
+	              <button id="openModalBtn" type="button" class="btn btn-outline-info" onclick="openModal()">
+	                  그래프 보기
+	              </button>
+          		</div>
+          	</div>
               <p id="description-content"></p>
               <p style="font-size:12px;">출처:서울특별시 대기환경정보(https://cleanair.seoul.go.kr/information/info151)</p>
               
-              <button id="openModalBtn" type="button" class="btn btn-outline-info" onclick="openModal()">
-                  그래프 보기
-              </button>
+              
           </div>
       </div>
       </div>

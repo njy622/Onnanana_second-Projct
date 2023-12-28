@@ -6,6 +6,7 @@
 
 /* ================== 현재위치 경도 위도 구하는 코드 ===================== */
 var hereLat, hereLon;
+let totalCarbon1, totalCarbon2, totalCarbon13, totalCarbon4; // 1,2: insert 3,4:update
 
 function getLocation() {
   if (navigator.geolocation) {
@@ -97,13 +98,13 @@ function readJs() {
     let smokeCarbon = parseInt($('#smoke').val()) * 14 / 1000;
 	
   	
-    let totalCarbon = carbonEmission - smokeCarbon;
-    document.getElementById('showResult').innerText = totalCarbon.toFixed(2);
+    totalCarbon1 = carbonEmission - smokeCarbon;
+    document.getElementById('showResult').innerText = totalCarbon1;
 
     // 입력값이 변경될 때마다 제목에 결과값 추가
     let titleElement = document.getElementById('title');
     let currentTitle = titleElement.value;
-    titleElement.value = currentTitle.split('-')[0].trim() + '- ' + totalCarbon.toFixed(2) + 'kg 감소';
+    titleElement.value = currentTitle.split('-')[0].trim() + '- ' + totalCarbon1 + 'kg 감소';
 }
 
 
@@ -271,13 +272,13 @@ function stopoverreadJs() {
     let smokeCarbon = parseInt($('#smoke2').val()) * 14 / 1000;
 	
   	
-    let totalCarbon = carbonEmission - smokeCarbon;
-    document.getElementById('showResult2').innerText = totalCarbon.toFixed(2);
+    totalCarbon2 = carbonEmission - smokeCarbon;
+    document.getElementById('showResult2').innerText = totalCarbon2;
 
     // 입력값이 변경될 때마다 제목에 결과값 추가
     let titleElement = document.getElementById('title2');
     let currentTitle = titleElement.value;
-    titleElement.value = currentTitle.split('-')[0].trim() + '- ' + totalCarbon.toFixed(2) + 'kg 감소';
+    titleElement.value = currentTitle.split('-')[0].trim() + '- ' + totalCarbon2 + 'kg 감소';
 }
 
 
@@ -360,13 +361,13 @@ function readJs2() {
     let smokeCarbon = parseInt($('#smoke3').val()) * 14 / 1000;
 	
   	
-    let totalCarbon = carbonEmission - smokeCarbon;
-    document.getElementById('showResult3').innerText = totalCarbon.toFixed(2);
+    totalCarbon3 = carbonEmission - smokeCarbon;
+    document.getElementById('showResult3').innerText = totalCarbon3;
 
     // 입력값이 변경될 때마다 제목에 결과값 추가
     let titleElement = document.getElementById('title3');
     let currentTitle = titleElement.value;
-    titleElement.value = currentTitle.split('-')[0].trim() + '- ' + totalCarbon.toFixed(2) + 'kg 감소';
+    titleElement.value = currentTitle.split('-')[0].trim() + '- ' + totalCarbon3 + 'kg 감소';
 }
 
 
@@ -534,15 +535,34 @@ function stopoverreadJs2() {
     let smokeCarbon = parseInt($('#smoke4').val()) * 14 / 1000;
 	
   	
-    let totalCarbon = carbonEmission - smokeCarbon;
-    document.getElementById('showResult4').innerText = totalCarbon.toFixed(2);
+    totalCarbon4 = carbonEmission - smokeCarbon;
+    document.getElementById('showResult4').innerText = totalCarbon4;
 
     // 입력값이 변경될 때마다 제목에 결과값 추가
     let titleElement = document.getElementById('title4');
     let currentTitle = titleElement.value;
-    titleElement.value = currentTitle.split('-')[0].trim() + '- ' + totalCarbon.toFixed(2) + 'kg 감소';
+    titleElement.value = currentTitle.split('-')[0].trim() + '- ' + totalCarbon4 + 'kg 감소';
 }
 
 
+document.addEventListener("DOMContentLoaded", function() {
+    let insertsum = totalCarbon1 + totalCarbon2;
+    let updatesum = totalCarbon13 + totalCarbon4;
 
+    let showsumResult1 = document.getElementById('showsumResult1');
+    let showsumResult2 = document.getElementById('showsumResult2');
 
+    if (showsumResult1 && showsumResult2) {
+        showsumResult1.innerText = insertsum;
+        showsumResult2.innerText = updatesum;
+    } else {
+        console.log("Element with provided ID not found.");
+    }
+});
+
+console.log(insertsum);
+console.log(updatesum);
+console.log(totalCarbon1);
+console.log(totalCarbon2);
+console.log(totalCarbon13);
+console.log(totalCarbon4);

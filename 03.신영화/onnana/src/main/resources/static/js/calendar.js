@@ -28,15 +28,6 @@ function cellClick(date) {
 		$('#endTime').val(endStr);
 		$('#addModal').modal('show');
 		 
-		 $.ajax({
-        type: 'GET',
-        url: '/onnana/schedule/detail/' + sid,
-        success: function(jsonSched) {
-            let sched = JSON.parse(jsonSched);
-			$('#totalSum2222').text(sched.totalSum);
-			console.log(sched.totalSum)
-        }
-    });
 		}
 }
 

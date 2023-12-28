@@ -56,13 +56,4 @@ public interface UserDaoOracle {
 	 @Select("SELECT COUNT(sid) FROM schedule WHERE uid=#{uid}")
 	    int getUserSchedCount(String uid); 
    
-	 
-	@Select("SELECT COUNT(sid) FROM users where \"uid\"=#{uid}")
-	int getAttendanceCount(String uid);
-
-	@Update("UPDATE USER_LOGIN SET ATTENDANCE_COUNT=#{count} WHERE \"uid\"=#{uid}")
-	void updateAttendanceCount(@Param("uid") String uid, @Param("count") int count);	
-
-
-	
 }
